@@ -18,6 +18,7 @@ begin
     gem.test_files = []
     gem.add_development_dependency "rspec"
     gem.add_development_dependency "nokogiri"
+    gem.add_development_dependency "sqlite3-ruby"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
