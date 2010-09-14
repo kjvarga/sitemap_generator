@@ -9,7 +9,7 @@ module SitemapGenerator
         path = path.sitemap_path
       end
 
-      options.assert_valid_keys(:priority, :changefreq, :lastmod, :host, :images)
+      options.assert_valid_keys(:priority, :changefreq, :lastmod, :host, :images, :video)
       options.reverse_merge!(:priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :host => Sitemap.default_host, :images => [])
       {
         :path => path,
@@ -18,7 +18,8 @@ module SitemapGenerator
         :lastmod => options[:lastmod],
         :host => options[:host],
         :loc => URI.join(options[:host], path).to_s,
-        :images => prepare_images(options[:images], options[:host])
+        :images => prepare_images(options[:images], options[:host]),
+        :video => options[:video]
       }
     end
 

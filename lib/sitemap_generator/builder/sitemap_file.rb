@@ -32,6 +32,7 @@ module SitemapGenerator
               xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
                 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
               xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+              xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
             >
         HTML
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!
@@ -96,6 +97,31 @@ module SitemapGenerator
                 builder.image :title, image[:title]                 if image[:title]
                 builder.image :license, image[:license]             if image[:license]
               end
+            end
+          end
+
+          unless link[:video].blank?
+            video = link[:video]
+            builder.video :video do
+              # required elements
+              builder.video :thumbnail_loc, video[:thumbnail_loc]
+              builder.video :title, video[:title]
+              builder.video :description, video[:description]
+
+              builder.video :content_loc, video[:content_loc]           if video[:content_loc]
+              if video[:player_loc]
+                builder.video :player_loc, video[:player_loc], :allow_embed => (video[:allow_embed] ? 'yes' : 'no'), :autoplay => video[:autoplay]
+              end
+
+              builder.video :rating, video[:rating]                     if video[:rating]
+              builder.video :view_count, video[:view_count]             if video[:view_count]
+              builder.video :publication_date, video[:publication_date] if video[:publication_date]
+              builder.video :expiration_date, video[:expiration_date]   if video[:expiration_date]
+              builder.video :duration, video[:duration]                 if video[:duration]
+              builder.video :family_friendly, (video[:family_friendly] ? 'yes' : 'no')  if video[:family_friendly]
+              builder.video :duration, video[:duration]                 if video[:duration]
+              video[:tags].each {|tag| builder.video :tag, tag }        if video[:tags]
+              video[:categories].each {|category| builder.video :category, category} if video[:categories]
             end
           end
         end
