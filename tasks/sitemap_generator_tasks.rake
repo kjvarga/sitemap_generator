@@ -1,26 +1,19 @@
-environment = begin
-
-  # Try to require the library.  If we are installed as a gem, this should work.
-  # We don't need to load the environment.
-  require 'sitemap_generator'
-  []
-
-rescue LoadError
-
-  # We must be installed as a plugin.  Make sure the environment is loaded
-  # when running all rake tasks.
-  [:environment]
-
-end
-
 namespace :sitemap do
+  task :environment do
+    Rake::Task["environment"].invoke
+    begin
+      require 'sitemap_generator'
+    rescue LoadError
+    end
+  end
+
   desc "Install a default config/sitemap.rb file"
-  task :install => environment do
+  task :install => ['sitemap:environment'] do
     SitemapGenerator::Utilities.install_sitemap_rb(verbose)
   end
 
   desc "Delete all Sitemap files in public/ directory"
-  task :clean => environment do
+  task :clean => ['sitemap:environment'] do
     SitemapGenerator::Utilities.clean_files
   end
 

@@ -2,6 +2,20 @@ ENV["RAILS_ENV"] ||= 'test'
 # TODO Fix Rails 3
 #ENV['BUNDLE_GEMFILE'] = File.join(File.dirname(__FILE__), 'mock_rails3_gem', 'Gemfile')
 
+module Helpers
+  extend self
+
+  # Invoke and then re-enable the task so it can be called multiple times
+  #
+  # <tt>task</tt> task symbol/string
+  def invoke_task(task)
+    Rake.send(:verbose, false)
+    Rake::Task[task.to_s].invoke
+    Rake::Task[task.to_s].reenable
+  end
+end
+
+
 sitemap_rails =
   case ENV["SITEMAP_RAILS"]
   when 'rails3'
@@ -14,6 +28,7 @@ sitemap_rails =
 
 # Load the app's Rakefile so we know everything is being loaded correctly
 load(File.join(File.dirname(__FILE__), sitemap_rails, 'Rakefile'))
+Helpers.invoke_task('sitemap:environment')
 
 require 'rubygems'
 begin
@@ -34,17 +49,4 @@ Spec::Runner.configure do |config|
   config.mock_with :mocha
   config.include(FileMacros)
   config.include(XmlMacros)
-end
-
-module Helpers
-  extend self
-
-  # Invoke and then re-enable the task so it can be called multiple times
-  #
-  # <tt>task</tt> task symbol/string
-  def invoke_task(task)
-    Rake.send(:verbose, false)
-    Rake::Task[task.to_s].invoke
-    Rake::Task[task.to_s].reenable
-  end
 end
