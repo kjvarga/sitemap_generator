@@ -7,8 +7,8 @@ module SitemapGenerator
   class LinkSet
     include ActionView::Helpers::NumberHelper  # for number_with_delimiter
 
-    attr_reader :default_host, :public_path, :sitemaps_path
-    attr_accessor :sitemap, :sitemap_index
+    attr_reader :default_host, :sitemaps_path
+    attr_accessor :sitemap, :sitemap_index, :public_path
     attr_accessor :verbose, :yahoo_app_id
 
     # Evaluate the sitemap config file and write all sitemaps.
@@ -53,13 +53,11 @@ module SitemapGenerator
     # <tt>default_host</tt> hostname including protocol to use in all sitemap links
     #   e.g. http://en.google.ca
     def initialize(public_path = nil, sitemaps_path = nil, default_host = nil)
-      @default_host = default_host
-      @public_path = public_path
-      @sitemaps_path = sitemaps_path
+      self.default_host = default_host unless default_host.nil?
+      self.public_path = public_path unless public_path.nil?
+      self.sitemaps_path = sitemaps_path unless default_host.nil?
 
-      if @public_path.nil?
-        @public_path = File.join(::Rails.root, 'public/') rescue 'public/'
-      end
+      self.public_path = File.join(::Rails.root, 'public/') if self.public_path.nil?
 
       # Default host is not set yet.  Set it on these objects when `add_links` is called
       self.sitemap_index = SitemapGenerator::Builder::SitemapIndexFile.new(@public_path, sitemap_index_path)
