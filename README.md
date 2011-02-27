@@ -6,7 +6,7 @@ SitemapGenerator generates Sitemaps for your Rails application.  The Sitemaps ad
 Features
 -------
 
-- Supports [Video sitemaps][sitemap_video] and [Image sitemaps][sitemap_images]
+- Supports [Video sitemaps][sitemap_video], [Image sitemaps][sitemap_images], and [Geo sitemaps][geo_tags]
 - Rails 2.x and 3.x compatible
 - Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
 - Handles millions of links
@@ -18,6 +18,7 @@ Features
 Changelog
 -------
 
+- v1.4.0: [Geo sitemap][geo_tags] support, support for generate multiple sitemap sets with different filenames
 - v1.3.0: Support setting the sitemaps path
 - v1.2.0: Verified working with Rails 3 stable release
 - v1.1.0: [Video sitemap][sitemap_video] support
