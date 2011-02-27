@@ -144,7 +144,7 @@ Supported video options include:
 Geo Sitemaps
 -----------
 
-Links to pages with KML or GeoRSS content can be added by passing a <tt>:geo</tt> Hash to <tt>add()</tt>.  The Hash only supports one tag of <tt>:format</tt>.  Google provides an [example of a geo sitemap link][geo_tags].  Note that the sitemap does not actually contain your KML or GeoRSS.  It merely links to a page that has this content.
+Page with geo data can be added by passing a <tt>:geo</tt> Hash to <tt>add()</tt>.  The Hash only supports one tag of <tt>:format</tt>.  Google provides an [example of a geo sitemap link here][geo_tags].  Note that the sitemap does not actually contain your KML or GeoRSS.  It merely links to a page that has this content.
 
     sitemap.add('/restaurants/1234.kml', :geo => { :format => 'kml' })
 
@@ -206,11 +206,11 @@ The hostname must include the full protocol.
 Sitemap Filenames
 ----------
 
-By default sitemaps have the name <tt>sitemap1.xml.gz</tt>, <tt>sitemap2.xml.gz</tt>, etc with the sitemap index having name <tt>sitemap_index_.xml.gz</tt>.
+By default sitemaps have the name <tt>sitemap1.xml.gz</tt>, <tt>sitemap2.xml.gz</tt>, etc with the sitemap index having name <tt>sitemap_index.xml.gz</tt>.
 
-If you want to change the <tt>sitemap</tt> portion of the name you can set it as shown below.  The surrounding structure of numbers, extensions, and _index will stay the same.
+If you want to change the <tt>sitemap</tt> portion of the name you can set it as shown below.  The surrounding structure of numbers, extensions, and _index will stay the same.  For example:
 
-    SitemapGenerator::Sitemap.filename = "another_sitemap"
+    SitemapGenerator::Sitemap.filename = "geo_sitemap"
 
 Example Configuration File
 ---------
@@ -255,7 +255,7 @@ To generate multiple sets of sitemaps you can create multiple configuration file
     rake sitemap:refresh
     rake sitemap:refresh CONFIG_FILE="config/geo_sitemap.rb"
     
-The first one uses the default config file at <tt>config/sitemap.rb</tt>.  Your two config files might look like this:
+The first one uses the default config file at <tt>config/sitemap.rb</tt>.  Your first config file might look like this:
 
     # config/sitemap.rb
     SitemapGenerator::Sitemap.default_host = "http://www.example.com"
@@ -264,7 +264,8 @@ The first one uses the default config file at <tt>config/sitemap.rb</tt>.  Your 
         sitemap.add store_path(store)
       end
     end
-    
+
+And the second:    
 
     # config/geo_sitemap.rb
     SitemapGenerator::Sitemap.filename = "geo_sitemap"
