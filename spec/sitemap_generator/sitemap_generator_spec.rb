@@ -85,7 +85,35 @@ describe "SitemapGenerator" do
   context "sitemap path" do
     before :each do
       ::SitemapGenerator::Sitemap.default_host = 'http://test.local'
+      ::SitemapGenerator::Sitemap.filename = 'sitemap'
       FileUtils.rm_rf(rails_path('/public/sitemaps'))
+    end
+    
+    it "should allow changing of the filename" do
+      sm = ::SitemapGenerator::Sitemap
+      sm.filename = 'geo_sitemap'
+      sm.create do
+        add '/goerss', :geo => { :format => 'georss' }
+        add '/kml', :geo => { :format => 'kml' }
+      end
+
+      file_should_exist(rails_path('/public/geo_sitemap_index.xml.gz'))
+      file_should_exist(rails_path('/public/geo_sitemap1.xml.gz'))
+    end
+    
+    it "should allow creating multiple sets of sitemaps" do
+      sm = ::SitemapGenerator::Sitemap
+      sm.create do
+        add '/'
+      end
+      sm.filename = 'geo_sitemap'
+      sm.create do
+        add '/kml', :geo => { :format => 'kml' }
+      end
+      file_should_exist(rails_path('/public/sitemap_index.xml.gz'))
+      file_should_exist(rails_path('/public/sitemap1.xml.gz'))
+      file_should_exist(rails_path('/public/geo_sitemap_index.xml.gz'))
+      file_should_exist(rails_path('/public/geo_sitemap1.xml.gz'))
     end
 
     it "should support setting a sitemap path" do

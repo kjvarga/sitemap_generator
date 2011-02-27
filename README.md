@@ -139,6 +139,17 @@ Supported video options include:
 * `tag` A single tag.  See `tags`
 * `category`
 * `gallery_loc`
+
+Geo Sitemaps
+-----------
+
+Links to pages with KML or GeoRSS content can be added by passing a <tt>:geo</tt> Hash to <tt>add()</tt>.  The Hash only supports one tag of <tt>:format</tt>.  Google provides an [example of a geo sitemap link][geo_tags].  Note that the sitemap does not actually contain your KML or GeoRSS.  It merely links to a page that has this content.
+
+    sitemap.add('/restaurants/1234.kml', :geo => { :format => 'kml' })
+
+Supported geo options include:
+
+* `format` Required, either 'kml' or 'georss'
     
 Configuration
 ======
@@ -190,6 +201,17 @@ You must set the <tt>default_host</tt> that is to be used when adding links to y
     SitemapGenerator::Sitemap.default_host = "http://www.example.com"
 
 The hostname must include the full protocol.
+
+Sitemaps Filename
+----------
+
+By default sitemaps have the name <tt>sitemap1.xml.gz</tt>, <tt>sitemap2.xml.gz</tt>, etc with the sitemap index having name <tt>sitemap_index_.xml.gz</tt>.
+
+If you want to change the <tt>sitemap</tt> portion of the name (the surround structure of numbers, extensions, and _index will stay the same) you can set it like this:
+
+    SitemapGenerator::Sitemap.filename = "another_sitemap"
+
+You can also use this to generate separate sets of sitemaps.  Inside your sitemap configuration file add multiple <tt>SitemapGenerator::Sitemap.add_links do |sitemap|</tt> blocks preceding each one with a different filename.
 
 Example Configuration File
 ---------
@@ -298,6 +320,7 @@ Thanks (in no particular order)
 - [Adrian Mugnolo](http://github.com/xymbol)
 - [Jason Weathered](http://github.com/jasoncodes)
 - [Andy Stewart](http://github.com/airblade)
+- [Brian Armstrong](https://github.com/barmstrong) for geo sitemaps
 
 Copyright (c) 2009 Karl Varga released under the MIT license
 
@@ -311,3 +334,4 @@ Copyright (c) 2009 Karl Varga released under the MIT license
 [sitemap_protocol]:http://sitemaps.org/protocol.php
 [video_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=80472#4
 [image_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=178636
+[geo_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=94555

@@ -7,7 +7,7 @@ module SitemapGenerator
   class LinkSet
     include ActionView::Helpers::NumberHelper  # for number_with_delimiter
 
-    attr_reader :default_host, :public_path, :sitemaps_path
+    attr_reader :default_host, :public_path, :sitemaps_path, :filename
     attr_accessor :sitemap, :sitemap_index
     attr_accessor :verbose, :yahoo_app_id
 
@@ -52,10 +52,14 @@ module SitemapGenerator
     #
     # <tt>default_host</tt> hostname including protocol to use in all sitemap links
     #   e.g. http://en.google.ca
-    def initialize(public_path = nil, sitemaps_path = nil, default_host = nil)
+    #
+    # <tt>filename</tt> used in the name of the file like "#{@filename}1.xml.gzip" and "#{@filename}_index.xml.gzip"
+    #   Defaults to <tt>sitemap</tt>
+    def initialize(public_path = nil, sitemaps_path = nil, default_host = nil, filename = 'sitemap')
       @default_host = default_host
       @public_path = public_path
       @sitemaps_path = sitemaps_path
+      @filename = filename
 
       if @public_path.nil?
         @public_path = File.join(::Rails.root, 'public/') rescue 'public/'
@@ -157,6 +161,12 @@ module SitemapGenerator
       self.sitemap_index.sitemap_path = sitemap_index_path unless self.sitemap_index.finalized?
       self.sitemap.sitemap_path = new_sitemap_path unless self.sitemap.finalized?
     end
+    
+    def filename=(value)
+      @filename = value
+      self.sitemap_index.sitemap_path = sitemap_index_path unless self.sitemap_index.finalized?
+      self.sitemap.sitemap_path = new_sitemap_path unless self.sitemap.finalized?
+    end
 
     protected
 
@@ -164,7 +174,7 @@ module SitemapGenerator
     #
     # The index depends on the length of the <tt>sitemaps</tt> array.
     def new_sitemap_path
-      File.join(self.sitemaps_path || '', "sitemap#{self.sitemap_index.sitemaps.length + 1}.xml.gz")
+      File.join(self.sitemaps_path || '', "#{@filename}#{self.sitemap_index.sitemaps.length + 1}.xml.gz")
     end
 
     # Return the current sitemap index filename.
@@ -172,7 +182,7 @@ module SitemapGenerator
     # At the moment we only support one index file which can link to
     # up to 50,000 sitemap files.
     def sitemap_index_path
-      File.join(self.sitemaps_path || '', 'sitemap_index.xml.gz')
+      File.join(self.sitemaps_path || '', "#{@filename}_index.xml.gz")
     end
   end
 end

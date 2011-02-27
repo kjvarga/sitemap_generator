@@ -41,6 +41,7 @@ module SitemapGenerator
                 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
               xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
               xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+              xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0"
             >
         HTML
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!
