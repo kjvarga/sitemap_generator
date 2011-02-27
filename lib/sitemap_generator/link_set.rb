@@ -18,7 +18,7 @@ module SitemapGenerator
     #
     # TODO: Refactor so that we can have multiple instances
     # of LinkSet.
-    def create(&block)
+    def create(config_file = 'config/sitemap.rb', &block)
       require 'sitemap_generator/interpreter'
 
       start_time = Time.now
@@ -27,7 +27,7 @@ module SitemapGenerator
         self.sitemap = SitemapGenerator::Builder::SitemapFile.new(@public_path, new_sitemap_path)
       end
 
-      SitemapGenerator::Interpreter.new(self, &block)
+      SitemapGenerator::Interpreter.new(self, config_file, &block)
       unless self.sitemap.finalized?
         self.sitemap_index.add(self.sitemap)
         puts self.sitemap.summary if verbose

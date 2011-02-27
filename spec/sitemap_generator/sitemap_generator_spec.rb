@@ -100,21 +100,6 @@ describe "SitemapGenerator" do
       file_should_exist(rails_path('/public/geo_sitemap_index.xml.gz'))
       file_should_exist(rails_path('/public/geo_sitemap1.xml.gz'))
     end
-    
-    it "should allow creating multiple sets of sitemaps" do
-      sm = ::SitemapGenerator::Sitemap
-      sm.create do
-        add '/'
-      end
-      sm.filename = 'geo_sitemap'
-      sm.create do
-        add '/kml', :geo => { :format => 'kml' }
-      end
-      file_should_exist(rails_path('/public/sitemap_index.xml.gz'))
-      file_should_exist(rails_path('/public/sitemap1.xml.gz'))
-      file_should_exist(rails_path('/public/geo_sitemap_index.xml.gz'))
-      file_should_exist(rails_path('/public/geo_sitemap1.xml.gz'))
-    end
 
     it "should support setting a sitemap path" do
       directory_should_not_exist(rails_path('/public/sitemaps/'))

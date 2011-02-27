@@ -27,4 +27,5 @@ module SitemapGenerator
 
   self.root = File.expand_path(File.join(File.dirname(__FILE__), '../'))
   self.templates = SitemapGenerator::Templates.new(self.root)
+  
 end

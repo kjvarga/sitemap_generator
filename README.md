@@ -202,16 +202,14 @@ You must set the <tt>default_host</tt> that is to be used when adding links to y
 
 The hostname must include the full protocol.
 
-Sitemaps Filename
+Sitemap Filenames
 ----------
 
 By default sitemaps have the name <tt>sitemap1.xml.gz</tt>, <tt>sitemap2.xml.gz</tt>, etc with the sitemap index having name <tt>sitemap_index_.xml.gz</tt>.
 
-If you want to change the <tt>sitemap</tt> portion of the name (the surround structure of numbers, extensions, and _index will stay the same) you can set it like this:
+If you want to change the <tt>sitemap</tt> portion of the name you can set it as shown below.  The surrounding structure of numbers, extensions, and _index will stay the same.
 
     SitemapGenerator::Sitemap.filename = "another_sitemap"
-
-You can also use this to generate separate sets of sitemaps.  Inside your sitemap configuration file add multiple <tt>SitemapGenerator::Sitemap.add_links do |sitemap|</tt> blocks preceding each one with a different filename.
 
 Example Configuration File
 ---------
@@ -245,6 +243,34 @@ Example Configuration File
           { :loc => image.url, :title => image.name }
         end
         sitemap.add news_path(news), :images => images
+      end
+    end
+    
+Generating Multiple Sets Of Sitemaps
+----------
+
+To generate multiple sets of sitemaps you can create multiple configuration files.  Each should contain a different <tt>SitemapGenerator::Sitemap.filename</tt> to avoid overwriting the previous set. (Of course you can keep the default name of 'sitemap' in one of them.)  You can then build each set with a separate rake task.  For example:
+
+    rake sitemap:refresh
+    rake sitemap:refresh CONFIG_FILE="config/geo_sitemap.rb"
+    
+The first one uses the default config file at <tt>config/sitemap.rb</tt>.  Your two config files might look like this:
+
+    # config/sitemap.rb
+    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+    SitemapGenerator::Sitemap.add_links do |sitemap|
+      Store.each do |store
+        sitemap.add store_path(store)
+      end
+    end
+    
+
+    # config/geo_sitemap.rb
+    SitemapGenerator::Sitemap.filename = "geo_sitemap"
+    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+    SitemapGenerator::Sitemap.add_links do |sitemap|
+      Store.each do |store
+        sitemap.add store_path(store, :format => :kml), :geo => { :format => 'kml' }
       end
     end
 

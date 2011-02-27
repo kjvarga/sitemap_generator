@@ -38,6 +38,6 @@ namespace :sitemap do
 
   task :create => ['sitemap:require_environment'] do
     SitemapGenerator::Sitemap.verbose = verbose
-    SitemapGenerator::Sitemap.create
+    SitemapGenerator::Sitemap.create(ENV["CONFIG_FILE"] || nil)
   end
 end
