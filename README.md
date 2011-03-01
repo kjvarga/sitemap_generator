@@ -146,7 +146,7 @@ Geo Sitemaps
 
 Page with geo data can be added by passing a <tt>:geo</tt> Hash to <tt>add()</tt>.  The Hash only supports one tag of <tt>:format</tt>.  Google provides an [example of a geo sitemap link here][geo_tags].  Note that the sitemap does not actually contain your KML or GeoRSS.  It merely links to a page that has this content.
 
-    sitemap.add('/restaurants/1234.kml', :geo => { :format => 'kml' })
+    sitemap.add('/stores/1234.xml', :geo => { :format => 'kml' })
 
 Supported geo options include:
 
@@ -272,7 +272,7 @@ And the second:
     SitemapGenerator::Sitemap.default_host = "http://www.example.com"
     SitemapGenerator::Sitemap.add_links do |sitemap|
       Store.each do |store
-        sitemap.add store_path(store, :format => :kml), :geo => { :format => 'kml' }
+        sitemap.add "stores/#{store.id}.xml", :geo => { :format => 'kml' }
       end
     end
     
