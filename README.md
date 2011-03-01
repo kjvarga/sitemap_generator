@@ -276,7 +276,7 @@ And the second:
       end
     end
     
-After running both rake tasks you'll have the following files in your <tt>public</tt> directory (or wherever you set the sitemaps_path):
+After running both rake tasks you'll have the following files in your <tt>public</tt> directory (or wherever you set the sitemaps_path): 
 
     geo_sitemap_index.xml.gz
     geo_sitemap1.xml.gz
