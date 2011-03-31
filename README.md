@@ -1,6 +1,8 @@
 SitemapGenerator
 ================
 
+- my fork changes: Fixes absolute path in local filesystem for sitemap files
+
 SitemapGenerator generates Sitemaps for your Rails application.  The Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.  You specify the contents of your Sitemap using a configuration file, à la Rails Routes.  A set of rake tasks is included to help you manage your Sitemaps.
 
 Features

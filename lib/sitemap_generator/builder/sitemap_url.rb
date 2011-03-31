@@ -11,7 +11,7 @@ module SitemapGenerator
       def initialize(path, options={})
         if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
           options.reverse_merge!(:host => sitemap.host, :lastmod => sitemap.lastmod)
-          path = sitemap.path
+          path = sitemap.url
         end
 
         SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo)
