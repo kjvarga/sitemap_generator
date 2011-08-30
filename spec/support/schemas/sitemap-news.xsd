@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.google.com/schemas/sitemap-news/0.9"
+    xmlns="http://www.google.com/schemas/sitemap-news/0.9"
+    elementFormDefault="qualified">
+
+<xsd:annotation>
+  <xsd:documentation>
+    XML Schema for the News Sitemap extension.  This schema defines the
+    News-specific elements only; the core Sitemap elements are defined
+    separately.
+
+    Help Center documentation for the News Sitemap extension:
+
+      http://www.google.com/support/news_pub/bin/topic.py?topic=11666
+
+    Copyright 2010 Google Inc. All Rights Reserved.
+  </xsd:documentation>
+</xsd:annotation>
+
+<xsd:element name="news">
+  <xsd:complexType>
+    <xsd:sequence>
+      <xsd:element name="publication">
+        <xsd:annotation>
+          <xsd:documentation>
+            The publication in which the article appears.  Required.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="name" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Name of the news publication. It must exactly match
+                  the name as it appears on your articles in news.google.com,
+                  omitting any trailing parentheticals.
+                  For example, if the name appears in Google News as
+                  "The Example Times (subscription)", you should use
+                  "The Example Times".  Required.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="language">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Language of the publication.  It should be an
+                  ISO 639 Language Code (either 2 or 3 letters); see:
+                    http://www.loc.gov/standards/iso639-2/php/code_list.php
+                  Exception: For Chinese, please use zh-cn for Simplified
+                  Chinese or zh-tw for Traditional Chinese.  Required.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:pattern value="zh-cn|zh-tw|([a-z]{2,3})"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="access" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Accessibility of the article.  Required if access is not open,
+            otherwise this tag should be omitted.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Subscription"/>
+            <xsd:enumeration value="Registration"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="genres" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            A comma-separated list of properties characterizing the content
+            of the article, such as "PressRelease" or "UserGenerated".
+            For a list of possible values, see:
+              http://www.google.com/support/news_pub/bin/answer.py?answer=93992
+            Required if any genres apply to the article, otherwise this tag
+            should be omitted.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="(PressRelease|Satire|Blog|OpEd|Opinion|UserGenerated)(, *(PressRelease|Satire|Blog|OpEd|Opinion|UserGenerated))*"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="publication_date">
+        <xsd:annotation>
+          <xsd:documentation>
+            Article publication date in W3C format, specifying the complete
+            date (YYYY-MM-DD) with optional timestamp.  See:
+              http://www.w3.org/TR/NOTE-datetime
+            Please ensure that you give the original date and time at which
+            the article was published on your site; do not give the time
+            at which the article was added to your Sitemap.  Required.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:union>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:date"/>
+            </xsd:simpleType>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:dateTime"/>
+            </xsd:simpleType>
+          </xsd:union>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="title" type="xsd:string" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Title of the news article.  Optional, but highly recommended.
+            Note: The title may be truncated for space reasons when shown
+            on Google News.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="keywords" type="xsd:string" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Comma-separated list of keywords describing the topic of
+            the article.  Keywords may be drawn from, but are not limited to,
+            the list of existing Google News keywords; see:
+              http://www.google.com/support/news_pub/bin/answer.py?answer=116037
+            Optional.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="stock_tickers" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Comma-separated list of up to 5 stock tickers of the companies,
+            mutual funds, or other financial entities that are the main subject
+            of the article.  Relevant primarily for business articles.
+            Each ticker must be prefixed by the name of its stock exchange,
+            and must match its entry in Google Finance.
+            For example, "NASDAQ:AMAT" (but not "NASD:AMAT"),
+            or "BOM:500325" (but not "BOM:RIL").  Optional.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="(\w+:\w+(, *\w+:\w+){0,4})?"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

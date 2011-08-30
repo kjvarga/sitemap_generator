@@ -7,7 +7,7 @@ describe SitemapGenerator::Builder::SitemapUrl do
       :sitemaps_path => 'sitemaps/',
       :public_path => '/public',
       :host => 'http://test.com',
-      :namer => SitemapGenerator::SitemapNamer.new(:sitemap) 
+      :namer => SitemapGenerator::SitemapNamer.new(:sitemap)
     )
     @s = SitemapGenerator::Builder::SitemapFile.new(@loc)
   end

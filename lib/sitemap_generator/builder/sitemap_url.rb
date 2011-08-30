@@ -14,8 +14,8 @@ module SitemapGenerator
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo)
-        options.reverse_merge!(:priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [])
+        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo, :news)
+        options.reverse_merge!(:priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {})
         self.merge!(
           :path => path,
           :priority => options[:priority],
@@ -24,6 +24,7 @@ module SitemapGenerator
           :host => options[:host],
           :loc => URI.join(options[:host], path).to_s,
           :images => prepare_images(options[:images], options[:host]),
+          :news => prepare_news(options[:news]),
           :video => options[:video],
           :geo => options[:geo]
         )
@@ -37,6 +38,24 @@ module SitemapGenerator
           builder.lastmod    w3c_date(self[:lastmod])   if self[:lastmod]
           builder.changefreq self[:changefreq]          if self[:changefreq]
           builder.priority   self[:priority]            if self[:priority]
+
+          unless self[:news].blank?
+            news_data = self[:news]
+            builder.news:news do
+              builder.news:publication do
+                builder.news :name, news_data[:publication_name] if news_data[:publication_name]
+                builder.news :language, news_data[:publication_language] if news_data[:publication_language]
+              end
+
+              builder.news :access, news_data[:access] if news_data[:access]
+              builder.news :genres, news_data[:genres] if news_data[:genres]
+              builder.news :publication_date, news_data[:publication_date] if news_data[:publication_date]
+              builder.news :title, news_data[:title] if news_data[:title]
+              builder.news :keywords, news_data[:keywords] if news_data[:keywords]
+              builder.news :stock_tickers, news_data[:stock_tickers] if news_data[:stock_tickers]
+            end
+          end
+
 
           unless self[:images].blank?
             self[:images].each do |image|
@@ -88,7 +107,16 @@ module SitemapGenerator
         builder << '' # Force to string
       end
 
+      def news?
+        self[:news].present?
+      end
+
       protected
+
+      def prepare_news(news)
+        SitemapGenerator::Utilities.assert_valid_keys(news, :publication_name, :publication_language, :publication_date, :genres, :access, :title, :keywords, :stock_tickers) unless news.empty?
+        news
+      end
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
       def prepare_images(images, host)
