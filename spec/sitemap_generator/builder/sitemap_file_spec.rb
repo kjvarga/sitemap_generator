@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'SitemapGenerator::Builder::SitemapFile' do
   before :each do
+    FileUtils.rm_rf("tmp/test/")
     @loc = SitemapGenerator::SitemapLocation.new(:namer => SitemapGenerator::SitemapNamer.new(:sitemap), :public_path => 'tmp/', :sitemaps_path => 'test/', :host => 'http://example.com/')
     @s = SitemapGenerator::Builder::SitemapFile.new(@loc)
   end
