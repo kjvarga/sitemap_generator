@@ -61,7 +61,7 @@ module SitemapGenerator
           builder.loc        self[:loc]
           builder.lastmod    w3c_date(self[:lastmod])   if self[:lastmod]
           builder.changefreq self[:changefreq]          if self[:changefreq]
-          builder.priority   self[:priority]            if self[:priority]
+          builder.priority   '%0.1f'%self[:priority]    if self[:priority]
 
           unless self[:news].blank?
             news_data = self[:news]
