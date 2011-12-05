@@ -12,7 +12,7 @@ Features
 - Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
 - Handles millions of links
 - Automatically compresses your sitemaps
-- Notifies search engines (Google, Yahoo, Bing, Ask, SitemapWriter) of new sitemaps
+- Notifies search engines (Google, Bing, Ask, SitemapWriter) of new sitemaps
 - Ensures your old sitemaps stay in place if the new sitemap fails to generate
 - Gives you complete control over your sitemaps and their content
 
@@ -109,9 +109,7 @@ Run `rake sitemap:refresh` as needed to create or rebuild your sitemap files.  S
 Search Engine Notification
 -----
 
-Using `rake sitemap:refresh` will notify major search engines to let them know that a new sitemap is available (Google, Yahoo, Bing, Ask, SitemapWriter).  To generate new sitemaps without notifying search engines (for example when running in a local environment) use `rake sitemap:refresh:no_ping`.
-
-To ping Yahoo you will need to set your Yahoo AppID in `config/sitemap.rb`.  For example: `SitemapGenerator::Sitemap.yahoo_app_id = "my_app_id"`
+Using `rake sitemap:refresh` will notify major search engines to let them know that a new sitemap is available (Google, Bing, Ask, SitemapWriter).  To generate new sitemaps without notifying search engines (for example when running in a local environment) use `rake sitemap:refresh:no_ping`.
 
 Crontab
 -----
@@ -213,7 +211,7 @@ overwrite each other.  You can use the `filename`, `sitemaps_namer` and `sitemap
 
 In the following example we generate three sitemaps each in its own subdirectory:
 
-    %w(google yahoo apple).each do |subdomain|
+    %w(google bing apple).each do |subdomain|
       SitemapGenerator::Sitemap.default_host = "https://#{subdomain}.mysite.com"
       SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
       SitemapGenerator::Sitemap.create do
@@ -226,8 +224,8 @@ Outputs:
     + sitemaps/google/sitemap1.xml.gz             2 links /  822 Bytes /  328 Bytes gzipped
     + sitemaps/google/sitemap_index.xml.gz          1 sitemaps /  389 Bytes /  217 Bytes gzipped
     Sitemap stats: 2 links / 1 sitemaps / 0m00s
-    + sitemaps/yahoo/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
-    + sitemaps/yahoo/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  217 Bytes gzipped
+    + sitemaps/bing/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
+    + sitemaps/bing/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  217 Bytes gzipped
     Sitemap stats: 2 links / 1 sitemaps / 0m00s
     + sitemaps/apple/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
     + sitemaps/apple/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  214 Bytes gzipped
@@ -249,9 +247,9 @@ If you don't want to have to generate all the sitemaps at once, or you want to r
       add '/home'
     end
 
-    # config/yahoo_sitemap.rb
-    SitemapGenerator::Sitemap.default_host = "https://yahoo.mysite.com"
-    SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/yahoo"
+    # config/bing_sitemap.rb
+    SitemapGenerator::Sitemap.default_host = "https://bing.mysite.com"
+    SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/bing"
     SitemapGenerator::Sitemap.create do
       add '/home'
     end
@@ -260,7 +258,7 @@ To generate each one specify the configuration file to run by passing the `CONFI
 
     rake sitemap:refresh CONFIG_FILE="config/google_sitemap.rb"
     rake sitemap:refresh CONFIG_FILE="config/apple_sitemap.rb"
-    rake sitemap:refresh CONFIG_FILE="config/yahoo_sitemap.rb"
+    rake sitemap:refresh CONFIG_FILE="config/bing_sitemap.rb"
 
 Sitemap Configuration
 ======
