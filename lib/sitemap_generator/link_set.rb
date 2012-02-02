@@ -7,7 +7,7 @@ module SitemapGenerator
     @@requires_finalization_opts = [:filename, :sitemaps_path, :sitemaps_namer, :sitemaps_host]
     @@new_location_opts = [:filename, :sitemaps_path, :sitemaps_namer]
 
-    attr_reader :default_host, :sitemaps_path, :filename
+    attr_reader :default_host, :sitemaps_path, :filename, :include_all_files
     attr_accessor :verbose, :yahoo_app_id, :include_root, :include_index, :sitemaps_host, :adapter
 
     # Create a new sitemap index and sitemap files.  Pass a block calls to the following
@@ -103,6 +103,7 @@ module SitemapGenerator
         :include_root => true,
         :include_index => true,
         :filename => :sitemap,
+        :include_all_files => false,
         :search_engines => {
           :google         => "http://www.google.com/webmasters/sitemaps/ping?sitemap=%s",
           :ask            => "http://submissions.ask.com/ping?sitemap=%s",
@@ -384,7 +385,25 @@ module SitemapGenerator
     def finalize_sitemap!
       add_default_links if !@added_default_links && !@created_group
       return if sitemap.finalized? || sitemap.empty? && @created_group
-      sitemap_index.add(sitemap)
+
+      array = []
+
+      # If the configured namer have a different start value it should be able to include
+      # the previous files
+      if include_all_files
+
+        file_namer = SitemapGenerator::SitemapNamer.new(sitemap.location.namer.base, start: 0)
+        (1...sitemaps_namer.start).each { array << file_namer.next.to_s }
+        array << sitemap
+
+        # It should include just one time
+        @include_all_files = false
+      else
+        array << sitemap
+      end
+
+      host = sitemap.location.host
+      array.each {|sitemap_element| sitemap_index.add(sitemap_element, host: host)}
       output(sitemap.summary)
     end
 

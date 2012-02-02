@@ -25,7 +25,8 @@ describe SitemapGenerator::LinkSet do
       :public_path => SitemapGenerator.app.root + 'public/',
       :default_host => nil,
       :include_index => true,
-      :include_root => true
+      :include_root => true,
+      :include_all_files => false
     }
 
     default_options.each do |option, value|
@@ -182,7 +183,7 @@ describe SitemapGenerator::LinkSet do
       SitemapGenerator::LinkSet.new.verbose.should be_true
       SitemapGenerator.expects(:verbose).returns(false).at_least_once
       SitemapGenerator::LinkSet.new.verbose.should be_false
-    end   
+    end
   end
 
   describe "when finalizing" do
@@ -196,6 +197,44 @@ describe SitemapGenerator::LinkSet do
       @ls.sitemap_index.expects(:finalize!)
       @ls.sitemap_index.expects(:summary)
       @ls.finalize!
+    end
+  end
+
+  describe "when finalizing configured to include all files" do
+    let :namer do
+      SitemapGenerator::SitemapNamer.new("sitemap-name", start: 3)
+    end
+
+    let :opts do
+      {:sitemaps_namer => namer, :include_all_files => true, :default_host => @default_host}
+    end
+
+    before do
+      @ls = SitemapGenerator::LinkSet.new(opts)
+    end
+
+    it "should be set to include all files" do
+      @ls.include_all_files.should be_true
+    end
+
+    it "should include the missing files to the index sitemap" do
+      @ls.sitemap_index.expects(:add).with("sitemap-name1.xml.gz", host: @default_host)
+      @ls.sitemap_index.expects(:add).with("sitemap-name2.xml.gz", host: @default_host)
+      @ls.sitemap_index.expects(:add).with(@ls.sitemap, host: @default_host)
+      @ls.send(:finalize_sitemap!)
+    end
+
+    it "should disable the inclusion after the first run" do
+      @ls.send(:finalize_sitemap!)
+      @ls.include_all_files.should be_false
+    end
+
+    it "should behave normally if the start value of namer was not defined" do
+      namer = SitemapGenerator::SitemapNamer.new("sitemap-name")
+      @ls = SitemapGenerator::LinkSet.new(opts.merge(:sitemaps_namer => namer))
+
+      @ls.sitemap_index.expects(:add).with(@ls.sitemap, host: @default_host)
+      @ls.send(:finalize_sitemap!)
     end
   end
 
