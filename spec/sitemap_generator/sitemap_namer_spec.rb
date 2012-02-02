@@ -48,6 +48,16 @@ describe 'SitemapGenerator::SitemapNamer' do
     namer = SitemapGenerator::SitemapNamer.new("sitemap1_")
     namer.to_s.should == "sitemap1_1.xml.gz"
   end
+
+  it "should provide access to start value" do
+    namer = SitemapGenerator::SitemapNamer.new(:sitemap, :start => 10)
+    namer.start.should eql 10
+  end
+
+  it "should provide access to base name" do
+    namer = SitemapGenerator::SitemapNamer.new('some-name')
+    namer.base.should eql 'some-name'
+  end
 end
 
 describe SitemapGenerator::SitemapIndexNamer do
