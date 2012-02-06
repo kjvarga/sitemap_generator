@@ -8,6 +8,8 @@ module SitemapGenerator
   class SitemapNamer
     NameError = Class.new(StandardError)
 
+    attr_reader :base
+
     # Params:
     #   base - string or symbol that forms the base of the generated filename
     #
@@ -38,6 +40,10 @@ module SitemapGenerator
       raise NameError, "Already at the start of the series" if start?
       @count -= 1
       self
+    end
+
+    def start
+      @options[:start]
     end
 
     # Reset count to the starting index
