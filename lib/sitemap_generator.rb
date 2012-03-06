@@ -61,7 +61,7 @@ module SitemapGenerator
 
   # Returns true if we should yield the sitemap instance to the block, false otherwise.
   def self.yield_sitemap?
-    !!@yeild_sitemap
+    !!@yield_sitemap
   end
 
   self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../'))  # Root of the install dir, not the Rails app
