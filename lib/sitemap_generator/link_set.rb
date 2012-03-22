@@ -364,7 +364,8 @@ module SitemapGenerator
         :public_path,
         :sitemaps_host,
         :verbose,
-        :default_host
+        :default_host,
+        :adapter
       ].inject({}) do |hash, key|
         if value = instance_variable_get(:"@#{key}")
           hash[key] = value
