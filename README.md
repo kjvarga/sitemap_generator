@@ -1,97 +1,103 @@
-SitemapGenerator
-================
+# SitemapGenerator
 
 SitemapGenerator is the easiest way to generate Sitemaps in Ruby.  Rails integration provides access to the Rails route helpers within your sitemap config file and automatically makes the rake tasks available to you.  Or if you prefer to use another framework, you can!  You can use the rake tasks provided or run your sitemap configs as plain ruby scripts.
 
 Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 
-Features
--------
+## Features
 
-- Framework agnostic
-- Supports [News sitemaps][sitemap_news], [Video sitemaps][sitemap_video], [Image sitemaps][sitemap_images], and [Geo sitemaps][sitemap_geo]
-- Supports read-only filesystems like Heroku via uploading to a remote host like Amazon S3
-- Compatible with Rails 2 & 3
-- Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
-- Handles millions of links
-- Automatically compresses your sitemaps
-- Notifies search engines (Google, Bing, Ask, SitemapWriter) of new sitemaps
-- Ensures your old sitemaps stay in place if the new sitemap fails to generate
-- Gives you complete control over your sitemaps and their content
+* Framework agnostic
+* Supports [News sitemaps][sitemap_news], [Video sitemaps][sitemap_video], [Image sitemaps][sitemap_images], and [Geo sitemaps][sitemap_geo]
+* Supports read-only filesystems like Heroku via uploading to a remote host like Amazon S3
+* Compatible with Rails 2 & 3
+* Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
+* Handles millions of links
+* Automatically compresses your sitemaps
+* Notifies search engines (Google, Bing, Ask, SitemapWriter) of new sitemaps
+* Ensures your old sitemaps stay in place if the new sitemap fails to generate
+* Gives you complete control over your sitemaps and their content
 
-Show Me
--------
+
+### Show Me
 
 Install:
 
-    gem install sitemap_generator
+```
+gem install sitemap_generator
+```
 
 Create `sitemap.rb`:
 
-    require 'rubygems'
-    require 'sitemap_generator'
+```ruby
+require 'rubygems'
+require 'sitemap_generator'
 
-    SitemapGenerator::Sitemap.default_host = 'http://example.com'
-    SitemapGenerator::Sitemap.create do
-      add '/home', :changefreq => 'daily', :priority => 0.9
-      add '/contact_us', :changefreq => 'weekly'
-    end
-    SitemapGenerator::Sitemap.ping_search_engines # called for you when you use the rake task
+SitemapGenerator::Sitemap.default_host = 'http://example.com'
+SitemapGenerator::Sitemap.create do
+  add '/home', :changefreq => 'daily', :priority => 0.9
+  add '/contact_us', :changefreq => 'weekly'
+end
+SitemapGenerator::Sitemap.ping_search_engines # called for you when you use the rake task
+```
 
 Run it:
 
-    ruby sitemap.rb
+```
+ruby sitemap.rb
+```
 
 Output:
 
-    In /Users/karl/projects/sitemap_generator-test/public/
-    + sitemap1.xml.gz                                          4 links /  357 Bytes
-    + sitemap_index.xml.gz                                  1 sitemaps /  228 Bytes
-    Sitemap stats: 4 links / 1 sitemaps / 0m00s
+```
+In /Users/karl/projects/sitemap_generator-test/public/
++ sitemap1.xml.gz                                          4 links /  357 Bytes
++ sitemap_index.xml.gz                                  1 sitemaps /  228 Bytes
+Sitemap stats: 4 links / 1 sitemaps / 0m00s
 
-    Successful ping of Google
-    Successful ping of Ask
-    Successful ping of Bing
-    Successful ping of Sitemap Writer
+Successful ping of Google
+Successful ping of Ask
+Successful ping of Bing
+Successful ping of Sitemap Writer
+```
 
-Contribute
--------
+
+## Contribute
 
 Does your website use SitemapGenerator to generate Sitemaps?  Where would you be without Sitemaps?  Probably still knocking rocks together.  Consider donating to the project to keep it up-to-date and open source.
 
 <a href='http://www.pledgie.com/campaigns/15267'><img alt='Click here to lend your support to: SitemapGenerator and make a donation at www.pledgie.com !' src='http://pledgie.com/campaigns/15267.png?skin_name=chrome' border='0' /></a>
 
-Changelog
--------
 
-- v3.1.0: Add `add_to_index` method to add links to the sitemap index.  Add `sitemap` method for accessing the LinkSet instance from within `create()`.  Don't modify options hashes passed to methods.  Fix and improve `yield_sitemap` option handling.
-- **v3.0.0: Framework agnostic**; fix alignment in output, show directory sitemaps are being generated into, only show sitemap compressed file size; toggle output using VERBOSE environment variable; remove tasks/ directory because it's deprecated in Rails 2;  Simplify dependencies.
-- v2.2.1: Support adding new search engines to ping and modifying the default search engines.
+## Changelog
+
+* v3.1.0: Add `add_to_index` method to add links to the sitemap index.  Add `sitemap` method for accessing the LinkSet instance from within `create()`.  Don't modify options hashes passed to methods.  Fix and improve `yield_sitemap` option handling.
+* **v3.0.0: Framework agnostic**; fix alignment in output, show directory sitemaps are being generated into, only show sitemap compressed file size; toggle output using VERBOSE environment variable; remove tasks/ directory because it's deprecated in Rails 2;  Simplify dependencies.
+* v2.2.1: Support adding new search engines to ping and modifying the default search engines.
           Allow the URL of the sitemap index to be passed as an argument to `ping_search_engines`.  See **Pinging Search Engines**.
-- v2.1.8: Extend and improve Video Sitemap support.  Include sitemap docs in the README, support all element attributes, properly format values.
-- v2.1.7: Improve format of float priorities; Remove Yahoo from ping - the Yahoo
+* v2.1.8: Extend and improve Video Sitemap support.  Include sitemap docs in the README, support all element attributes, properly format values.
+* v2.1.7: Improve format of float priorities; Remove Yahoo from ping - the Yahoo
           service has been shut down.
-- v2.1.6: Fix the lastmod value on sitemap file links
-- v2.1.5: Fix verbose setting in the rake tasks; should default to true
-- v2.1.4: Allow special characters in URLs (don't use URI.join to construct URLs)
-- v2.1.3: Fix calling create with both `filename` and `sitemaps_namer` options
-- v2.1.2: Support multiple videos per url using the new `videos` option to `add()`.
-- v2.1.1: Support calling `create()` multiple times in a sitemap config.  Support host names with path segments so you can use a `default_host` like `'http://mysite.com/subdirectory/'`.  Turn off `include_index` when the `sitemaps_host` differs from `default_host`.  Add docs about how to upload to remote hosts.
-- v2.1.0: [News sitemap][sitemap_news] support
-- v2.0.1.pre2: Fix uploading to the (bucket) root on a remote server
-- v2.0.1.pre1: Support read-only filesystems like Heroku by supporting uploading to remote host
-- v2.0.1: Minor improvements to verbose handling; prevent missing Timeout issue
-- **v2.0.0: Introducing a new simpler API, Sitemap Groups, Sitemap Namers and more!**
-- v1.5.0: New options `include_root`, `include_index`; Major testing & refactoring
-- v1.4.0: [Geo sitemap][geo_tags] support, multiple sitemap support via CONFIG_FILE rake option
-- v1.3.0: Support setting the sitemaps path
-- v1.2.0: Verified working with Rails 3 stable release
-- v1.1.0: [Video sitemap][sitemap_video] support
-- v0.2.6: [Image Sitemap][sitemap_images] support
-- v0.2.5: Rails 3 prerelease support (beta)
+* v2.1.6: Fix the lastmod value on sitemap file links
+* v2.1.5: Fix verbose setting in the rake tasks; should default to true
+* v2.1.4: Allow special characters in URLs (don't use URI.join to construct URLs)
+* v2.1.3: Fix calling create with both `filename` and `sitemaps_namer` options
+* v2.1.2: Support multiple videos per url using the new `videos` option to `add()`.
+* v2.1.1: Support calling `create()` multiple times in a sitemap config.  Support host names with path segments so you can use a `default_host` like `'http://mysite.com/subdirectory/'`.  Turn off `include_index` when the `sitemaps_host` differs from `default_host`.  Add docs about how to upload to remote hosts.
+* v2.1.0: [News sitemap][sitemap_news] support
+* v2.0.1.pre2: Fix uploading to the (bucket) root on a remote server
+* v2.0.1.pre1: Support read-only filesystems like Heroku by supporting uploading to remote host
+* v2.0.1: Minor improvements to verbose handling; prevent missing Timeout issue
+* **v2.0.0: Introducing a new simpler API, Sitemap Groups, Sitemap Namers and more!**
+* v1.5.0: New options `include_root`, `include_index`; Major testing & refactoring
+* v1.4.0: [Geo sitemap][geo_tags] support, multiple sitemap support via CONFIG_FILE rake option
+* v1.3.0: Support setting the sitemaps path
+* v1.2.0: Verified working with Rails 3 stable release
+* v1.1.0: [Video sitemap][sitemap_video] support
+* v0.2.6: [Image Sitemap][sitemap_images] support
+* v0.2.5: Rails 3 prerelease support (beta)
 
-Foreword
--------
+
+## Foreword
 
 Adam Salter first created SitemapGenerator while we were working together in Sydney, Australia.  Unfortunately, he passed away in 2009.  Since then I have taken over development of SitemapGenerator.
 
@@ -99,46 +105,53 @@ Those who knew him know what an amazing guy he was, and what an excellent Rails 
 
 The canonical repository is now: [http://github.com/kjvarga/sitemap_generator][canonical_repo]
 
-Install
-=======
 
-Ruby
------
+## Install
 
-    gem install 'sitemap_generator'
+### Ruby
+
+```
+gem install 'sitemap_generator'
+```
 
 To use the rake tasks add the following to your `Rakefile`:
 
-    require 'sitemap_generator/tasks'
+```ruby
+require 'sitemap_generator/tasks'
+```
 
 The Rake tasks expect your sitemap to be at `config/sitemap.rb` but if you need to change that call like so: `rake sitemap:refresh CONFIG_FILE="path/to/sitemap.rb"`
 
-Rails
------
+### Rails
 
 Add the gem to your `Gemfile`:
 
-    gem 'sitemap_generator'
+```ruby
+gem 'sitemap_generator'
+```
 
 Alternatively, if you are not using a `Gemfile` add the gem to your `config/environment.rb` file config block:
 
-    config.gem 'sitemap_generator'
+```ruby
+config.gem 'sitemap_generator'
+```
+
 
 **Rails 1 or 2 only**, add the following code to your `Rakefile` to include the gem's Rake tasks in your project (Rails 3 does this for you automatically, so this step is not necessary):
 
-    begin
-      require 'sitemap_generator/tasks'
-    rescue Exception => e
-      puts "Warning, couldn't load gem tasks: #{e.message}! Skipping..."
-    end
+```ruby
+begin
+  require 'sitemap_generator/tasks'
+rescue Exception => e
+  puts "Warning, couldn't load gem tasks: #{e.message}! Skipping..."
+end
+```
 
-<i>If you would prefer to install as a plugin (deprecated) don't do any of the above.  Simply run `script/plugin install git://github.com/kjvarga/sitemap_generator.git` from your application root directory.</i>
+_If you would prefer to install as a plugin (deprecated) don't do any of the above.  Simply run `script/plugin install git://github.com/kjvarga/sitemap_generator.git` from your application root directory._
 
-Getting Started
-======
+## Getting Started
 
-Preventing Output
------
+### Preventing Output
 
 To disable all non-essential output set the environment variable `VERBOSE=false` when calling Rake or running your Ruby script.
 
@@ -146,65 +159,73 @@ Alternatively you can pass the `-s` option to Rake, for example `rake -s sitemap
 
 To disable output in-code use the following:
 
-    SitemapGenerator.verbose = false
+```ruby
+SitemapGenerator.verbose = false
+```
 
-Rake Tasks
------
+### Rake Tasks
 
-Run `rake sitemap:install` to create a `config/sitemap.rb` file which is your sitemap configuration and contains everything needed to build your sitemap.  See **Sitemap Configuration** below for more information about how to define your sitemap.
-
-Run `rake sitemap:refresh` as needed to create or rebuild your sitemap files.  Sitemaps are generated into the `public/` folder and by default are named `sitemap_index.xml.gz`, `sitemap1.xml.gz`, `sitemap2.xml.gz`, etc.  As you can see they are automatically gzip compressed for you.
-
-`rake sitemap:refresh` will output information about each sitemap that is written including its location, how many links it contains and the size of the file.
+* `rake sitemap:install` will create a `config/sitemap.rb` file which is your sitemap configuration and contains everything needed to build your sitemap.  See **Sitemap Configuration** below for more information about how to define your sitemap.
+* `rake sitemap:refresh` will create or rebuild your sitemap files as needed.  Sitemaps are generated into the `public/` folder and by default are named `sitemap_index.xml.gz`, `sitemap1.xml.gz`, `sitemap2.xml.gz`, etc.  As you can see they are automatically gzip compressed for you.
+* `rake sitemap:refresh` will output information about each sitemap that is written including its location, how many links it contains and the size of the file.
 
 
-Pinging Search Engines
------
+### Pinging Search Engines
 
 Using `rake sitemap:refresh` will notify major search engines to let them know that a new sitemap is available (Google, Bing, Ask, SitemapWriter).  To generate new sitemaps without notifying search engines (for example when running in a local environment) use `rake sitemap:refresh:no_ping`.
 
 If you want to customize the hash of search engines you can access it at:
 
-    SitemapGenerator::Sitemap.search_engines
+```ruby
+SitemapGenerator::Sitemap.search_engines
+```
 
 Usually you would be adding a new search engine to ping.  In this case you can modify the `search_engines` hash directly.  This ensures that when `SitemapGenerator::Sitemap.ping_search_engines` is called your new search engine will be included.
 
 If you are calling `ping_search_engines` manually (for example if you have to wait some time or perform a custom action after your sitemaps have been regenerated) then you can pass you new search engine directly in the call as in the following example:
 
-    SitemapGenerator::Sitemap.ping_search_engines(:newengine => 'http://newengine.com/ping?url=%s')
+```ruby
+SitemapGenerator::Sitemap.ping_search_engines(:newengine => 'http://newengine.com/ping?url=%s')
+```
 
 The key gives the name of the search engine as a string or symbol and the value is the full URL to ping with a string interpolation that will be replaced by the CGI escaped sitemap index URL.  If you have any literal percent characters in your URL you need to escape them with `%%`.
 
 If you are calling `SitemapGenerator::Sitemap.ping_search_engines` from outside of your sitemap config file then you will need to set `SitemapGenerator::Sitemap.default_host` and any other options that you set in your sitemap config which affect the location of the sitemap index file.  For example:
 
-    SitemapGenerator::Sitemap.default_host = 'http://example.com'
-    SitemapGenerator::Sitemap.ping_search_engines
+```ruby
+SitemapGenerator::Sitemap.default_host = 'http://example.com'
+SitemapGenerator::Sitemap.ping_search_engines
+```
 
 Alternatively you can pass in the full URL to your sitemap index in which case we would have just the following:
 
-    SitemapGenerator::Sitemap.ping_search_engines('http://example.com/sitemap_index.xml.gz')
+```ruby
+SitemapGenerator::Sitemap.ping_search_engines('http://example.com/sitemap_index.xml.gz')
+```
 
-Crontab
------
+### Crontab
 
 To keep your sitemaps up-to-date, setup a cron job.  Make sure to pass the `-s` option to silence rake.  That way you will only get email if the sitemap build fails.
 
 If you're using Whenever, your schedule would look something like this:
 
-    # config/schedule.rb
-    every 1.day, :at => '5:00 am' do
-      rake "-s sitemap:refresh"
-    end
+```ruby
+# config/schedule.rb
+every 1.day, :at => '5:00 am' do
+  rake "-s sitemap:refresh"
+end
+```
 
-Robots.txt
-----------
+
+### Robots.txt
 
 You should add the URL of the sitemap index file to `public/robots.txt` to help search engines find your sitemaps.  The URL should be the complete URL to the sitemap index.  For example:
 
-    Sitemap: http://www.example.com/sitemap_index.xml.gz
+```
+Sitemap: http://www.example.com/sitemap_index.xml.gz
+```
 
-Deployments & Capistrano
-----------
+## Deployments & Capistrano
 
 To ensure that your application's sitemaps are available after a deployment you can do one of the following:
 
@@ -212,29 +233,33 @@ To ensure that your application's sitemaps are available after a deployment you 
 
     You can set your sitemaps path to your shared directory using the `sitemaps_path` option.  For example if we have a directory `public/shared/` that is shared by all deployments we can have our sitemaps generated into that directory by setting:
 
-        SitemapGenerator::Sitemap.sitemaps_path = 'shared/'
+```ruby
+SitemapGenerator::Sitemap.sitemaps_path = 'shared/'
+```
 
 2.  **Copy the sitemaps from the previous deploy over to the new deploy:**
 
     (You will need to customize the task if you are using custom sitemap filenames or locations.)
 
-        after "deploy:update_code", "deploy:copy_old_sitemap"
-        namespace :deploy do
-          task :copy_old_sitemap do
-            run "if [ -e #{previous_release}/public/sitemap_index.xml.gz ]; then cp #{previous_release}/public/sitemap* #{current_release}/public/; fi"
-          end
-        end
-
+```ruby
+after "deploy:update_code", "deploy:copy_old_sitemap"
+namespace :deploy do
+  task :copy_old_sitemap do
+    run "if [ -e #{previous_release}/public/sitemap_index.xml.gz ]; then cp #{previous_release}/public/sitemap* #{current_release}/public/; fi"
+  end
+end
+```
 
 3.  **Regenerate your sitemaps after each deployment:**
 
-        after "deploy", "refresh_sitemaps"
-        task :refresh_sitemaps do
-          run "cd #{latest_release} && RAILS_ENV=#{rails_env} rake sitemap:refresh"
-        end
+```ruby
+after "deploy", "refresh_sitemaps"
+task :refresh_sitemaps do
+  run "cd #{latest_release} && RAILS_ENV=#{rails_env} rake sitemap:refresh"
+end
+```
 
-Upload Sitemaps to a Remote Host
-----------
+### Upload Sitemaps to a Remote Host
 
 Sometimes it is desirable to host your sitemap files on a remote server and point robots
 and search engines to the remote files.  For example if you are using a host like Heroku
@@ -257,15 +282,19 @@ Sitemap Generator uses CarrierWave to support uploading to Amazon S3 store, Rack
 
    For Example:
 
-        SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-        SitemapGenerator::Sitemap.sitemaps_host = "http://s3.amazonaws.com/sitemap-generator/"
-        SitemapGenerator::Sitemap.public_path = 'tmp/'
-        SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
-        SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.sitemaps_host = "http://s3.amazonaws.com/sitemap-generator/"
+SitemapGenerator::Sitemap.public_path = 'tmp/'
+SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
+```
 
 3. Update your `robots.txt` file to point robots to the remote sitemap index file, e.g:
 
-        Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap_index.xml.gz
+```
+Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap_index.xml.gz
+```
 
 You generate your sitemaps as usual using `rake sitemap:refresh`.
 
@@ -274,8 +303,7 @@ the `sitemaps_host` does not match the `default_host`.  The link to the sitemap 
 that would otherwise be included would point to a different host than the rest of the links
 in the sitemap, something that the sitemap rules forbid.
 
-Generating Multiple Sitemaps
-----------
+### Generating Multiple Sitemaps
 
 Each call to `create` creates a new sitemap index and associated sitemaps.  You can call `create` as many times as you want within your sitemap configuration.
 
@@ -284,73 +312,85 @@ overwrite each other.  You can use the `filename`, `sitemaps_namer` and `sitemap
 
 In the following example we generate three sitemaps each in its own subdirectory:
 
-    %w(google bing apple).each do |subdomain|
-      SitemapGenerator::Sitemap.default_host = "https://#{subdomain}.mysite.com"
-      SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
-      SitemapGenerator::Sitemap.create do
-        add '/home'
-      end
-    end
+```ruby
+%w(google bing apple).each do |subdomain|
+  SitemapGenerator::Sitemap.default_host = "https://#{subdomain}.mysite.com"
+  SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
+  SitemapGenerator::Sitemap.create do
+    add '/home'
+  end
+end
+```
 
 Outputs:
 
-    + sitemaps/google/sitemap1.xml.gz             2 links /  822 Bytes /  328 Bytes gzipped
-    + sitemaps/google/sitemap_index.xml.gz          1 sitemaps /  389 Bytes /  217 Bytes gzipped
-    Sitemap stats: 2 links / 1 sitemaps / 0m00s
-    + sitemaps/bing/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
-    + sitemaps/bing/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  217 Bytes gzipped
-    Sitemap stats: 2 links / 1 sitemaps / 0m00s
-    + sitemaps/apple/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
-    + sitemaps/apple/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  214 Bytes gzipped
-    Sitemap stats: 2 links / 1 sitemaps / 0m00s
+```
++ sitemaps/google/sitemap1.xml.gz             2 links /  822 Bytes /  328 Bytes gzipped
++ sitemaps/google/sitemap_index.xml.gz          1 sitemaps /  389 Bytes /  217 Bytes gzipped
+Sitemap stats: 2 links / 1 sitemaps / 0m00s
++ sitemaps/bing/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
++ sitemaps/bing/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  217 Bytes gzipped
+Sitemap stats: 2 links / 1 sitemaps / 0m00s
++ sitemaps/apple/sitemap1.xml.gz             2 links /  820 Bytes /  330 Bytes gzipped
++ sitemaps/apple/sitemap_index.xml.gz          1 sitemaps /  388 Bytes /  214 Bytes gzipped
+Sitemap stats: 2 links / 1 sitemaps / 0m00s
+```
 
 If you don't want to have to generate all the sitemaps at once, or you want to refresh some more often than others, you can split them up into their own configuration files.  Using the above example we would have:
 
-    # config/google_sitemap.rb
-    SitemapGenerator::Sitemap.default_host = "https://google.mysite.com"
-    SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/google"
-    SitemapGenerator::Sitemap.create do
-      add '/home'
-    end
+```ruby
+# config/google_sitemap.rb
+SitemapGenerator::Sitemap.default_host = "https://google.mysite.com"
+SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/google"
+SitemapGenerator::Sitemap.create do
+  add '/home'
+end
 
-    # config/apple_sitemap.rb
-    SitemapGenerator::Sitemap.default_host = "https://apple.mysite.com"
-    SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/apple"
-    SitemapGenerator::Sitemap.create do
-      add '/home'
-    end
+# config/apple_sitemap.rb
+SitemapGenerator::Sitemap.default_host = "https://apple.mysite.com"
+SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/apple"
+SitemapGenerator::Sitemap.create do
+  add '/home'
+end
 
-    # config/bing_sitemap.rb
-    SitemapGenerator::Sitemap.default_host = "https://bing.mysite.com"
-    SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/bing"
-    SitemapGenerator::Sitemap.create do
-      add '/home'
-    end
+# config/bing_sitemap.rb
+SitemapGenerator::Sitemap.default_host = "https://bing.mysite.com"
+SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/bing"
+SitemapGenerator::Sitemap.create do
+  add '/home'
+end
+```
+
 
 To generate each one specify the configuration file to run by passing the `CONFIG_FILE` option to `rake sitemap:refresh`, e.g.:
 
-    rake sitemap:refresh CONFIG_FILE="config/google_sitemap.rb"
-    rake sitemap:refresh CONFIG_FILE="config/apple_sitemap.rb"
-    rake sitemap:refresh CONFIG_FILE="config/bing_sitemap.rb"
+```
+rake sitemap:refresh CONFIG_FILE="config/google_sitemap.rb"
+rake sitemap:refresh CONFIG_FILE="config/apple_sitemap.rb"
+rake sitemap:refresh CONFIG_FILE="config/bing_sitemap.rb"
+```
 
-Sitemap Configuration
-======
+## Sitemap Configuration
 
 A sitemap configuration file contains all the information needed to generate your sitemaps.  By default SitemapGenerator looks for a configuration file in  `config/sitemap.rb` - relative to your application root or the current working directory.  (Run `rake sitemap:install` to have this file generated for you if you have not done so already.)
 
 If you want to use a non-standard configuration file, or have multiple configuration files, you can specify which one to run by passing the `CONFIG_FILE` option like so:
 
-    rake sitemap:refresh CONFIG_FILE="config/geo_sitemap.rb"
+```
+rake sitemap:refresh CONFIG_FILE="config/geo_sitemap.rb"
+```
 
-A Simple Example
--------
+
+### A Simple Example
 
 So what does a sitemap configuration look like?  Let's take a look at a simple example:
 
-    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-    SitemapGenerator::Sitemap.create do
-      add '/welcome'
-    end
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+  add '/welcome'
+end
+```
 
 A few things to note:
 
@@ -361,9 +401,11 @@ A few things to note:
 
 Now let's see what is output when we run this configuration with `rake sitemap:refresh:no_ping`:
 
-    + sitemap1.xml.gz                   3 links /  923 Bytes /  329 Bytes gzipped
-    + sitemap_index.xml.gz           1 sitemaps /  364 Bytes /  199 Bytes gzipped
-    Sitemap stats: 3 links / 1 sitemaps / 0m00s
+```
++ sitemap1.xml.gz                   3 links /  923 Bytes /  329 Bytes gzipped
++ sitemap_index.xml.gz           1 sitemaps /  364 Bytes /  199 Bytes gzipped
+Sitemap stats: 3 links / 1 sitemaps / 0m00s
+```
 
 Weird!  The sitemap has three links, even though only added one!  This is because SitemapGenerator adds the root URL `/` and the URL of the sitemap index file to your sitemap by default.  (You can change the default behaviour by setting the `include_root` or `include_index` option.)
 
@@ -371,53 +413,58 @@ Now let's take a look at the files that were created.  After uncompressing and X
 
 * `public/sitemap_index.xml.gz`
 
-        <?xml version="1.0" encoding="UTF-8"?>
-        <sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">
-          <sitemap>
-            <loc>http://www.example.com/sitemap1.xml.gz</loc>
-          </sitemap>
-        </sitemapindex>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">
+  <sitemap>
+    <loc>http://www.example.com/sitemap1.xml.gz</loc>
+  </sitemap>
+</sitemapindex>
+```
 
 * `public/sitemap1.xml.gz`
 
-        <?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-          <url>
-            <loc>http://www.example.com/</loc>
-            <lastmod>2011-05-21T00:03:38+00:00</lastmod>
-            <changefreq>always</changefreq>
-            <priority>1.0</priority>
-          </url>
-          <url>
-            <loc>http://www.example.com/sitemap_index.xml.gz</loc>
-            <lastmod>2011-05-21T00:03:38+00:00</lastmod>
-            <changefreq>always</changefreq>
-            <priority>1.0</priority>
-          </url>
-          <url>
-            <loc>http://www.example.com/welcome</loc>
-            <lastmod>2011-05-21T00:03:38+00:00</lastmod>
-            <changefreq>weekly</changefreq>
-            <priority>0.5</priority>
-          </url>
-        </urlset>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+    <loc>http://www.example.com/</loc>
+    <lastmod>2011-05-21T00:03:38+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>http://www.example.com/sitemap_index.xml.gz</loc>
+    <lastmod>2011-05-21T00:03:38+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>http://www.example.com/welcome</loc>
+    <lastmod>2011-05-21T00:03:38+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
+```
 
 The sitemaps conform to the [Sitemap 0.9 protocol][sitemap_protocol].  Notice the values for `priority` and `changefreq` on the root and sitemap index links, the ones that were added for us?  The values tell us that these links are the highest priority and should be checked regularly because they are constantly changing.  You can specify your own values for these options in your call to `add`.
 
-Adding Links
-----------
+### Adding Links
 
 You call `add` in the block passed to `create` to add a **path** to your sitemap.  `add` takes a string path and optional hash of options, generates the URL and adds it to the sitemap.  You only need to pass a **path** because the URL will be built for us using the `default_host` we specified.  However, if we want to use a different host for a particular link, we can pass the `:host` option to `add`.
 
 Let's see another example:
 
-    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-    SitemapGenerator::Sitemap.create do
-      add '/contact_us'
-      Content.find_each do |content|
-        add content_path(content), :lastmod => content.updated_at
-      end
-    end
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+  add '/contact_us'
+  Content.find_each do |content|
+    add content_path(content), :lastmod => content.updated_at
+  end
+end
+```
 
 In this example first we add the `/contact_us` page to the sitemap and then we iterate through the Content model's records adding each one to the sitemap using the `content_path` helper method to generate the path for each record.
 
@@ -427,9 +474,11 @@ In the example about we pass a `lastmod` (last modified) option with the value o
 
 Looking at the output from running this sitemap, we see that we have a few more links than before:
 
-    + sitemap1.xml.gz                  12 links /     2.3 KB /  365 Bytes gzipped
-    + sitemap_index.xml.gz           1 sitemaps /  364 Bytes /  199 Bytes gzipped
-    Sitemap stats: 12 links / 1 sitemaps / 0m00s
+```
++ sitemap1.xml.gz                  12 links /     2.3 KB /  365 Bytes gzipped
++ sitemap_index.xml.gz           1 sitemaps /  364 Bytes /  199 Bytes gzipped
+Sitemap stats: 12 links / 1 sitemaps / 0m00s
+```
 
 From this example we can see that:
 
@@ -445,28 +494,36 @@ You can read more about `add` in the [XML Specification](http://sitemaps.org/pro
 
   Indicates how often the content of the page changes.  One of `'always'`, `'hourly'`, `'daily'`, `'weekly'`, `'monthly'`, `'yearly'` or `'never'`.  Example:
 
-        add '/contact_us', :changefreq => 'monthly'
+```ruby
+add '/contact_us', :changefreq => 'monthly'
+```
 
 * `lastmod` - Default: `Time.now` (Time).
 
   The date and time of last modification.  Example:
 
-        add content_path(content), :lastmod => content.updated_at
+```ruby
+add content_path(content), :lastmod => content.updated_at
+```
 
 * `host` - Default: `default_host` (String).
 
   Host to use when building the URL.  Example:
 
-        add '/login', :host => 'https://securehost.com'
+```ruby
+add '/login', :host => 'https://securehost.com'
+```
 
 * `priority` - Default: `0.5` (Float).
 
   The priority of the URL relative to other URLs on a scale from 0 to 1.   Example:
 
-        add '/about', :priority => 0.75
+```ruby
+add '/about', :priority => 0.75
+```
 
-Adding Links to the Sitemap Index
-----------
+
+### Adding Links to the Sitemap Index
 
 Sometimes you may need to manually add some links to the sitemap index file.  For example if you are generating your sitemaps incrementally you may want to create a sitemap index which includes the files which have already been generated.  To achieve this you can use the `add_to_index` method which works exactly the same as the `add` method described above.
 
@@ -478,50 +535,56 @@ It supports the same options as `add`, namely:
 
   The value for `host` defaults to whatever you have set as your `sitemaps_host`.  Remember that the `sitemaps_host` is the host where your sitemaps reside.  If your sitemaps are on the same host as your `default_host`, then the value for `default_host` is used.  Example:
 
-        add_to_index '/mysitemap1.xml.gz', :host => 'http://sitemaphostingserver.com'
+```ruby
+add_to_index '/mysitemap1.xml.gz', :host => 'http://sitemaphostingserver.com'
+```
 
 * `priority`
 
 An example:
 
-    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-    SitemapGenerator::Sitemap.create do
-      add_to_index '/mysitemap1.xml.gz'
-      add_to_index '/mysitemap2.xml.gz'
-      ...
-    end
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+  add_to_index '/mysitemap1.xml.gz'
+  add_to_index '/mysitemap2.xml.gz'
+  # ...
+end
+```
 
-Accessing the LinkSet instance
-----------
+### Accessing the LinkSet instance
 
 Sometimes you need to mess with the internals to do custom stuff.  If you need access to the LinkSet instance from within `create()` you can use the `sitemap` method to do so.
 
 In this example, say we have already pre-generated three sitemap files: `sitemap1.xml.gz`, `sitemap2.xml.gz`, `sitemap3.xml.gz`.  Now we want to start the sitemap generation at `sitemap4.xml.gz` and create a bunch of new sitemaps.  There are a few ways we can do this, but this is an easy way:
 
-    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-    SitemapGenerator::Sitemap.create do
-      3.times do |i|
-        add_to_index sitemap.sitemaps_namer.to_s
-        sitemap.sitemaps_namer.next
-      end
-      add '/home'
-      add '/another'
-    end
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+  3.times do |i|
+    add_to_index sitemap.sitemaps_namer.to_s
+    sitemap.sitemaps_namer.next
+  end
+  add '/home'
+  add '/another'
+end
+```
 
 The output looks something like this:
 
-    In /Users/karl/projects/sitemap_generator-test/public/
-    + sitemap4.xml.gz                                          4 links /  347 Bytes
-    + sitemap_index.xml.gz                                  4 sitemaps /  242 Bytes
-    Sitemap stats: 4 links / 4 sitemaps / 0m00s
+```
+In /Users/karl/projects/sitemap_generator-test/public/
++ sitemap4.xml.gz                                          4 links /  347 Bytes
++ sitemap_index.xml.gz                                  4 sitemaps /  242 Bytes
+Sitemap stats: 4 links / 4 sitemaps / 0m00s
+```
 
-Speeding Things Up
-----------
+### Speeding Things Up
 
 For large ActiveRecord collections with thousands of records it is advisable to iterate through them in batches to avoid loading all records into memory at once.  For this reason in the example above we use `Content.find_each` which is a batched iterator available since Rails 2.3.2, rather than `Content.all`.
 
-Customizing your Sitemaps
-=======
+
+## Customizing your Sitemaps
 
 SitemapGenerator supports a number of options which allow you to control every aspect of your sitemap generation.  How they are named, where they are stored, the contents of the links and the location that the sitemaps will be hosted from can all be set.
 
@@ -529,34 +592,39 @@ The options can be set in the following ways.
 
 On `SitemapGenerator::Sitemap`:
 
-    SitemapGenerator::Sitemap.default_host = 'http://example.com'
-    SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+```ruby
+SitemapGenerator::Sitemap.default_host = 'http://example.com'
+SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+```
 
 These options will apply to all sitemaps.  This is how you set most options.
 
 Passed as options in the call to `create`:
 
-    SitemapGenerator::Sitemap.create(
-        :default_host => 'http://example.com',
-        :sitemaps_path => 'sitemaps/') do
-      add '/home'
-    end
+```ruby
+SitemapGenerator::Sitemap.create(
+    :default_host => 'http://example.com',
+    :sitemaps_path => 'sitemaps/') do
+  add '/home'
+end
+```
 
 This is useful if you are setting a lot of options.
 
 Finally, passed as options in a call to `group`:
 
-    SitemapGenerator::Sitemap.create do
-      group(:default_host => 'http://example.com',
-            :sitemaps_path => 'sitemaps/') do
-        add '/home'
-      end
-    end
+```ruby
+SitemapGenerator::Sitemap.create do
+  group(:default_host => 'http://example.com',
+        :sitemaps_path => 'sitemaps/') do
+    add '/home'
+  end
+end
+```
 
 The options passed to `group` only apply to the links and sitemaps generated in the group.  Sitemap Groups are useful to group links into specific sitemaps, or to set options that you only want to apply to the links in that group.
 
-Sitemap Options
--------
+### Sitemap Options
 
 The following options are supported:
 
@@ -587,8 +655,8 @@ different host than the rest of the links in the sitemap.  Something that the si
   you can provide an instance of your own class to provide custom behavior.  Your class must
   define a write method which takes a `SitemapGenerator::Location` and raw XML data.
 
-Sitemap Groups
-=======
+
+## Sitemap Groups
 
 Sitemap Groups is a powerful feature that is also very simple to use.
 
@@ -599,33 +667,36 @@ Sitemap Groups is a powerful feature that is also very simple to use.
 * Groups can handle any number of links.
 * Group sitemaps are finalized (written out) as they get full and at the end of each group.
 
-A Groups Example
-----------------
+### A Groups Example
 
 When you create a new group you pass options which will apply only to that group.  You pass a block to `group`.  Inside your block you call `add` to add links to the group.
 
 Let's see an example that demonstrates a few interesting things about groups:
 
-    SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-    SitemapGenerator::Sitemap.create do
-      add '/rss'
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+  add '/rss'
 
-      group(:sitemaps_path => 'en/', :filename => :english) do
-        add '/home'
-      end
+  group(:sitemaps_path => 'en/', :filename => :english) do
+    add '/home'
+  end
 
-      group(:sitemaps_path => 'fr/', :filename => :french) do
-        add '/maison'
-      end
-    end
+  group(:sitemaps_path => 'fr/', :filename => :french) do
+    add '/maison'
+  end
+end
+```
 
 And the output from running the above:
 
-    + en/english1.xml.gz                1 links /  612 Bytes /  296 Bytes gzipped
-    + fr/french1.xml.gz                 1 links /  614 Bytes /  298 Bytes gzipped
-    + sitemap1.xml.gz                   3 links /  919 Bytes /  328 Bytes gzipped
-    + sitemap_index.xml.gz           3 sitemaps /  505 Bytes /  221 Bytes gzipped
-    Sitemap stats: 5 links / 3 sitemaps / 0m00s
+```
++ en/english1.xml.gz                1 links /  612 Bytes /  296 Bytes gzipped
++ fr/french1.xml.gz                 1 links /  614 Bytes /  298 Bytes gzipped
++ sitemap1.xml.gz                   3 links /  919 Bytes /  328 Bytes gzipped
++ sitemap_index.xml.gz           3 sitemaps /  505 Bytes /  221 Bytes gzipped
+Sitemap stats: 5 links / 3 sitemaps / 0m00s
+```
 
 So we have two sitemaps with one link each and one sitemap with three links.  The sitemaps from the groups are easy to spot by their filenames.  They are `english1.xml.gz` and `french1.xml.gz`.  They contain only one link each because **`include_index` and `include_root` are set to `false` by default** in a group.
 
@@ -637,30 +708,31 @@ The options you use when creating your groups will determine which and how many 
 
 If you have changed your sitemaps physical location in a group, then the default sitemap will not be used and it will be unaffected by the group.  **Group sitemaps are finalized as they get full and at the end of each group.**
 
-Sitemap Extensions
-===========
 
-News Sitemaps
------------
+## Sitemap Extensions
+
+### News Sitemaps
 
 A news item can be added to a sitemap URL by passing a `:news` hash to `add`.  The hash must  contain tags defined by the [News Sitemap][news_tags] specification.
 
-### Example
+#### Example
 
-    SitemapGenerator::Sitemap.create do
-      add('/index.html', :news => {
-          :publication_name => "Example",
-          :publication_language => "en",
-          :title => "My Article",
-          :keywords => "my article, articles about myself",
-          :stock_tickers => "SAO:PETR3",
-          :publication_date => "2011-08-22",
-          :access => "Subscription",
-          :genres => "PressRelease"
-      })
-    end
+```ruby
+SitemapGenerator::Sitemap.create do
+  add('/index.html', :news => {
+      :publication_name => "Example",
+      :publication_language => "en",
+      :title => "My Article",
+      :keywords => "my article, articles about myself",
+      :stock_tickers => "SAO:PETR3",
+      :publication_date => "2011-08-22",
+      :access => "Subscription",
+      :genres => "PressRelease"
+  })
+end
+```
 
-### Supported options
+#### Supported options
 
 * `publication_name`
 * `publication_language`
@@ -671,21 +743,22 @@ A news item can be added to a sitemap URL by passing a `:news` hash to `add`.  T
 * `keywords`
 * `stock_tickers`
 
-* * *
-Image Sitemaps
------------
+
+### Image Sitemaps
 
 Images can be added to a sitemap URL by passing an `:images` array to `add`.  Each item in the array must be a Hash containing tags defined by the [Image Sitemap][image_tags] specification.
 
-### Example
+#### Example
 
-    SitemapGenerator::Sitemap.create do
-      add('/index.html', :images => [{
-        :loc => 'http://www.example.com/image.png',
-        :title => 'Image' }])
-    end
+```ruby
+SitemapGenerator::Sitemap.create do
+  add('/index.html', :images => [{
+    :loc => 'http://www.example.com/image.png',
+    :title => 'Image' }])
+end
+```
 
-### Supported options
+#### Supported options
 
 * `loc` Required, location of the image
 * `caption`
@@ -693,48 +766,50 @@ Images can be added to a sitemap URL by passing an `:images` array to `add`.  Ea
 * `title`
 * `license`
 
-* * *
-Video Sitemaps
------------
+
+### Video Sitemaps
 
 A video can be added to a sitemap URL by passing a `:video` Hash to `add()`.  The Hash can contain tags defined by the [Video Sitemap specification][video_tags].
 
 To add more than one video to a url, pass an array of video hashes using the `:videos` option.
 
-### Example
+#### Example
 
-    add('/index.html', :video => {
-      :thumbnail_loc => 'http://www.example.com/video1_thumbnail.png',
-      :title => 'Title',
-      :description => 'Description',
-      :content_loc => 'http://www.example.com/cool_video.mpg',
-      :tags => %w[one two three],
-      :category => 'Category'
-    })
+```ruby
+add('/index.html', :video => {
+  :thumbnail_loc => 'http://www.example.com/video1_thumbnail.png',
+  :title => 'Title',
+  :description => 'Description',
+  :content_loc => 'http://www.example.com/cool_video.mpg',
+  :tags => %w[one two three],
+  :category => 'Category'
+})
+```
 
-### Supported options
+#### Supported options
 
 * `:thumbnail_loc` - Required, string.
 
 
 
-Geo Sitemaps
------------
+### Geo Sitemaps
 
 Pages with geo data can be added by passing a `:geo` Hash to `add`.  The Hash only supports one tag of `:format`.  Google provides an [example of a geo sitemap link here][geo_tags].  Note that the sitemap does not actually contain your KML or GeoRSS.  It merely links to a page that has this content.
 
-### Example:
+#### Example:
 
-    SitemapGenerator::Sitemap.create do
-      add('/stores/1234.xml', :geo => { :format => 'kml' })
-    end
+```ruby
+SitemapGenerator::Sitemap.create do
+  add('/stores/1234.xml', :geo => { :format => 'kml' })
+end
+```
 
-### Supported options
+#### Supported options
 
 * `format` Required, either 'kml' or 'georss'
 
-Raison d'être
-=======
+
+## Raison d'être
 
 Most of the Sitemap plugins out there seem to try to recreate the Sitemap links by iterating the Rails routes. In some cases this is possible, but for a great deal of cases it isn't.
 
@@ -744,7 +819,9 @@ and
 
 b) How would you infer the correct series of links for the following route?
 
-    map.zipcode 'location/:state/:city/:zipcode', :controller => 'zipcode', :action => 'index'
+```ruby
+map.zipcode 'location/:state/:city/:zipcode', :controller => 'zipcode', :action => 'index'
+```
 
 Don't tell me it's trivial, because it isn't. It just looks trivial.
 
@@ -752,45 +829,46 @@ So my idea is to have another file similar to 'routes.rb' called 'sitemap.rb', w
 
 Here's my solution:
 
-    Zipcode.find(:all, :include => :city).each do |z|
-      add zipcode_path(:state => z.city.state, :city => z.city, :zipcode => z)
-    end
+```ruby
+Zipcode.find(:all, :include => :city).each do |z|
+  add zipcode_path(:state => z.city.state, :city => z.city, :zipcode => z)
+end
+```
 
 Easy hey?
 
-Compatibility
-=======
+## Compatibility
 
 Tested and working on:
 
-- **Rails** 3.0.0, 3.0.7
-- **Rails** 1.x - 2.3.8
-- **Ruby** 1.8.6, 1.8.7, 1.8.7 Enterprise Edition, 1.9.1, 1.9.2
+* **Rails** 3.0.0, 3.0.7
+* **Rails** 1.x - 2.3.8
+* **Ruby** 1.8.6, 1.8.7, 1.8.7 Enterprise Edition, 1.9.1, 1.9.2
 
-Known Bugs
-========
 
-- There's no check on the size of a URL which [isn't supposed to exceed 2,048 bytes][sitemaps_xml].
-- Currently only supports one Sitemap Index file, which can contain 50,000 Sitemap files which can each contain 50,000 urls, so it _only_ supports up to 2,500,000,000 (2.5 billion) urls.
+## Known Bugs
 
-Wishlist & Coming Soon
-========
+* There's no check on the size of a URL which [isn't supposed to exceed 2,048 bytes][sitemaps_xml].
+* Currently only supports one Sitemap Index file, which can contain 50,000 Sitemap files which can each contain 50,000 urls, so it _only_ supports up to 2,500,000,000 (2.5 billion) urls.
 
-- Rails framework agnosticism; support for other frameworks like Merb
 
-Thanks (in no particular order)
-========
+## Wishlist & Coming Soon
 
-- [Rodrigo Flores](https://github.com/rodrigoflores) for News sitemaps
-- [Alex Soto](http://github.com/apsoto) for Video sitemaps
-- [Alexadre Bini](http://github.com/alexandrebini) for Image sitemaps
-- [Dan Pickett](http://github.com/dpickett)
-- [Rob Biedenharn](http://github.com/rab)
-- [Richie Vos](http://github.com/jerryvos)
-- [Adrian Mugnolo](http://github.com/xymbol)
-- [Jason Weathered](http://github.com/jasoncodes)
-- [Andy Stewart](http://github.com/airblade)
-- [Brian Armstrong](https://github.com/barmstrong) for Geo sitemaps
+* Rails framework agnosticism; support for other frameworks like Merb
+
+
+## Thanks (in no particular order)
+
+* [Rodrigo Flores](https://github.com/rodrigoflores) for News sitemaps
+* [Alex Soto](http://github.com/apsoto) for Video sitemaps
+* [Alexadre Bini](http://github.com/alexandrebini) for Image sitemaps
+* [Dan Pickett](http://github.com/dpickett)
+* [Rob Biedenharn](http://github.com/rab)
+* [Richie Vos](http://github.com/jerryvos)
+* [Adrian Mugnolo](http://github.com/xymbol)
+* [Jason Weathered](http://github.com/jasoncodes)
+* [Andy Stewart](http://github.com/airblade)
+* [Brian Armstrong](https://github.com/barmstrong) for Geo sitemaps
 
 Copyright (c) 2009 Karl Varga released under the MIT license
 
