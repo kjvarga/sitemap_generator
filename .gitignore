@@ -10,3 +10,4 @@ tmp/**/*
 *.bundle
 *.orig
 coverage
+.idea
