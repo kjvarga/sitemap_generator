@@ -100,4 +100,11 @@ describe "SitemapGenerator" do
       doc.at_xpath("//url/video:video/video:#{element}").should be_nil
     end
   end
+
+  it "should not include autoplay param if blank" do
+    xml = video_xml(video_options.tap {|v| v.delete(:autoplay) })
+    doc = video_doc(xml)
+    doc.at_xpath("//url/video:video/video:player_loc").attribute('autoplay').should be_nil
+  end
+
 end

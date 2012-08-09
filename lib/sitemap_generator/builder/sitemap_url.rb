@@ -100,7 +100,7 @@ module SitemapGenerator
               builder.video :description, video[:description]
               builder.video :content_loc, video[:content_loc]           if video[:content_loc]
               if video[:player_loc]
-                builder.video :player_loc, video[:player_loc], :allow_embed => yes_or_no_with_default(video[:allow_embed], true), :autoplay => video[:autoplay]
+                builder.video :player_loc, video[:player_loc], {:allow_embed => yes_or_no_with_default(video[:allow_embed], true) }.merge( SitemapGenerator::Utilities.present?(video[:autoplay]) ? {:autoplay => video[:autoplay]} : {} ) 
               end
               builder.video :duration, video[:duration]                 if video[:duration]
               builder.video :expiration_date,  w3c_date(video[:expiration_date])  if video[:expiration_date]
