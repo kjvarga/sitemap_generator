@@ -18,7 +18,7 @@ module SitemapGenerator
       directory.files.create(
         :key    => location.path_in_public, 
         :body   => File.open(location.path),
-        :public => true,
+        :public => true
       )
     end
   end
