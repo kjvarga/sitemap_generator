@@ -264,9 +264,10 @@ end
 ### Upload Sitemaps to a Remote Host
 
 **Upload to Remote Host using Fog**
-You can use the SitemapGenerator::FogAdapter class to upload the sitemaps to a remote host (such as Amazon S3 or Rackspace Cloud Files)
 
-Just include the following code in your config/sitemap.rb file.
+You can use the **SitemapGenerator::FogAdapter** class to upload the sitemaps to a remote host (such as Amazon S3 or Rackspace Cloud Files)
+
+Just include the following code in your **config/sitemap.rb** file.
 
 ```ruby
 # config/sitemap.rb
@@ -296,6 +297,7 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |c
   # Name of your Bucket / Container
   config.fog_directory = "mysite_sitemaps"
 end
+```
 
 Sometimes it is desirable to host your sitemap files on a remote server and point robots
 and search engines to the remote files.  For example if you are using a host like Heroku
