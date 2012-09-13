@@ -276,24 +276,24 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |c
   config.credentials = {
     # Amazon S3
     #
-    # provider:                         "AWS",
-    # aws_access_key_id:                YOUR_AWS_ACCESS_KEY_ID,
-    # aws_secret_access_key:            YOUR_AWS_SECRET_ACCESS_KEY
+    # :provider =>                        "AWS",
+    # :aws_access_key_id =>               YOUR_AWS_ACCESS_KEY_ID,
+    # :aws_secret_access_key =>           YOUR_AWS_SECRET_ACCESS_KEY
 
     # Rackspace Cloud Files
     #
-    # provider: "Rackspace",
-    # rackspace_username:               RACKSPACE_USERNAME,
-    # rackspace_api_key:                RACKSPACE_API_KEY
+    # :provider =>                         "Rackspace",
+    # :rackspace_username =>               RACKSPACE_USERNAME,
+    # :rackspace_api_key =>                RACKSPACE_API_KEY
     #
     # Rackspace European Cloud:
-    # rackspace_auth_url:               "lon.auth.api.rackspacecloud.com"
+    # :rackspace_auth_url =>               "lon.auth.api.rackspacecloud.com"
 
     # Google Storage for Developers
     #
-    # provider:                         "Google",
-    # google_storage_access_key_id:     YOUR_SECRET_ACCESS_KEY_ID,
-    # google_storage_secret_access_key: YOUR_SECRET_ACCESS_KEY
+    # :provider =>                         "Google",
+    # :google_storage_access_key_id =>     YOUR_SECRET_ACCESS_KEY_ID,
+    # :google_storage_secret_access_key => YOUR_SECRET_ACCESS_KEY
   }
   
   # Name of your Bucket / Container
