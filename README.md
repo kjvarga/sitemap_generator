@@ -298,6 +298,7 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |c
   config.fog_directory = "mysite_sitemaps"
 end
 ```
+**Upload to Remote Host using CarrierWave**
 
 Sometimes it is desirable to host your sitemap files on a remote server and point robots
 and search engines to the remote files.  For example if you are using a host like Heroku
