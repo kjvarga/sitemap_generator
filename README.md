@@ -263,9 +263,39 @@ end
 
 ### Upload Sitemaps to a Remote Host
 
-> SitemapGenerator::S3Adapter is a simple S3 adapter which was added in v3.2 which
-> uses Fog and doesn't require CarrierWave.  You can find a bit more information
-> about it [on the wiki page][remote_hosts].
+**Upload to Remote Host using Fog**
+You can use the SitemapGenerator::FogAdapter class to upload the sitemaps to a remote host (such as Amazon S3 or Rackspace Cloud Files)
+
+Just include the following code in your config/sitemap.rb file.
+
+```ruby
+# config/sitemap.rb
+SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |config|
+  config.credentials = {
+
+    # Amazon S3
+    #
+    # provider:               "AWS",
+    # aws_access_key_id:      YOUR_AWS_ACCESS_KEY_ID,
+    # aws_secret_access_key:  YOUR_AWS_SECRET_ACCESS_KEY
+
+    # Rackspace Cloud Files
+    #
+    # provider: "Rackspace",
+    # rackspace_username: RACKSPACE_USERNAME,
+    # rackspace_api_key:  RACKSPACE_API_KEY
+    # rackspace_auth_url: "lon.auth.api.rackspacecloud.com" # To Connect to Rackspace European Cloud
+
+    # Google Storage for Developers
+    #
+    # provider:                         "Google",
+    # google_storage_access_key_id:     YOUR_SECRET_ACCESS_KEY_ID,
+    # google_storage_secret_access_key: YOUR_SECRET_ACCESS_KEY
+  }
+  
+  # Name of your Bucket / Container
+  config.fog_directory = "mysite_sitemaps"
+end
 
 Sometimes it is desirable to host your sitemap files on a remote server and point robots
 and search engines to the remote files.  For example if you are using a host like Heroku
