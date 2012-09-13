@@ -276,16 +276,18 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |c
   config.credentials = {
     # Amazon S3
     #
-    # provider:               "AWS",
-    # aws_access_key_id:      YOUR_AWS_ACCESS_KEY_ID,
-    # aws_secret_access_key:  YOUR_AWS_SECRET_ACCESS_KEY
+    # provider:                         "AWS",
+    # aws_access_key_id:                YOUR_AWS_ACCESS_KEY_ID,
+    # aws_secret_access_key:            YOUR_AWS_SECRET_ACCESS_KEY
 
     # Rackspace Cloud Files
     #
     # provider: "Rackspace",
-    # rackspace_username: RACKSPACE_USERNAME,
-    # rackspace_api_key:  RACKSPACE_API_KEY
-    # rackspace_auth_url: "lon.auth.api.rackspacecloud.com" # To Connect to Rackspace European Cloud
+    # rackspace_username:               RACKSPACE_USERNAME,
+    # rackspace_api_key:                RACKSPACE_API_KEY
+    #
+    # Rackspace European Cloud:
+    # rackspace_auth_url:               "lon.auth.api.rackspacecloud.com"
 
     # Google Storage for Developers
     #
@@ -296,7 +298,7 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |c
   
   # Name of your Bucket / Container
   config.fog_directory = "mysite_sitemaps"
-  
+
 end
 ```
 **Upload to Remote Host using CarrierWave**
