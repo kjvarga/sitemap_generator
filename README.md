@@ -272,8 +272,8 @@ Just include the following code in your **config/sitemap.rb** file.
 ```ruby
 # config/sitemap.rb
 SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |config|
-  config.credentials = {
 
+  config.credentials = {
     # Amazon S3
     #
     # provider:               "AWS",
@@ -296,6 +296,7 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::FogAdapter.configure do |c
   
   # Name of your Bucket / Container
   config.fog_directory = "mysite_sitemaps"
+  
 end
 ```
 **Upload to Remote Host using CarrierWave**
