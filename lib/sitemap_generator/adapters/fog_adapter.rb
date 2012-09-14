@@ -16,7 +16,7 @@ module SitemapGenerator
 		def self.write(location, raw_data)
 			SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
-			@storage = self.connect if !@storage
+			self.connect if !@storage
 			directory = @storage.directories.get(@configuration.fog_directory)
 
 			directory.files.create(
@@ -29,7 +29,7 @@ module SitemapGenerator
 		private
 
 		def self.connect
-			@connection = Fog::Storage.new(@configuration.credentials.to_hash)
+			@storage = Fog::Storage.new(@configuration.credentials.to_hash)
 		end
 	end
 end
