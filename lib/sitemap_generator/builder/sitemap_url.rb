@@ -27,6 +27,7 @@ module SitemapGenerator
       # * +geo+
       # * +news+
       # * +mobile+
+      # * +alternate+/+alternates+
       def initialize(path, options={})
         options = options.dup
         if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
@@ -34,11 +35,14 @@ module SitemapGenerator
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo, :news, :videos, :mobile)
-        SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false)
+        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates)
+        SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false, :alternates => [])
         raise "Cannot generate a url without a host" unless SitemapGenerator::Utilities.present?(options[:host])
         if video = options.delete(:video)
           options[:videos] = video.is_a?(Array) ? options[:videos].concat(video) : options[:videos] << video
+        end
+        if alternate = options.delete(:alternate)
+          options[:alternates] = alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
         end
 
         path = path.to_s.sub(/^\//, '')
@@ -53,7 +57,8 @@ module SitemapGenerator
           :news       => prepare_news(options[:news]),
           :videos     => options[:videos],
           :geo        => options[:geo],
-          :mobile     => options[:mobile]
+          :mobile     => options[:mobile],
+          :alternates => options[:alternates]
         )
       end
 
@@ -118,6 +123,10 @@ module SitemapGenerator
                 builder.video :uploader, video[:uploader], video[:uploader_info] ? { :info => video[:uploader_info] } : {}
               end
             end
+          end
+
+          self[:alternates].each do |alternate|
+            builder.xhtml :link, :rel => 'alternate', :hreflang => alternate[:lang], :href => alternate[:href]
           end
 
           unless SitemapGenerator::Utilities.blank?(self[:geo])

@@ -36,6 +36,7 @@ module SitemapGenerator
               xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0"
               xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
               xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+              xmlns:xhtml="http://www.w3.org/1999/xhtml"
             >
         HTML
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!

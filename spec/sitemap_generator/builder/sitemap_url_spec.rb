@@ -67,6 +67,21 @@ describe SitemapGenerator::Builder::SitemapUrl do
     loc[:videos].should == [3,4,1,2]
   end
 
+  it "should support a :alternates option" do
+    loc = SitemapGenerator::Builder::SitemapUrl.new('', :host => 'http://test.com', :alternates => [1,2,3])
+    loc[:alternates].should == [1,2,3]
+  end
+
+  it "should support a singular :alternate option" do
+    loc = SitemapGenerator::Builder::SitemapUrl.new('', :host => 'http://test.com', :alternate => 1)
+    loc[:alternates].should == [1]
+  end
+
+  it "should support an array :alternate option" do
+    loc = SitemapGenerator::Builder::SitemapUrl.new('', :host => 'http://test.com', :alternate => [1,2], :alternates => [3,4])
+    loc[:alternates].should == [3,4,1,2]
+  end
+
   it "should not fail if invalid characters are used in the URL" do
     special = ':$&+,;:=?@'
     url = SitemapGenerator::Builder::SitemapUrl.new("/#{special}", :host => "http://example.com/#{special}/")

@@ -819,6 +819,25 @@ end
 * `format` Required, either 'kml' or 'georss'
 
 
+### Alternate links (useful for i18n)
+
+Alternate links can be added by passing a `:alternate` Hash do `add`. You may add more alternate links to url, by passing an array of hashes using the `:alternates` option.
+
+#### Example
+
+```ruby
+add('/index.html', :alternate => {
+  :href => 'http://www.example.de/index.html',
+  :lang => 'de'
+})
+```
+
+#### Supported options
+
+* `:href` - Required, string.
+* `lang`  - Required, string.
+
+
 ## Raison d'être
 
 Most of the Sitemap plugins out there seem to try to recreate the Sitemap links by iterating the Rails routes. In some cases this is possible, but for a great deal of cases it isn't.
