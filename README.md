@@ -68,6 +68,7 @@ Does your website use SitemapGenerator to generate Sitemaps?  Where would you be
 
 ## Changelog
 
+* v3.4.1: Support `exclude` and `only` options options to conditionally skip processing of groups.
 * v3.4: Support [alternate links][alternate_links] for urls; Support configurable options in the `SitemapGenerator::S3Adapter`
 * v3.3: **Support creating sitemaps with no index file**.  A big thank-you to [Eric Hochberger][ehoch] for generously paying for this feature.
 * v3.2.1: Fix syntax error in SitemapGenerator::S3Adapter
@@ -642,11 +643,15 @@ The following options are supported:
 
 * `default_host` - String.  Required.  **Host including protocol** to use when building a link to add to your sitemap.  For example `http://example.com`.  Calling `add '/home'` would then generate the URL `http://example.com/home` and add that to the sitemap.  You can pass a `:host` option in your call to `add` to override this value on a per-link basis.  For example calling `add '/home', :host => 'https://example.com'` would generate the URL `https://example.com/home`, for that link only.
 
+* `exclude` - String.  A CSV string whose elements are converted to Regex.  Skips processing of any group whose `:filename` matches against at least 1 Regex element.  Superceded by `only` option if a `:filename` matches both conditions.
+
 * `filename` - Symbol.  The **base name for the files** that will be generated.  The default value is `:sitemap`.  This yields sitemaps with names like `sitemap1.xml.gz`, `sitemap2.xml.gz`, `sitemap3.xml.gz` etc, and a sitemap index named `sitemap_index.xml.gz`.  If we now set the value to `:geo` the sitemaps would be named `geo1.xml.gz`, `geo2.xml.gz`, `geo3.xml.gz` etc, and the sitemap index would be named `geo_index.xml.gz`.
 
 * `include_index` - Boolean.  Whether to **add a link to the sitemap index** to the current sitemap.  This points search engines to your Sitemap Index to include it in the indexing of your site.  2012-07: This is now turned off by default because Google may complain about there being 'Nested Sitemap indexes'.  Default is `false`.  Turned off when `sitemaps_host` is set or within a `group()` block.
 
 * `include_root` - Boolean.  Whether to **add the root** url i.e. '/' to the current sitemap.  Default is `true`.  Turned off within a `group()` block.
+
+* `only` - String.  A CSV string whose elements are converted to Regex.  Skips processing of any group whose `:filename` does not match any Regex element.  Overrides `exclude` condition if `:filename` matches both conditions.
 
 * `public_path` - String.  A **full or relative path** to the `public` directory or the directory you want to write sitemaps into.  Defaults to `public/` under your application root or relative to the current working directory.
 

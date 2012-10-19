@@ -42,7 +42,7 @@ module SitemapGenerator
 
   class << self
     attr_accessor :root, :app, :templates
-    attr_writer :yield_sitemap, :verbose
+    attr_writer :exclude, :only, :yield_sitemap, :verbose
   end
 
   # Global default for the verbose setting.
@@ -57,6 +57,34 @@ module SitemapGenerator
       end
     else
       @verbose
+    end
+  end
+
+  # List of group names to be run.  Can be given an Array or a CSV String.
+  # Values converted to Regex
+  def self.only
+    if @only.nil?
+      @only = if ENV['ONLY'].is_a?(String)
+        ENV['ONLY'].split(',').map {|filname| Regexp.new(filname)}
+      else
+        []
+      end
+    else
+      @only
+    end
+  end
+
+  # List of excluded group names.  Can be given an Array or a CSV String
+  # Values converted to Regex.
+  def self.exclude
+    if @exclude.nil?
+      @exclude = if ENV['EXCLUDE'].is_a?(String)
+        ENV['EXCLUDE'].split(',').map {|filname| Regexp.new(filname)}
+      else
+        []
+      end
+    else
+      @exclude
     end
   end
 

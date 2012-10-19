@@ -8,7 +8,7 @@ module SitemapGenerator
     @@new_location_opts = [:filename, :sitemaps_path, :sitemaps_namer]
 
     attr_reader :default_host, :sitemaps_path, :filename
-    attr_accessor :verbose, :yahoo_app_id, :include_root, :include_index, :sitemaps_host, :adapter, :yield_sitemap, :create_index
+    attr_accessor :verbose, :exclude, :only, :yahoo_app_id, :include_root, :include_index, :sitemaps_host, :adapter, :yield_sitemap, :create_index
 
     # Create a new sitemap index and sitemap files.  Pass a block calls to the following
     # methods:
@@ -196,21 +196,34 @@ module SitemapGenerator
       end
 
       opts = options_for_group(opts)
-      @group = SitemapGenerator::LinkSet.new(opts)
-      if opts.key?(:sitemap)
-        # If the group is sharing the current sitemap, set the
-        # new location options on the location object.
-        @original_location = @sitemap.location.dup
-        @sitemap.location.merge!(@group.sitemap_location)
-        if block_given?
+      string_filename = opts[:filename].to_s
+      if only && only.none? { |group_name_regex| string_filename =~ group_name_regex }
+        # Skip processing of this group if ONLY option is set and this group's filename
+        # is not included in ONLY
+        output("! group \"#{string_filename}\" not processed - not included in ONLY option")
+        nil
+      elsif exclude && exclude.any? { |group_name_regex| string_filename =~ group_name_regex }
+        # Skip processing of this group if EXCLUDE option is set and this group's filename
+        # is included in EXCLUDE
+        output("! group \"#{string_filename}\" not processed - matches EXCLUDE option")
+        nil
+      else
+        @group = SitemapGenerator::LinkSet.new(opts)
+        if opts.key?(:sitemap)
+          # If the group is sharing the current sitemap, set the
+          # new location options on the location object.
+          @original_location = @sitemap.location.dup
+          @sitemap.location.merge!(@group.sitemap_location)
+          if block_given?
+            @group.interpreter.eval(:yield_sitemap => @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
+            @sitemap.location.merge!(@original_location)
+          end
+        elsif block_given?
           @group.interpreter.eval(:yield_sitemap => @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
-          @sitemap.location.merge!(@original_location)
+          @group.finalize_sitemap!
         end
-      elsif block_given?
-        @group.interpreter.eval(:yield_sitemap => @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
-        @group.finalize_sitemap!
+        @group
       end
-      @group
     end
 
     # Ping search engines to notify them of updated sitemaps.
@@ -331,6 +344,22 @@ module SitemapGenerator
       @verbose
     end
 
+    # If only is nil, fail conditionals that check for it
+    def only
+      if @only.nil?
+        @only = SitemapGenerator.only.empty? ? false : SitemapGenerator.only
+      end
+      @only
+    end
+
+    # If exclude is nil, fail conditionals that check for it
+    def exclude
+      if @exclude.nil?
+        @exclude = SitemapGenerator.exclude.empty? ? false : SitemapGenerator.exclude
+      end
+      @exclude
+    end
+
     # Return a boolean indicating whether or not to yield the sitemap.
     def yield_sitemap?
       @yield_sitemap.nil? ? SitemapGenerator.yield_sitemap? : !!@yield_sitemap
@@ -377,6 +406,8 @@ module SitemapGenerator
         :public_path,
         :sitemaps_host,
         :verbose,
+        :only,
+        :exclude,
         :default_host,
         :adapter,
         :create_index
