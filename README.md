@@ -233,34 +233,30 @@ Sitemap: http://www.example.com/sitemap_index.xml.gz
 To ensure that your application's sitemaps are available after a deployment you can do one of the following:
 
 1.  **Generate sitemaps into a directory which is shared by all deployments.**
-
     You can set your sitemaps path to your shared directory using the `sitemaps_path` option.  For example if we have a directory `public/shared/` that is shared by all deployments we can have our sitemaps generated into that directory by setting:
 
-```ruby
-SitemapGenerator::Sitemap.sitemaps_path = 'shared/'
-```
-
+    ```ruby
+    SitemapGenerator::Sitemap.sitemaps_path = 'shared/'
+    ```
 2.  **Copy the sitemaps from the previous deploy over to the new deploy:**
-
     (You will need to customize the task if you are using custom sitemap filenames or locations.)
 
-```ruby
-after "deploy:update_code", "deploy:copy_old_sitemap"
-namespace :deploy do
-  task :copy_old_sitemap do
-    run "if [ -e #{previous_release}/public/sitemap_index.xml.gz ]; then cp #{previous_release}/public/sitemap* #{current_release}/public/; fi"
-  end
-end
-```
-
+    ```ruby
+    after "deploy:update_code", "deploy:copy_old_sitemap"
+    namespace :deploy do
+      task :copy_old_sitemap do
+        run "if [ -e #{previous_release}/public/sitemap_index.xml.gz ]; then cp #{previous_release}/public/sitemap* #{current_release}/public/; fi"
+      end
+    end
+    ```
 3.  **Regenerate your sitemaps after each deployment:**
-
-```ruby
-after "deploy", "refresh_sitemaps"
-task :refresh_sitemaps do
-  run "cd #{latest_release} && RAILS_ENV=#{rails_env} rake sitemap:refresh"
-end
-```
+    
+    ```ruby
+    after "deploy", "refresh_sitemaps"
+    task :refresh_sitemaps do
+      run "cd #{latest_release} && RAILS_ENV=#{rails_env} rake sitemap:refresh"
+    end
+    ```
 
 ### Sitemaps with no Index File
 
