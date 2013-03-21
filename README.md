@@ -283,36 +283,40 @@ Sitemap Generator uses CarrierWave to support uploading to Amazon S3 store, Rack
 
 2. Once you have CarrierWave setup and configured all you need to do is set some options in your sitemap config, such as:
 
-   * `default_host` - your website host name
-   * `sitemaps_host` - the remote host where your sitemaps will be hosted
-   * `public_path` - the directory to write sitemaps to locally e.g. `tmp/`
-   * `sitemaps_path` - set to a directory/path if you don't want to upload to the root of your `sitemaps_host`
-   * `adapter` - instance of `SitemapGenerator::WaveAdapter`
+* `default_host` - your website host name
+* `sitemaps_host` - the remote host where your sitemaps will be hosted
+* `public_path` - the directory to write sitemaps to locally e.g. `tmp/`
+* `sitemaps_path` - set to a directory/path if you don't want to upload to the root of your `sitemaps_host`
+* `adapter` - instance of `SitemapGenerator::WaveAdapter`
 
-   For Example:
-
-```ruby
-SitemapGenerator::Sitemap.default_host = "http://www.example.com"
-SitemapGenerator::Sitemap.sitemaps_host = "http://s3.amazonaws.com/sitemap-generator/"
-SitemapGenerator::Sitemap.public_path = 'tmp/'
-SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
-SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
-```
+    For Example:
+    
+     ```ruby
+     SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+     SitemapGenerator::Sitemap.sitemaps_host = "http://s3.amazonaws.com/sitemap-generator/"
+     SitemapGenerator::Sitemap.public_path = 'tmp/'
+     SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+     SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
+     ```
 
 3. Update your `robots.txt` file to point robots to the remote sitemap index file, e.g:
 
-```
-Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap_index.xml.gz
-```
+    ```
+    Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap_index.xml.gz
+    ```
 
-You generate your sitemaps as usual using `rake sitemap:refresh`.
+    You generate your sitemaps as usual using `rake sitemap:refresh`.
+    
+    Note that SitemapGenerator will automatically turn off `include_index` in this case because
+    the `sitemaps_host` does not match the `default_host`.  The link to the sitemap index file
+    that would otherwise be included would point to a different host than the rest of the links
+    in the sitemap, something that the sitemap rules forbid.  (Since version 3.2 this is no
+    longer an issue because [`include_index` is off by default][include_index_change].)
 
-Note that SitemapGenerator will automatically turn off `include_index` in this case because
-the `sitemaps_host` does not match the `default_host`.  The link to the sitemap index file
-that would otherwise be included would point to a different host than the rest of the links
-in the sitemap, something that the sitemap rules forbid.  (Since version 3.2 this is no
-longer an issue because [`include_index` is off by default][include_index_change].)
+4. Verify to google that you own the s3 url
 
+    In order for Google to use your sitemap, you need to prove you own the s3 bucket through [google webmaster tools](https://www.google.com/webmasters/tools/home?hl=en).  In the example above, you would add the site http://s3.amazonaws.com/sitemap-generator/sitemaps.  Once you have verified you own the directory then add your sitemap_index.xml.gz to this list of sitemaps for the site.
+    
 ### Generating Multiple Sitemaps
 
 Each call to `create` creates a new sitemap index and associated sitemaps.  You can call `create` as many times as you want within your sitemap configuration.
