@@ -126,7 +126,8 @@ module SitemapGenerator
           end
 
           self[:alternates].each do |alternate|
-            builder.xhtml :link, :rel => 'alternate', :hreflang => alternate[:lang], :href => alternate[:href]
+            rel = alternate[:nofollow] ? 'alternate nofollow' : 'alternate'
+            builder.xhtml :link, :rel => rel, :hreflang => alternate[:lang], :href => alternate[:href]
           end
 
           unless SitemapGenerator::Utilities.blank?(self[:geo])
