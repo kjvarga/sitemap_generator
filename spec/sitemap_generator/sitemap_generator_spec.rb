@@ -179,6 +179,44 @@ describe "SitemapGenerator" do
     end
   end
 
+  describe "exclude" do
+    before(:each) { ENV['EXCLUDE'] = SitemapGenerator.exclude = nil }
+    after(:all)   { ENV['EXCLUDE'] = SitemapGenerator.exclude = nil }
+
+    it "should be set via ENV['EXCLUDE']" do
+      ENV['EXCLUDE'] = 'group_name'
+      SitemapGenerator.exclude.should == [/group_name/]
+    end
+
+    it "should set SitemapGenerator.exclude to an empty array if given not set" do
+      SitemapGenerator.exclude.should == []
+    end
+
+    it "should split on ',' and convert elements to Regex when given a String" do
+      ENV['EXCLUDE'] = 'exclude_group_name1,exclude_group_name2'
+      SitemapGenerator.exclude.should == [/exclude_group_name1/,/exclude_group_name2/]
+    end
+  end
+
+  describe "only" do
+    before(:each) { ENV['ONLY'] = SitemapGenerator.only = nil }
+    after(:all)   { ENV['ONLY'] = SitemapGenerator.only = nil }
+
+    it "should be set via ENV['ONLY']" do
+      ENV['ONLY'] = 'group_name'
+      SitemapGenerator.only.should == [/group_name/]
+    end
+
+    it "should set SitemapGenerator.only to an empty array if given not set" do
+      SitemapGenerator.only.should == []
+    end
+
+    it "should split on ',' and convert elements to Regex when given a String" do
+      ENV['ONLY'] = 'only_group_name1,only_group_name2'
+      SitemapGenerator.only.should == [/only_group_name1/,/only_group_name2/]
+    end
+  end
+
   describe "verbose" do
     it "should be set via ENV['VERBOSE']" do
       original = SitemapGenerator.verbose

@@ -165,6 +165,28 @@ describe SitemapGenerator::LinkSet do
     end
   end
 
+  describe "only" do
+    it "should be set as an initialize option" do
+      SitemapGenerator::LinkSet.new(:default_host => default_host, :only => [/group_name/]).only.should == [/group_name/]
+    end
+
+    it "should be set as an accessor" do
+      ls.only = [/group_name/]
+      ls.only.should == [/group_name/]
+    end
+  end
+
+  describe "exclude" do
+    it "should be set as an initialize option" do
+      SitemapGenerator::LinkSet.new(:default_host => default_host, :exclude => [/group_name/]).exclude.should == [/group_name/]
+    end
+
+    it "should be set as an accessor" do
+      ls.exclude = [/group_name/]
+      ls.exclude.should == [/group_name/]
+    end
+  end
+
   describe "verbose" do
     it "should be set as an initialize option" do
       SitemapGenerator::LinkSet.new(:default_host => default_host, :verbose => false).verbose.should be_false
@@ -478,6 +500,16 @@ describe SitemapGenerator::LinkSet do
       ls.create(:filename => :xxx)
       ls.filename.should == :xxx
       ls.sitemap.location.filename.should =~ /xxx/
+    end
+
+    it "should set only" do
+      ls.create(:only => [/set_group_name_only/])
+      ls.only.should == [/set_group_name_only/]
+    end
+
+    it "should set exclude" do
+      ls.create(:exclude => [/set_group_name_exclude/])
+      ls.exclude.should == [/set_group_name_exclude/]
     end
 
     it "should set verbose" do
