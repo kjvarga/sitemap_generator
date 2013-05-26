@@ -1,0 +1,97 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.google.com/schemas/sitemap-pagemap/1.0"
+    xmlns="http://www.google.com/schemas/sitemap-pagemap/1.0"
+    elementFormDefault="qualified">
+
+<xsd:annotation>
+  <xsd:documentation>
+    XML Schema for the PageMap Sitemap extension. This schema defines the
+    PageMap-specific elements only; the core Sitemap elements are defined
+    separately.
+
+    Copyright 2011 Google Inc. All Rights Reserved.
+  </xsd:documentation>
+</xsd:annotation>
+
+<xsd:element name="PageMap">
+  <xsd:complexType>
+    <xsd:sequence>
+      <xsd:element name="Template" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Template file specification. Can be used for overriding the
+            default rendering of search results delivered via
+            Google Custom Search Engine.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:attribute name="src" type="xsd:anyURI" use="required">
+            <xsd:annotation>
+              <xsd:documentation>
+                Reference to a template file. A template file contains a set of
+                ResultSpecs, which, given DataObjects of appropriate types on
+                the page, renders a search result based on the key-value pairs
+                found in those DataObjects. If the template file is not
+                specified, Google will use the default predefined set of
+                templates tailored to popular content.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="DataObject" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Attribute" minOccurs="0" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Either 'value' attribute or text content must be set, but
+                  not both.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:simpleContent>
+                  <xsd:extension base="xsd:string">
+                    <xsd:attribute name="name" type="xsd:string" use="required">
+                      <xsd:annotation>
+                        <xsd:documentation>
+                          Name of the attribute.
+                        </xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="value" type="xsd:string">
+                      <xsd:annotation>
+                        <xsd:documentation>
+                          Value of the attribute.
+                        </xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                  </xsd:extension>
+                </xsd:simpleContent>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+          <xsd:attribute name="type" type="xsd:string" use="required">
+            <xsd:annotation>
+              <xsd:documentation>
+                Type of the object.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="id" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>
+                ID of the object.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

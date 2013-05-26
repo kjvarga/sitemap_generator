@@ -7,7 +7,7 @@ Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 ## Features
 
 * Framework agnostic
-* Supports [News sitemaps][sitemap_news], [Video sitemaps][sitemap_video], [Image sitemaps][sitemap_images], [Geo sitemaps][sitemap_geo], [Mobile sitemaps][sitemap_mobile] and [Alternate Links][alternate_links]
+* Supports [News sitemaps][sitemap_news], [Video sitemaps][sitemap_video], [Image sitemaps][sitemap_images], [Geo sitemaps][sitemap_geo], [Mobile sitemaps][sitemap_mobile], [PageMap sitemaps][sitemap_pagemap] and [Alternate Links][alternate_links]
 * Supports read-only filesystems like Heroku via uploading to a remote host like Amazon S3
 * Compatible with Rails 2 & 3 and tested with Ruby REE, 1.9.2 & 1.9.3
 * Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
@@ -103,6 +103,7 @@ That's it!  Welcome to the future!
 
 ## Changelog
 
+* v4.1.0: [PageMap sitemap][using_pagemaps] support.
 * v4.0.1: Add a post install message regarding the naming convention change.
 * **v4.0: NEW, NON-BACKWARDS COMPATIBLE CHANGES.**  See above for more info. `create_index` defaults to `:auto`.  Define `SitemapGenerator::SimpleNamer` class for simpler custom namers compatible with the new naming conventions.  Deprecate `sitemaps_namer`, `sitemap_index_namer` and their respective namer classes.  It's more just that their usage is discouraged.  Support `nofollow` option on alternate links.  Fix formatting of `publication_date` in News sitemaps.
 * v3.4: Support [alternate links][alternate_links] for urls; Support configurable options in the `SitemapGenerator::S3Adapter`
@@ -907,6 +908,35 @@ end
 * `:format` Required, either 'kml' or 'georss'
 
 
+### PageMap Sitemaps
+
+Pagemaps can be added by passing a `:pagemap` Hash to `add`. The Hash must contain one or more `:dataobject`, each containing a `:type` and `:id`, and an array of `:attributes` Hashes with two keys: `:name` and `:value`.  For more information consult the [official documentation on PageMaps][using_pagemaps].
+
+#### Example:
+
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+  add('/blog/post', :pagemap => {
+    :dataobjects => [
+      {
+        type: 'document',
+        id: 'hibachi',
+        attributes: [
+          {name: 'name', value: 'Dragon'},
+          {name: 'review', value: '3.5'},
+        ]
+      }
+    ]
+  })
+end
+```
+
+#### Supported options
+
+* `:format` Required, either 'kml' or 'georss'
+
+
 ### Alternate Links
 
 A useful feature for internationalization is to specify alternate links for a url.
@@ -1010,6 +1040,7 @@ Copyright (c) 2009 Karl Varga released under the MIT license
 [sitemap_news]:http://www.google.com/support/webmasters/bin/topic.py?hl=en&topic=10078
 [sitemap_geo]:http://www.google.com/support/webmasters/bin/topic.py?hl=en&topic=14688
 [sitemap_mobile]:http://support.google.com/webmasters/bin/answer.py?hl=en&answer=34648
+[sitemap_pagemap]:https://developers.google.com/custom-search/docs/structured_data#addtositemap
 [sitemap_protocol]:http://sitemaps.org/protocol.php
 [video_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=80472#4
 [image_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=178636
@@ -1019,3 +1050,4 @@ Copyright (c) 2009 Karl Varga released under the MIT license
 [include_index_change]:https://github.com/kjvarga/sitemap_generator/issues/70
 [ehoch]:https://github.com/ehoch
 [alternate_links]:http://support.google.com/webmasters/bin/answer.py?hl=en&answer=2620865
+[using_pagemaps]:https://developers.google.com/custom-search/docs/structured_data#pagemaps

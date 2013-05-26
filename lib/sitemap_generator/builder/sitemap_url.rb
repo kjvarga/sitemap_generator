@@ -29,6 +29,7 @@ module SitemapGenerator
       # * +news+
       # * +mobile+
       # * +alternate+/+alternates+
+      # * +pagemap+
       def initialize(path, options={})
         options = options.dup
         if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
@@ -36,7 +37,7 @@ module SitemapGenerator
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates)
+        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates, :pagemap)
         SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false, :alternates => [])
         raise "Cannot generate a url without a host" unless SitemapGenerator::Utilities.present?(options[:host])
         if video = options.delete(:video)
@@ -59,7 +60,8 @@ module SitemapGenerator
           :videos     => options[:videos],
           :geo        => options[:geo],
           :mobile     => options[:mobile],
-          :alternates => options[:alternates]
+          :alternates => options[:alternates],
+          :pagemap    => options[:pagemap]
         )
       end
 
@@ -140,6 +142,19 @@ module SitemapGenerator
 
           unless SitemapGenerator::Utilities.blank?(self[:mobile])
             builder.mobile :mobile
+          end
+
+          unless SitemapGenerator::Utilities.blank?(self[:pagemap])
+            pagemap = self[:pagemap]
+            builder.pagemap :PageMap, xmlns: 'http://www.google.com/schemas/sitemap-pagemap/1.0' do
+              pagemap[:dataobjects].each do |dataobject|
+                builder.pagemap :DataObject, type: dataobject[:type], id: dataobject[:id] do
+                  dataobject[:attributes].each do |attribute|
+                    builder.pagemap :Attribute, attribute[:value], name: attribute[:name]
+                  end
+                end
+              end
+            end
           end
         end
         builder << '' # Force to string
