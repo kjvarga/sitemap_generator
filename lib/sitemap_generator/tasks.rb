@@ -50,4 +50,9 @@ namespace :sitemap do
   task :create => ['sitemap:require_environment'] do
     SitemapGenerator::Interpreter.run(:config_file => ENV["CONFIG_FILE"], :verbose => verbose)
   end
+
+  desc "Ping search engines but don't generate sitemaps."
+  task :ping do
+    SitemapGenerator::Sitemap.ping_search_engines
+  end
 end
