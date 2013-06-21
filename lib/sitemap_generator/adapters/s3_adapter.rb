@@ -8,6 +8,7 @@ module SitemapGenerator
       @aws_secret_access_key = opts[:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
       @fog_provider = opts[:fog_provider] || ENV['FOG_PROVIDER']
       @fog_directory = opts[:fog_directory] || ENV['FOG_DIRECTORY']
+      @fog_region = opts[:fog_region] || ENV['FOG_REGION']
     end
 
     # Call with a SitemapLocation and string data
@@ -19,6 +20,7 @@ module SitemapGenerator
         :aws_secret_access_key => @aws_secret_access_key,
         :provider              => @fog_provider,
       }
+      credentials[:region] = @fog_region if @fog_region
 
       storage   = Fog::Storage.new(credentials)
       directory = storage.directories.get(@fog_directory)
