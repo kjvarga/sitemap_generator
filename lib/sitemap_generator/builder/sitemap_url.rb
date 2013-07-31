@@ -126,6 +126,7 @@ module SitemapGenerator
               if video[:uploader]
                 builder.video :uploader, video[:uploader], video[:uploader_info] ? { :info => video[:uploader_info] } : {}
               end
+              builder.video :price, video[:price], :currency => video[:price_currency] if video[:price].to_i > 0
             end
           end
 
