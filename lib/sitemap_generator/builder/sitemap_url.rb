@@ -37,7 +37,7 @@ module SitemapGenerator
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates, :pagemap)
+        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates, :pagemap)
         SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false, :alternates => [])
         raise "Cannot generate a url without a host" unless SitemapGenerator::Utilities.present?(options[:host])
 
@@ -54,6 +54,7 @@ module SitemapGenerator
           :priority   => options[:priority],
           :changefreq => options[:changefreq],
           :lastmod    => options[:lastmod],
+          :expires    => options[:expires],
           :host       => options[:host],
           :loc        => loc,
           :images     => prepare_images(options[:images], options[:host]),
@@ -72,9 +73,10 @@ module SitemapGenerator
         builder.url do
           builder.loc        self[:loc]
           builder.lastmod    w3c_date(self[:lastmod])      if self[:lastmod]
+          builder.expires    w3c_date(self[:expires])      if self[:expires]
           builder.changefreq self[:changefreq].to_s        if self[:changefreq]
           builder.priority   format_float(self[:priority]) if self[:priority]
-
+          
           unless SitemapGenerator::Utilities.blank?(self[:news])
             news_data = self[:news]
             builder.news:news do
