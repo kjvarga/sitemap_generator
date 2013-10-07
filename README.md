@@ -272,6 +272,14 @@ You should add the URL of the sitemap index file to `public/robots.txt` to help 
 Sitemap: http://www.example.com/sitemap.xml.gz
 ```
 
+### Ruby Modules
+
+If you need to include a module (e.g. a rails helper) you can add the following line:
+
+```ruby
+SitemapGenerator::Interpreter.send :include, RoutingHelper
+```
+
 ## Deployments & Capistrano
 
 To ensure that your application's sitemaps are available after a deployment you can do one of the following:
@@ -301,6 +309,7 @@ To ensure that your application's sitemaps are available after a deployment you 
       run "cd #{latest_release} && RAILS_ENV=#{rails_env} rake sitemap:refresh"
     end
     ```
+
 
 ### Sitemaps with no Index File
 
