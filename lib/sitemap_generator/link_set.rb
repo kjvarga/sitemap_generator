@@ -110,6 +110,9 @@ module SitemapGenerator
     #   and index file names.  See <tt>:filename</tt> if you don't need to do anything fancy, and can
     #   accept the default naming conventions.
     #
+    # * <tt>:gzip_initial</tt> - Boolean. Whether to compress the first sitemap file produced. Default
+    #   is +true+.
+    #
     # === Deprecated
     #
     # * <tt>:sitemaps_namer</tt> - Deprecated, use <tt>:namer</tt>.  A <tt>SitemapGenerator::SitemapNamer</tt> instance for generating the sitemap names.
@@ -121,6 +124,7 @@ module SitemapGenerator
       options = SitemapGenerator::Utilities.reverse_merge(options,
         :include_root => true,
         :include_index => false,
+        :gzip_initial => true,
         :filename => :sitemap,
         :search_engines => {
           :google         => "http://www.google.com/webmasters/tools/ping?sitemap=%s",
@@ -611,7 +615,19 @@ module SitemapGenerator
       # the current sitemap and if there is no sitemap, creates a new one using
       # the current filename.
       def namer
-        @namer ||= @sitemap && @sitemap.location.namer || SitemapGenerator::SimpleNamer.new(@filename)
+        @namer ||= @sitemap && @sitemap.location.namer || SitemapGenerator::SimpleNamer.new(@filename, :gzip_zero => gzip_initial?)
+      end
+
+      def gzip_initial=(value)
+        @gzip_initial = value
+      end
+
+      # Return a boolean indicating whether or not to gzip the first sitemap file produced (usually the index)
+      def gzip_initial?
+        if @gzip_initial.nil?
+          @gzip_initial = SitemapGenerator.gzip_initial.nil? ? true : SitemapGenerator.gzip_initial
+        end
+        @gzip_initial
       end
 
       protected

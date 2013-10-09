@@ -11,3 +11,6 @@ tmp/**/*
 *.orig
 coverage
 .idea
+bin
+public
+vendor

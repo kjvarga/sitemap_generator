@@ -16,17 +16,25 @@ module SitemapGenerator
     # Options include:
     #   :extension - Default: '.xml.gz'. File extension to append.
     #   :start     - Default: 1. Numerical index at which to start counting.
+    #   :gzip_zero - Default: true. If false, strip out any .gz in the file
+    #                extension for the first file
     def initialize(base, options={});
       @options = SitemapGenerator::Utilities.reverse_merge(options,
         :extension => '.xml.gz',
-        :start => 1
+        :start => 1,
+        :gzip_zero => true
       )
       @base = base
       reset
     end
 
     def to_s
-      "#{@base}#{@count}#{@options[:extension]}"
+      extension = @options[:extension]
+      if start? && !@options[:gzip_zero]
+        extension.gsub(/\.gz/, '')
+      end
+
+      "#{@base}#{@count}#{extension}"
     end
 
     # Increment count and return self
@@ -79,6 +87,8 @@ module SitemapGenerator
   # Options:
   #   :extension - Default: '.xml.gz'. File extension to append.
   #   :start     - Default: 1. Numerical index at which to start counting.
+  #   :gzip_zero - Default: true. If false, strip out any .gz in the file
+  #                extension for the first file
   #   :zero      - Default: nil.  A string or number that is appended to +base+
   #                to create the first name in the sequence.  So setting this
   #                to '_index' would produce 'sitemap_index.xml.gz' as
@@ -94,7 +104,12 @@ module SitemapGenerator
     end
 
     def to_s
-      "#{@base}#{@count}#{@options[:extension]}"
+      extension = @options[:extension]
+      if start? && !@options[:gzip_zero]
+        extension = extension.gsub(/\.gz/, '')
+      end
+
+      "#{@base}#{@count}#{extension}"
     end
 
     # Reset to the first name
