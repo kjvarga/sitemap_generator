@@ -9,9 +9,26 @@ GEM
   specs:
     builder (3.0.0)
     diff-lcs (1.1.3)
+    excon (0.28.0)
+    fog (1.18.0)
+      builder
+      excon (~> 0.28.0)
+      formatador (~> 0.2.0)
+      mime-types
+      multi_json (~> 1.0)
+      net-scp (~> 1.1)
+      net-ssh (>= 2.1.3)
+      nokogiri (~> 1.5)
+      ruby-hmac
+    formatador (0.2.4)
     metaclass (0.0.1)
+    mime-types (1.25)
     mocha (0.10.0)
       metaclass (~> 0.0.1)
+    multi_json (1.8.1)
+    net-scp (1.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.7.0)
     nokogiri (1.5.10)
     rake (10.0.4)
     rspec (2.8.0)
@@ -22,12 +39,14 @@ GEM
     rspec-expectations (2.8.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.8.0)
+    ruby-hmac (0.4.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   builder
+  fog
   mocha
   nokogiri (= 1.5.10)
   rake
