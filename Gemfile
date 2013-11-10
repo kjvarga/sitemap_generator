@@ -10,4 +10,5 @@ group :development, :test do
   gem 'rspec'
   #gem 'ruby-debug19', :require => 'ruby-debug'
   #gem 'simplecov', :require => false
+  gem 'fog'
 end

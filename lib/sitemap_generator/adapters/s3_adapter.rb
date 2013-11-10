@@ -23,7 +23,7 @@ module SitemapGenerator
       credentials[:region] = @fog_region if @fog_region
 
       storage   = Fog::Storage.new(credentials)
-      directory = storage.directories.get(@fog_directory)
+      directory = storage.directories.new(:key => @fog_directory)
       directory.files.create(
         :key    => location.path_in_public,
         :body   => File.open(location.path),
