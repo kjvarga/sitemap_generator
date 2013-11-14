@@ -76,7 +76,7 @@ module SitemapGenerator
           builder.expires    w3c_date(self[:expires])      if self[:expires]
           builder.changefreq self[:changefreq].to_s        if self[:changefreq]
           builder.priority   format_float(self[:priority]) if self[:priority]
-
+          
           unless SitemapGenerator::Utilities.blank?(self[:news])
             news_data = self[:news]
             builder.news:news do
