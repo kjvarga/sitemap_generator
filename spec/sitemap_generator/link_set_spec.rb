@@ -20,13 +20,14 @@ describe SitemapGenerator::LinkSet do
     let(:ls) { SitemapGenerator::LinkSet.new }
 
     default_options = {
-      :filename      => :sitemap,
-      :sitemaps_path => nil,
-      :public_path   => SitemapGenerator.app.root + 'public/',
-      :default_host  => nil,
-      :include_index => false,
-      :include_root  => true,
-      :create_index  => :auto
+      :filename           => :sitemap,
+      :sitemaps_path      => nil,
+      :public_path        => SitemapGenerator.app.root + 'public/',
+      :default_host       => nil,
+      :include_index      => false,
+      :include_root       => true,
+      :create_index       => :auto,
+      :max_sitemap_links  => SitemapGenerator::MAX_SITEMAP_LINKS,
     }
 
     default_options.each do |option, value|
