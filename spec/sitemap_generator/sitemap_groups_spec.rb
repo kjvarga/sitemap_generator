@@ -1,11 +1,13 @@
 require "spec_helper"
 
 def with_max_links(num)
-  SitemapGenerator::Utilities.with_warnings(nil) do
-    original = SitemapGenerator::MAX_SITEMAP_LINKS
-    SitemapGenerator.const_set(:MAX_SITEMAP_LINKS, num)
+  original = SitemapGenerator::Sitemap.max_sitemap_links
+  SitemapGenerator::Sitemap.max_sitemap_links = num
+
+  begin
     yield
-    SitemapGenerator.const_set(:MAX_SITEMAP_LINKS, original)
+  ensure
+    SitemapGenerator::Sitemap.max_sitemap_links = original
   end
 end
 

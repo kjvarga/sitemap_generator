@@ -8,13 +8,13 @@ class Holder
 end
 
 def with_max_links(num)
-  original = SitemapGenerator::MAX_SITEMAP_LINKS
-  SitemapGenerator::Utilities.with_warnings(nil) do
-    SitemapGenerator.const_set(:MAX_SITEMAP_LINKS, num)
-  end
-  yield
-  SitemapGenerator::Utilities.with_warnings(nil) do
-    SitemapGenerator.const_set(:MAX_SITEMAP_LINKS, original)
+  original = SitemapGenerator::Sitemap.max_sitemap_links
+  SitemapGenerator::Sitemap.max_sitemap_links = num
+
+  begin
+    yield
+  ensure
+    SitemapGenerator::Sitemap.max_sitemap_links = original
   end
 end
 

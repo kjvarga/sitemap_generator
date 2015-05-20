@@ -9,7 +9,7 @@ module SitemapGenerator
 
     attr_reader :default_host, :sitemaps_path, :filename, :create_index
     attr_accessor :include_root, :include_index, :adapter, :yield_sitemap
-    attr_writer :verbose
+    attr_writer :verbose, :max_sitemap_links
 
     # Create a new sitemap index and sitemap files.  Pass a block with calls to the following
     # methods:
@@ -365,6 +365,10 @@ module SitemapGenerator
     # Return a boolean indicating whether or not to yield the sitemap.
     def yield_sitemap?
       @yield_sitemap.nil? ? SitemapGenerator.yield_sitemap? : !!@yield_sitemap
+    end
+
+    def max_sitemap_links
+      @max_sitemap_links ||= SitemapGenerator::MAX_SITEMAP_LINKS
     end
 
     protected
