@@ -571,7 +571,8 @@ module SitemapGenerator
           :sitemaps_path => @sitemaps_path,
           :adapter => @adapter,
           :verbose => verbose,
-          :compress => @compress
+          :compress => @compress,
+          :max_sitemap_links => max_sitemap_links,
         )
       end
 
