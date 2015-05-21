@@ -8,8 +8,8 @@ module SitemapGenerator
     @@new_location_opts = [:filename, :sitemaps_path, :namer]
 
     attr_reader :default_host, :sitemaps_path, :filename, :create_index
-    attr_accessor :include_root, :include_index, :adapter, :yield_sitemap
-    attr_writer :verbose, :max_sitemap_links
+    attr_accessor :include_root, :include_index, :adapter, :yield_sitemap, :max_sitemap_links
+    attr_writer :verbose
 
     # Create a new sitemap index and sitemap files.  Pass a block with calls to the following
     # methods:
@@ -124,7 +124,8 @@ module SitemapGenerator
           :bing           => "http://www.bing.com/webmaster/ping.aspx?siteMap=%s"
         },
         :create_index => :auto,
-        :compress => true
+        :compress => true,
+        :max_sitemap_links => SitemapGenerator::MAX_SITEMAP_LINKS,
       )
       options.each_pair { |k, v| instance_variable_set("@#{k}".to_sym, v) }
 
@@ -365,10 +366,6 @@ module SitemapGenerator
     # Return a boolean indicating whether or not to yield the sitemap.
     def yield_sitemap?
       @yield_sitemap.nil? ? SitemapGenerator.yield_sitemap? : !!@yield_sitemap
-    end
-
-    def max_sitemap_links
-      @max_sitemap_links ||= SitemapGenerator::MAX_SITEMAP_LINKS
     end
 
     protected
