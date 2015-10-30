@@ -10,7 +10,7 @@ describe 'SitemapGenerator::S3Adapter', :integration => true do
 
   let(:location) { SitemapGenerator::SitemapLocation.new(:namer => SitemapGenerator::SitemapNamer.new(:sitemap), :public_path => 'tmp/', :sitemaps_path => 'test/', :host => 'http://example.com/') }
   let(:directory) { stub(:files => stub(:create)) }
-  let(:directories) { stub(:directories => stub(:new => directory)) }
+  let(:directories) { stub(:directories => stub(:create => directory)) }
 
   before do
     SitemapGenerator::S3Adapter # eager load
