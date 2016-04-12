@@ -1,7 +1,7 @@
 begin
-  require 'fog'
+  require 'fog/storage'
 rescue LoadError
-  raise LoadError.new("Missing required 'fog'.  Please 'gem install fog' and require it in your application.")
+  raise LoadError.new("Missing required 'fog' or fog provider gem (e.g. 'fog-rackspace').  Please 'gem install fog' and require it in your application.")
 end
 
 module SitemapGenerator
