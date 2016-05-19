@@ -9,7 +9,7 @@ describe "SitemapGenerator" do
        :microform =>
            {
                :title => "Example",
-               :href => "http://www.example.com/my_elemenent_microform.html",
+               :href => "my_elemenent_microform.html",
                :type => "text/html; ext=microforms.org; vocab=schema.org"
            }
     ).to_xml

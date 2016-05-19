@@ -65,7 +65,7 @@ module SitemapGenerator
           :mobile     => options[:mobile],
           :alternates => options[:alternates],
           :pagemap    => options[:pagemap],
-          :microform  => prepare_microform(options[:microform])
+          :microform  => prepare_microform(options[:microform], options[:host])
         )
       end
 
@@ -200,8 +200,9 @@ module SitemapGenerator
         news
       end
 
-      def prepare_microform(microform)
+      def prepare_microform(microform, host)
         SitemapGenerator::Utilities.assert_valid_keys(microform, :title, :href, :type) unless microform.empty?
+        microform[:href] = URI.join(host, microform[:href]).to_s if !microform.empty? && !microform[:href].empty?
         microform
       end
 
