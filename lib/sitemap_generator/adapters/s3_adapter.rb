@@ -15,6 +15,7 @@ module SitemapGenerator
       @fog_region = opts[:fog_region] || ENV['FOG_REGION']
       @fog_path_style = opts[:fog_path_style] || ENV['FOG_PATH_STYLE']
       @fog_storage_options = opts[:fog_storage_options] || {}
+      @fog_key_prefix = opts[:fog_key_prefix] || ""
     end
 
     # Call with a SitemapLocation and string data
@@ -48,8 +49,10 @@ module SitemapGenerator
 
       storage   = Fog::Storage.new(@fog_storage_options.merge(credentials))
       directory = storage.directories.new(:key => @fog_directory)
+
+      key = [@fog_key_prefix, location.path_in_public].join
       directory.files.create(
-        :key    => location.path_in_public,
+        :key    => key, 
         :body   => File.open(temp_file.path),
         :public => true
       )
