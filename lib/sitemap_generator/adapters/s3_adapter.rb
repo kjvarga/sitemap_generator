@@ -19,7 +19,20 @@ module SitemapGenerator
 
     # Call with a SitemapLocation and string data
     def write(location, raw_data)
-      SitemapGenerator::FileAdapter.new.write(location, raw_data)
+
+      # write to a temporary file
+      file_name = File.basename(location.path)
+      temp_file = Tempfile.new(file_name.split('.', 2))
+
+      if location.path.to_s =~ /.gz$/
+        temp_file.binmode
+        gz = Zlib::GzipWriter.new(temp_file)
+        gz.write raw_data
+        gz.close
+      else
+        temp_file.write raw_data
+        temp_file.close
+      end
 
       credentials = { :provider => @fog_provider }
 
@@ -37,9 +50,11 @@ module SitemapGenerator
       directory = storage.directories.new(:key => @fog_directory)
       directory.files.create(
         :key    => location.path_in_public,
-        :body   => File.open(location.path),
+        :body   => File.open(temp_file.path),
         :public => true
       )
+      # delete the temporary file
+      temp_file.unlink
     end
 
   end
