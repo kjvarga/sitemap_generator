@@ -9,16 +9,27 @@ module SitemapGenerator
 
     PATH_OUTPUT_WIDTH = 47 # Character width of the path in the summary lines
 
-    [:host, :adapter].each do |method|
-      define_method(method) do
-        raise SitemapGenerator::SitemapError, "No value set for #{method}" unless self[method]
-        self[method]
-      end
+    def assert_value(key)
+      raise SitemapGenerator::SitemapError, "No value set for #{key}" unless self[key]
+    end
+
+    def assert_slash(key)
+      SitemapGenerator::Utilities.append_slash(self[key])
+    end
+
+    def adapter
+      assert_value(:adapter)
+      self[:adapter]
+    end
+
+    def host
+      assert_value(:host)
+      assert_slash(:host)
     end
 
     [:public_path, :sitemaps_path].each do |method|
       define_method(method) do
-        Pathname.new(SitemapGenerator::Utilities.append_slash(self[method]))
+        Pathname.new(assert_slash(method))
       end
     end
 
