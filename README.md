@@ -369,6 +369,10 @@ _This section needs better documentation.  Please consider contributing._
 
   Uses `carrierwave` to upload to any service supported by CarrierWave.
 
+* `SitemapGenerator::NeverWriteAdapter`
+
+  Exposes sitemap as a string--only use for small sitemaps.
+
 Some documentation exists [on the wiki page][remote_hosts].
 
 Sometimes it is desirable to host your sitemap files on a remote server and point robots
