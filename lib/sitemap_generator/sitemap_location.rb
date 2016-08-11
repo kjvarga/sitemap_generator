@@ -13,7 +13,7 @@ module SitemapGenerator
       raise SitemapGenerator::SitemapError, "No value set for #{key}" unless self[key]
     end
 
-    def assert_slash(key)
+    def append_slash(key)
       SitemapGenerator::Utilities.append_slash(self[key])
     end
 
@@ -24,12 +24,12 @@ module SitemapGenerator
 
     def host
       assert_value(:host)
-      assert_slash(:host)
+      append_slash(:host)
     end
 
     [:public_path, :sitemaps_path].each do |method|
       define_method(method) do
-        Pathname.new(assert_slash(method))
+        Pathname.new(append_slash(method))
       end
     end
 

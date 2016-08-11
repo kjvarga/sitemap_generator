@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SitemapGenerator::SitemapLocation do
-  let(:default_host) { 'http://example.com/' }
+  let(:default_host) { 'http://example.com' }
   let(:location)     { SitemapGenerator::SitemapLocation.new }
 
   it "public_path should default to the public directory in the application root" do
@@ -100,7 +100,7 @@ describe SitemapGenerator::SitemapLocation do
   describe "when duplicated" do
     it "should not inherit some objects" do
       location = SitemapGenerator::SitemapLocation.new(:filename => 'xxx', :host => default_host, :public_path => 'public/')
-      location.url.should == URI.join(default_host, '/xxx').to_s
+      location.url.should == default_host+'/xxx'
       location.public_path.to_s.should == 'public/'
       dup = location.dup
       dup.url.should == location.url
@@ -145,7 +145,7 @@ describe SitemapGenerator::SitemapLocation do
       location = SitemapGenerator::SitemapLocation.new(
           :public_path => 'public/google', :filename => 'xxx',
           :host => default_host, :sitemaps_path => 'sub/dir')
-      location.url.should == URI.join(default_host, '/sub/dir/xxx').to_s
+      location.url.should == default_host + '/sub/dir/xxx'
     end
   end
 

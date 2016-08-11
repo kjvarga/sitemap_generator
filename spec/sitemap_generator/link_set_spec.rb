@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SitemapGenerator::LinkSet do
-  let(:default_host) { 'http://example.com/' }
+  let(:default_host) { 'http://example.com' }
   let(:ls)           { SitemapGenerator::LinkSet.new(:default_host => default_host) }
 
   describe "initializer options" do
@@ -97,8 +97,8 @@ describe SitemapGenerator::LinkSet do
 
   describe "sitemaps url" do
     it "should change when the default_host is changed" do
-      ls.default_host = 'http://one.com/'
-      ls.default_host.should == 'http://one.com/'
+      ls.default_host = 'http://one.com'
+      ls.default_host.should == 'http://one.com'
       ls.default_host.should == ls.sitemap.location.host
       ls.default_host.should == ls.sitemap_index.location.host
     end
@@ -121,7 +121,7 @@ describe SitemapGenerator::LinkSet do
   describe "sitemap_index_url" do
     it "should return the url to the index file" do
       ls.default_host = default_host
-      ls.sitemap_index.location.url.should == URI.join(default_host, "/sitemap.xml.gz").to_s
+      ls.sitemap_index.location.url.should == "#{default_host}/sitemap.xml.gz"
       ls.sitemap_index_url.should == ls.sitemap_index.location.url
     end
   end
@@ -215,7 +215,7 @@ describe SitemapGenerator::LinkSet do
   end
 
   describe "sitemaps host" do
-    let(:new_host) { 'http://wowza.com/' }
+    let(:new_host) { 'http://wowza.com' }
 
     it "should have a host" do
       ls.default_host = default_host
@@ -253,7 +253,7 @@ describe SitemapGenerator::LinkSet do
 
     it "should not modify the index" do
       @ls.sitemaps_host = 'http://newhost.com'
-      @ls.sitemap.location.host.should == 'http://newhost.com/'
+      @ls.sitemap.location.host.should == 'http://newhost.com'
       @ls.sitemap_index.location.host.should == default_host
     end
 
@@ -345,7 +345,7 @@ describe SitemapGenerator::LinkSet do
       end
 
       it "should set the default_host" do
-        host = 'http://defaulthost.com/'
+        host = 'http://defaulthost.com'
         group = ls.group(:default_host => host)
         group.default_host.should == host
         group.sitemap.location.host.should == host
@@ -354,7 +354,7 @@ describe SitemapGenerator::LinkSet do
 
     describe "sitemaps_host" do
       it "should set the sitemaps host" do
-        @host = 'http://sitemaphost.com/'
+        @host = 'http://sitemaphost.com'
         @group = ls.group(:sitemaps_host => @host)
         @group.sitemaps_host.should == @host
         @group.sitemap.location.host.should == @host
@@ -403,7 +403,7 @@ describe SitemapGenerator::LinkSet do
       it "if only default_host is passed" do
         group = ls.group(:default_host => 'http://newhost.com')
         group.sitemap.should == ls.sitemap
-        group.sitemap.location.host.should == 'http://newhost.com/'
+        group.sitemap.location.host.should == 'http://newhost.com'
       end
     end
 
@@ -512,14 +512,14 @@ describe SitemapGenerator::LinkSet do
     end
 
     it "should set the default_host" do
-      host = 'http://defaulthost.com/'
+      host = 'http://defaulthost.com'
       ls.create(:default_host => host)
       ls.default_host.should == host
       ls.sitemap.location.host.should == host
     end
 
     it "should set the sitemaps host" do
-      host = 'http://sitemaphost.com/'
+      host = 'http://sitemaphost.com'
       ls.create(:sitemaps_host => host)
       ls.sitemaps_host.should == host
       ls.sitemap.location.host.should == host
@@ -590,7 +590,7 @@ describe SitemapGenerator::LinkSet do
   end
 
   describe "include_index?" do
-    let(:sitemaps_host)  { 'http://amazon.com/' }
+    let(:sitemaps_host)  { 'http://amazon.com' }
 
     it "should be true if no sitemaps_host set, or it is the same" do
       ls.include_index = true
