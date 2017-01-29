@@ -108,6 +108,10 @@ module SitemapGenerator
     #     * `false` - Boolean; write out only uncompressed files.
     #     * `:all_but_first` - Symbol; leave the first file uncompressed but compress any remaining files.
     #
+    # * <tt>:append</tt> - If true the linkset will have to be finalized manually with a `finalize_sitemap!`.
+    #   call. This is useful when you are dynamcally adding new links to the group in loop and don't want
+    #   the group's file to be overwritten on each iteration.
+    #
     #   The compression setting applies to groups too.  So :all_but_first will have the same effect (the first
     #   file in the group will not be compressed, the rest will).  So if you require different behaviour for your
     #   groups, pass in a `:compress` option e.g. <tt>group(:compress => false) { add('/link') }</tt>
@@ -124,7 +128,8 @@ module SitemapGenerator
           :bing           => "http://www.bing.com/ping?sitemap=%s"
         },
         :create_index => :auto,
-        :compress => true
+        :compress => true,
+        :append => false
       )
       options.each_pair { |k, v| instance_variable_set("@#{k}".to_sym, v) }
 
@@ -200,7 +205,7 @@ module SitemapGenerator
       elsif original_opts.key?(:sitemaps_host) && (@@new_location_opts & original_opts.keys).empty?
         # If no location options are provided we are creating the next sitemap in the
         # current series, so finalize and inherit the namer.
-        finalize_sitemap!
+        finalize_sitemap! unless opts[:append]
         original_opts[:namer] = namer
       end
 
@@ -231,7 +236,7 @@ module SitemapGenerator
 
         if block_given?
           @group.interpreter.eval(:yield_sitemap => @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
-          @group.finalize_sitemap!
+          @group.finalize_sitemap! unless opts[:append]
         end
       end
       @group
@@ -367,6 +372,26 @@ module SitemapGenerator
       @yield_sitemap.nil? ? SitemapGenerator.yield_sitemap? : !!@yield_sitemap
     end
 
+    # Finalize a sitemap by including it in the index and outputting a summary line.
+    # Do nothing if it has already been finalized.
+    #
+    # Don't finalize if the sitemap is empty.
+    #
+    # Add the default links if they have not been added yet and no groups have been created.
+    # If the default links haven't been added we know that the sitemap is empty,
+    # because they are added on the first call to add().  This ensure that if the
+    # block passed to create() is empty the default links are still included in the
+    # sitemap.
+    def finalize_sitemap!
+      return if sitemap.finalized? || sitemap.empty? && @created_group
+      add_default_links if !@added_default_links && !@created_group
+      # This will finalize it.  We add to the index even if not creating an index because
+      # the index keeps track of how many links are in our sitemaps and we need this info
+      # for the summary line.  Also the index determines which file gets the first name
+      # so everything has to go via the index.
+      add_to_index(sitemap) unless sitemap.empty?
+    end
+
     protected
 
     # Set each option on this instance using accessor methods.  This will affect
@@ -432,26 +457,6 @@ module SitemapGenerator
         sitemap.add(sitemap_index, :lastmod => Time.now, :changefreq => 'always', :priority => 1.0)
       end
       @added_default_links = true
-    end
-
-    # Finalize a sitemap by including it in the index and outputting a summary line.
-    # Do nothing if it has already been finalized.
-    #
-    # Don't finalize if the sitemap is empty.
-    #
-    # Add the default links if they have not been added yet and no groups have been created.
-    # If the default links haven't been added we know that the sitemap is empty,
-    # because they are added on the first call to add().  This ensure that if the
-    # block passed to create() is empty the default links are still included in the
-    # sitemap.
-    def finalize_sitemap!
-      return if sitemap.finalized? || sitemap.empty? && @created_group
-      add_default_links if !@added_default_links && !@created_group
-      # This will finalize it.  We add to the index even if not creating an index because
-      # the index keeps track of how many links are in our sitemaps and we need this info
-      # for the summary line.  Also the index determines which file gets the first name
-      # so everything has to go via the index.
-      add_to_index(sitemap) unless sitemap.empty?
     end
 
     # Finalize a sitemap index and output a summary line.  Do nothing if it has already
