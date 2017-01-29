@@ -1110,7 +1110,9 @@ Tested and working on:
 
 ## Known Bugs
 
+
 * There's no check on the size of a URL which [isn't supposed to exceed 2,048 bytes][sitemaps_xml].
+* There's no thread safety support, so apporaches like spliting the sitemap generation across multiple concurrent jobs will randomly crash and produce unexpected behaviour. 
 * Currently only supports one Sitemap Index file, which can contain 50,000 Sitemap files which can each contain 50,000 urls, so it _only_ supports up to 2,500,000,000 (2.5 billion) urls.
 
 
