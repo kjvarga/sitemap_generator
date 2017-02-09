@@ -32,6 +32,8 @@ module SitemapGenerator
     # the sitemaps may be overwritten.
     def create(opts={}, &block)
       reset!
+      exclude_keys = opts.delete(:exclude_keys) || []
+      @schemas= SitemapGenerator::SCHEMAS.reject{ |k, v| exclude_keys.include? k }
       set_options(opts)
       if verbose
         start_time = Time.now
@@ -310,7 +312,8 @@ module SitemapGenerator
 
     # Lazy-initialize a sitemap instance and return it.
     def sitemap
-      @sitemap ||= SitemapGenerator::Builder::SitemapFile.new(sitemap_location)
+      @sitemap ||= SitemapGenerator::Builder::SitemapFile.new(sitemap_location,
+                                                              schemas)
     end
 
     # Lazy-initialize a sitemap index instance and return it.
@@ -362,6 +365,10 @@ module SitemapGenerator
       @verbose
     end
 
+    def schemas
+      @schemas || SCHEMAS
+    end
+
     # Return a boolean indicating whether or not to yield the sitemap.
     def yield_sitemap?
       @yield_sitemap.nil? ? SitemapGenerator.yield_sitemap? : !!@yield_sitemap
@@ -411,7 +418,8 @@ module SitemapGenerator
         :default_host,
         :adapter,
         :create_index,
-        :compress
+        :compress,
+        :schemas
       ].inject({}) do |hash, key|
         if !(value = instance_variable_get(:"@#{key}")).nil?
           hash[key] = value
@@ -654,3 +662,4 @@ module SitemapGenerator
     include LocationHelpers
   end
 end
+
