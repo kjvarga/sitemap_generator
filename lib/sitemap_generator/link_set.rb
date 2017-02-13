@@ -8,7 +8,7 @@ module SitemapGenerator
     @@new_location_opts = [:filename, :sitemaps_path, :namer]
 
     attr_reader :default_host, :sitemaps_path, :filename, :create_index
-    attr_accessor :include_root, :include_index, :adapter, :yield_sitemap
+    attr_accessor :include_root, :include_index, :adapter, :yield_sitemap, :max_sitemap_links
     attr_writer :verbose
 
     # Create a new sitemap index and sitemap files.  Pass a block with calls to the following
@@ -124,7 +124,8 @@ module SitemapGenerator
           :bing           => "http://www.bing.com/ping?sitemap=%s"
         },
         :create_index => :auto,
-        :compress => true
+        :compress => true,
+        :max_sitemap_links => SitemapGenerator::MAX_SITEMAP_LINKS,
       )
       options.each_pair { |k, v| instance_variable_set("@#{k}".to_sym, v) }
 
@@ -570,7 +571,8 @@ module SitemapGenerator
           :sitemaps_path => @sitemaps_path,
           :adapter => @adapter,
           :verbose => verbose,
-          :compress => @compress
+          :compress => @compress,
+          :max_sitemap_links => max_sitemap_links,
         )
       end
 

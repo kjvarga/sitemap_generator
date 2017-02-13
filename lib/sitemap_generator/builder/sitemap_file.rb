@@ -67,7 +67,7 @@ module SitemapGenerator
       # bytesize will be calculated for you.
       def file_can_fit?(bytes)
         bytes = bytes.is_a?(String) ? SitemapGenerator::Utilities.bytesize(bytes) : bytes
-        (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < SitemapGenerator::MAX_SITEMAP_LINKS && @news_count < SitemapGenerator::MAX_SITEMAP_NEWS
+        (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < location[:max_sitemap_links] && @news_count < SitemapGenerator::MAX_SITEMAP_NEWS
       end
 
       # Add a link to the sitemap file.
