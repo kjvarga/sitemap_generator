@@ -30,6 +30,7 @@ module SitemapGenerator
       # * +mobile+
       # * +alternate+/+alternates+
       # * +pagemap+
+      # * +microform+
       def initialize(path, options={})
         options = SitemapGenerator::Utilities.symbolize_keys(options)
         if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
@@ -37,8 +38,8 @@ module SitemapGenerator
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates, :pagemap)
-        SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false, :alternates => [])
+        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :geo, :news, :videos, :mobile, :alternate, :alternates, :pagemap, :microform)
+        SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false, :alternates => [], :microform => {})
         raise "Cannot generate a url without a host" unless SitemapGenerator::Utilities.present?(options[:host])
 
         if video = options.delete(:video)
@@ -63,7 +64,8 @@ module SitemapGenerator
           :geo        => options[:geo],
           :mobile     => options[:mobile],
           :alternates => options[:alternates],
-          :pagemap    => options[:pagemap]
+          :pagemap    => options[:pagemap],
+          :microform  => prepare_microform(options[:microform], options[:host])
         )
       end
 
@@ -164,6 +166,17 @@ module SitemapGenerator
               end
             end
           end
+
+          unless SitemapGenerator::Utilities.blank?(self[:microform])
+            data = self[:microform]
+            rel = 'alternate'
+            attributes = { :rel => rel }
+            attributes[:href] = data[:href].to_s if SitemapGenerator::Utilities.present?(data[:href])
+            attributes[:title] = data[:title].to_s if SitemapGenerator::Utilities.present?(data[:title])
+            attributes[:type] = data[:type].to_s if SitemapGenerator::Utilities.present?(data[:type])
+            builder.xhtml :link, attributes
+          end
+
         end
         builder << '' # Force to string
       end
@@ -185,6 +198,12 @@ module SitemapGenerator
       def prepare_news(news)
         SitemapGenerator::Utilities.assert_valid_keys(news, :publication_name, :publication_language, :publication_date, :genres, :access, :title, :keywords, :stock_tickers) unless news.empty?
         news
+      end
+
+      def prepare_microform(microform, host)
+        SitemapGenerator::Utilities.assert_valid_keys(microform, :title, :href, :type) unless microform.empty?
+        microform[:href] = URI.join(host, microform[:href]).to_s if !microform.empty? && !microform[:href].empty?
+        microform
       end
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
