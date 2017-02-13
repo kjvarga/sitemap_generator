@@ -3,7 +3,8 @@ require 'spec_helper'
 describe SitemapGenerator::Application do
   before :all do
     SitemapGenerator::Utilities.with_warnings(nil) do
-      Object.const_set(:Rails, Object.new)
+      Object.const_set(:Rails, Object)
+      Object::Rails.const_set(:Railtie, Object)
     end
   end
 

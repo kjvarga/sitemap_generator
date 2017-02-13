@@ -3,7 +3,7 @@ require 'pathname'
 module SitemapGenerator
   class Application
     def rails?
-      defined?(Rails)
+      defined?(Rails::Railtie)
     end
 
     # Returns a boolean indicating whether this environment is Rails 3
