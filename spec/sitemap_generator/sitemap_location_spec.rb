@@ -35,6 +35,11 @@ describe SitemapGenerator::SitemapLocation do
     }.should raise_error
   end
 
+  it "should append slash to host" do
+    location = SitemapGenerator::SitemapLocation.new(:filename => nil, :namer => nil, :host => "http://www.slash.com")
+    location.host.should == "http://www.slash.com/"
+  end
+
   it "should accept a Namer option" do
     @namer = SitemapGenerator::SimpleNamer.new(:xxx)
     location = SitemapGenerator::SitemapLocation.new(:namer => @namer)
