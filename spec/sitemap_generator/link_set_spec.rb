@@ -314,6 +314,24 @@ describe SitemapGenerator::LinkSet do
       end
     end
 
+    describe "append" do
+      context "when passing a host without block" do
+        it "should set the value" do
+          @host = 'http://sitemaphost.com'
+
+          ls.expects(:finalize_sitemap!).never
+          ls.group(:sitemaps_host => @host, :append => true)
+        end
+      end
+
+      context "when passing a host with a block" do
+        it "should set the value" do
+          ls.expects(:finalize_sitemap!).never
+          ls.group(:sitemaps_host => 'http://test.com', :append => true) {}
+        end
+      end
+    end
+
     describe "verbose" do
       it "should inherit the value" do
         ls.group.verbose.should == ls.verbose
