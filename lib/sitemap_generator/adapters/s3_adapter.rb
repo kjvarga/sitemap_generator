@@ -34,7 +34,7 @@ module SitemapGenerator
       credentials[:path_style] = @fog_path_style if @fog_path_style
 
       storage   = Fog::Storage.new(@fog_storage_options.merge(credentials))
-      directory = storage.directories.new(:key => @fog_directory)
+      directory = storage.directories.create(:key => @fog_directory)
       directory.files.create(
         :key    => location.path_in_public,
         :body   => File.open(location.path),
