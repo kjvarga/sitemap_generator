@@ -1,7 +1,11 @@
-begin
-  require 'fog'
-rescue LoadError
-  raise LoadError.new("Missing required 'fog'.  Please 'gem install fog' and require it in your application.")
+# any number of storage method sub-gems, ex. fog-rackspace, could define this without
+# requiring the whole (large) fog project. If not, though, try loading everything.
+if !defined?(Fog::Storage)
+  begin
+    require 'fog'
+  rescue LoadError
+    raise LoadError.new("Missing required 'fog'.  Please 'gem install fog' and require it in your application.")
+  end
 end
 
 module SitemapGenerator
