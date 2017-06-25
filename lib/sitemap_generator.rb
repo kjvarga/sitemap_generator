@@ -11,6 +11,7 @@ module SitemapGenerator
   autoload(:FileAdapter,   'sitemap_generator/adapters/file_adapter')
   autoload(:S3Adapter,     'sitemap_generator/adapters/s3_adapter')
   autoload(:AwsSdkAdapter, 'sitemap_generator/adapters/aws_sdk_adapter')
+  autoload(:AwsSdkV1Adapter, 'sitemap_generator/adapters/aws_sdk_v1_adapter')
   autoload(:WaveAdapter,   'sitemap_generator/adapters/wave_adapter')
   autoload(:FogAdapter,    'sitemap_generator/adapters/fog_adapter')
   autoload(:BigDecimal,    'sitemap_generator/core_ext/big_decimal')
