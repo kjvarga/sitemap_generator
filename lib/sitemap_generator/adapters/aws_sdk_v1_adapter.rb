@@ -8,7 +8,7 @@ end
 
 module SitemapGenerator
   # Class for uploading the sitemaps to an S3 bucket using the plain AWS SDK gem
-  class AwsSdkAdapter
+  class AwsSdkV1Adapter
     # @param [String] bucket name of the S3 bucket
     # @param [Hash]   opts   alternate means of configuration other than ENV
     # @option opts  [String] :aws_access_key_id instead of ENV['AWS_ACCESS_KEY_ID']
