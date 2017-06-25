@@ -1,5 +1,5 @@
 begin
-  require 'aws'
+  require 'aws-sdk-v1'
 rescue LoadError
   raise LoadError.new("Missing required 'aws-sdk'.  Please 'gem install "\
                       "aws-sdk' and require it in your application, or "\
