@@ -1,9 +1,9 @@
 begin
   require 'aws-sdk-v1'
 rescue LoadError
-  raise LoadError.new("Missing required 'aws-sdk'.  Please 'gem install "\
-                      "aws-sdk' and require it in your application, or "\
-                      "add: gem 'aws-sdk' to your Gemfile.")
+  raise LoadError.new("Missing required 'aws-sdk-v1'.  Please 'gem install "\
+                      "aws-sdk-v1' and require it in your application, or "\
+                      "add: gem 'aws-sdk-v1' to your Gemfile.")
 end
 
 module SitemapGenerator
@@ -12,14 +12,12 @@ module SitemapGenerator
     # @param [String] bucket name of the S3 bucket
     # @param [Hash]   opts   alternate means of configuration other than ENV
     # @option opts  [String] :aws_access_key_id instead of ENV['AWS_ACCESS_KEY_ID']
-    # @option opts  [String] :aws_region instead of ENV['AWS_REGION']
     # @option opts  [String] :aws_secret_access_key instead of ENV['AWS_SECRET_ACCESS_KEY']
     # @option opts  [String] :path use this prefix on the object key instead of 'sitemaps/'
     def initialize(bucket, opts = {})
       @bucket = bucket
 
       @aws_access_key_id = opts[:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID']
-      @aws_region = opts[:aws_region] || ENV['AWS_REGION']
       @aws_secret_access_key = opts[:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
 
       @path = opts[:path] || 'sitemaps/'
