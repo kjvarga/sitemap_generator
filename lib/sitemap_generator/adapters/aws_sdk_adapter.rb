@@ -1,9 +1,9 @@
 begin
-  require 'aws-sdk'
+  require 'aws-sdk-s3'
 rescue LoadError
-  raise LoadError.new("Missing required 'aws-sdk'.  Please 'gem install "\
-                      "aws-sdk' and require it in your application, or "\
-                      "add: gem 'aws-sdk' to your Gemfile.")
+  raise LoadError.new("Missing required aws-sdk-s3.  Please 'gem install "\
+                      "aws-sdk-s3 and require it in your application, or "\
+                      "add: gem gem 'aws-sdk-s3' to your Gemfile.")
 end
 
 module SitemapGenerator

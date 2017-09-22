@@ -340,7 +340,7 @@ _This section needs better documentation.  Please consider contributing._
 
 * `SitemapGenerator::AwsSdkAdapter`
 
-  Uses `aws-sdk` to upload to Amazon S3 storage.
+  Uses AWS SDK (gems aws-sdk-core aws-sdk-s3) to upload to Amazon S3 storage.
 
 * `SitemapGenerator::WaveAdapter`
 
