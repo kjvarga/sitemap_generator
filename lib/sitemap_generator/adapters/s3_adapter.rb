@@ -23,11 +23,25 @@ module SitemapGenerator
       @fog_region = opts[:fog_region] || ENV['FOG_REGION']
       @fog_path_style = opts[:fog_path_style] || ENV['FOG_PATH_STYLE']
       @fog_storage_options = opts[:fog_storage_options] || {}
+      @fog_key_prefix = opts[:fog_key_prefix] || ""
     end
 
     # Call with a SitemapLocation and string data
     def write(location, raw_data)
-      SitemapGenerator::FileAdapter.new.write(location, raw_data)
+
+      # write to a temporary file
+      file_name = File.basename(location.path)
+      temp_file = Tempfile.new(file_name.split('.', 2))
+
+      if location.path.to_s =~ /.gz$/
+        temp_file.binmode
+        gz = Zlib::GzipWriter.new(temp_file)
+        gz.write raw_data
+        gz.close
+      else
+        temp_file.write raw_data
+        temp_file.close
+      end
 
       credentials = { :provider => @fog_provider }
 
@@ -43,11 +57,15 @@ module SitemapGenerator
 
       storage   = Fog::Storage.new(@fog_storage_options.merge(credentials))
       directory = storage.directories.new(:key => @fog_directory)
+
+      key = [@fog_key_prefix, location.path_in_public].join
       directory.files.create(
-        :key    => location.path_in_public,
-        :body   => File.open(location.path),
+        :key    => key, 
+        :body   => File.open(temp_file.path),
         :public => true
       )
+      # delete the temporary file
+      temp_file.unlink
     end
 
   end
