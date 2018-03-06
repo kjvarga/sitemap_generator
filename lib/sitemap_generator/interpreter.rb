@@ -9,6 +9,10 @@ module SitemapGenerator
     if SitemapGenerator.app.is_at_least_rails3?
       if !::Rails.application.nil?
         include ::Rails.application.routes.url_helpers
+        unless ::Webpacker.instance.nil?
+          include ::ActionView::Helpers::AssetUrlHelper
+          include ::Webpacker::Helper
+        end
       end
     elsif SitemapGenerator.app.is_rails?
       require 'action_controller'
