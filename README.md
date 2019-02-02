@@ -387,9 +387,9 @@ directory.
   SitemapGenerator::Sitemap.sitemaps_host = 'https://example.blob.core.windows.net/'
   SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AzureAdapter.new(
-    azure_storage_account_name: Rails.application.credentials.dig(:azure_storage, :storage_account_name),
-    azure_storage_access_key: Rails.application.credentials.dig(:azure_storage, :storage_access_key),
-    azure_storage_sitemaps_container: Rails.application.credentials.dig(:azure_storage, :sitemaps_container)
+    azure_storage_account_name: [your-account-name],
+    azure_storage_access_key: [your-access-key],
+    azure_storage_sitemaps_container: [your-container-name]
   )
   ```
 
