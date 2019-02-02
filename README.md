@@ -374,6 +374,25 @@ directory.
 
   Some documentation exists [on the wiki page][remote_hosts].
 
+* `SitemapGenerator::AzureAdapter`
+
+  Uses `Azure::Storage::Blob` to upload to Azure blob storage.
+
+  You must `require 'azure/storage/blob'` in your sitemap config before using this adapter.
+
+  An example of using this adapter in your sitemap configuration:
+
+  ```ruby
+  SitemapGenerator::Sitemap.default_host = 'https://example.com'
+  SitemapGenerator::Sitemap.sitemaps_host = 'https://example.blob.core.windows.net/'
+  SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+  SitemapGenerator::Sitemap.adapter = SitemapGenerator::AzureAdapter.new(
+    azure_storage_account_name: Rails.application.credentials.dig(:azure_storage, :storage_account_name),
+    azure_storage_access_key: Rails.application.credentials.dig(:azure_storage, :storage_access_key),
+    azure_storage_sitemaps_container: Rails.application.credentials.dig(:azure_storage, :sitemaps_container)
+  )
+  ```
+
 #### An Example of Using an Adapter
 
 1. Please see [this wiki page][remote_hosts] for more information about setting up SitemapGenerator to upload to a

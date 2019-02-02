@@ -13,6 +13,7 @@ module SitemapGenerator
   autoload(:AwsSdkAdapter, 'sitemap_generator/adapters/aws_sdk_adapter')
   autoload(:WaveAdapter,   'sitemap_generator/adapters/wave_adapter')
   autoload(:FogAdapter,    'sitemap_generator/adapters/fog_adapter')
+  autoload(:AzureAdapter,  'sitemap_generator/adapters/azure_adapter')
   autoload(:BigDecimal,    'sitemap_generator/core_ext/big_decimal')
   autoload(:Numeric,       'sitemap_generator/core_ext/numeric')
 
