@@ -283,6 +283,21 @@ sitemap:refresh  #Create sitemaps and ping search engines
 sitemap:clean    #Clean up sitemaps in the sitemap path
 ```
 
+Let's say, you have `namespace :deploy` in your `config/deploy.rb` file, then you can create a simple task which refreshes the sitemap on every deploy:
+```ruby
+namespace :deploy do
+  ...
+  desc 'Create new sitemap and ping search engines'
+  task :refresh_sitemap do
+    on roles(:app) do
+      invoke 'sitemap:refresh'
+    end
+  end
+  
+  after  :finishing,   :refresh_sitemap
+end
+```
+
   **Generate sitemaps into a directory which is shared by all deployments.**
 
   You can set your sitemaps path to your shared directory using the `sitemaps_path` option.  For example if we have a directory `public/shared/` that is shared by all deployments we can have our sitemaps generated into that directory by setting:
