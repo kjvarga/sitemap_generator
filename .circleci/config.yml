@@ -2,12 +2,36 @@
 version: 2.1
 # Use a package of configuration called an orb.
 orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
+  ruby: circleci/ruby@1.0.5
+
+jobs:
+  build:
+    docker:
+      - image: cimg/ruby:2.7.1-node
+      - image: circleci/postgres:9.5-alpine # database image
+    environment:
+      BUNDLE_JOBS: '3'
+      BUNDLE_RETRY: '3'
+      RAILS_ENV: test
+    steps:
+      - checkout
+      # We don't have Gemfile.lock in the VCS so remove the cache
+      # error computing cache key: template: cacheKey:1:11: executing "cacheKey" at <checksum "./Gemfile.lock">: error calling checksum: open /home/circleci/project/Gemfile.lock: no such file or director
+      - run:
+          name: Touch a fake Gemfile.lock for passing the test
+          command: |
+            touch Gemfile.lock
+      - ruby/install-deps:
+          bundler-version: 2.1.0
+          with-cache: false
+      - run:
+          command: 'dockerize -wait tcp://localhost:5432 -timeout 1m'
+          name: Wait for DB
+      - ruby/rspec-test
+
 # Orchestrate or schedule a set of jobs
 workflows:
-  # Name the workflow "welcome"
-  welcome:
+  build_and_test:
     # Run the welcome/run job in its own container
     jobs:
-      - welcome/run
+      - build
