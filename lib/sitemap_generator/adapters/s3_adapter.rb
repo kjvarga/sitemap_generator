@@ -24,6 +24,7 @@ module SitemapGenerator
       @fog_region = opts[:fog_region] || ENV['FOG_REGION']
       @fog_path_style = opts[:fog_path_style] || ENV['FOG_PATH_STYLE']
       @fog_storage_options = opts[:fog_storage_options] || {}
+      @fog_public = opts[:fog_public].to_s.present? ? opts[:fog_public] : true
     end
 
     # Call with a SitemapLocation and string data
@@ -47,7 +48,7 @@ module SitemapGenerator
       directory.files.create(
         :key    => location.path_in_public,
         :body   => File.open(location.path),
-        :public => true
+        :public => @fog_public
       )
     end
   end
