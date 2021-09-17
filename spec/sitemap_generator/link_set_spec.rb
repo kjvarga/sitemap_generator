@@ -182,8 +182,10 @@ describe SitemapGenerator::LinkSet do
       request = stub_request(:get, /^http:\/\/newnegine\.com\?/)
       ls.ping_search_engines(:newengine => 'http://newnegine.com?%s')
       expect(request).to have_been_requested
-
-      # WebMock.reset_executed_requests!
+      WebMock.reset!
+      stub_request(:get, "http://newnegine.com/?http://example.com/sitemap.xml.gz").
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => "", :headers => {})
       ls.ping_search_engines(:newengine => 'http://newnegine.com?%s', :anotherengine => 'http://newnegine.com?%s')
       expect(request).to have_been_requested.twice
     end
