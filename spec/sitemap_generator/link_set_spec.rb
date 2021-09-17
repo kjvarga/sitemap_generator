@@ -183,7 +183,7 @@ describe SitemapGenerator::LinkSet do
       ls.ping_search_engines(:newengine => 'http://newnegine.com?%s')
       expect(request).to have_been_requested
 
-      WebMock.reset_executed_requests!
+      # WebMock.reset_executed_requests!
       ls.ping_search_engines(:newengine => 'http://newnegine.com?%s', :anotherengine => 'http://newnegine.com?%s')
       expect(request).to have_been_requested.twice
     end

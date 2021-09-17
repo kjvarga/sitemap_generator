@@ -126,13 +126,13 @@ module SitemapGenerator
             digits, rounded_number = 1, 0
           else
             digits = (Math.log10(number.abs) + 1).floor
-            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10 ** (digits - precision)).to_f.to_s)).round.to_f * 10 ** (digits - precision)
+            rounded_number = (BigDecimal(number.to_s) / BigDecimal((10 ** (digits - precision)).to_f.to_s)).round.to_f * 10 ** (digits - precision)
             digits = (Math.log10(rounded_number.abs) + 1).floor # After rounding, the number of digits may have changed
           end
           precision = precision - digits
           precision = precision > 0 ? precision : 0  #don't let it be negative
         else
-          rounded_number = SitemapGenerator::Utilities.round(SitemapGenerator::BigDecimal.new(number.to_s), precision).to_f
+          rounded_number = SitemapGenerator::Utilities.round(BigDecimal(number.to_s), precision).to_f
         end
         formatted_number = number_with_delimiter("%01.#{precision}f" % rounded_number, options)
         if strip_insignificant_zeros
