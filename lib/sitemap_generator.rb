@@ -82,6 +82,8 @@ module SitemapGenerator
   self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../'))  # Root of the install dir, not the Rails app
   self.templates = SitemapGenerator::Templates.new(self.root)
   self.app       = SitemapGenerator::Application.new
+
+  DEFAULT_CHANGEFREQ = 'monthly'.freeze
 end
 
 require 'sitemap_generator/railtie' if SitemapGenerator.app.is_at_least_rails3?

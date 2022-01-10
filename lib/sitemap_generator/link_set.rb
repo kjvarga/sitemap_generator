@@ -438,7 +438,7 @@ module SitemapGenerator
     # in an instance variable.
     def add_default_links
       @added_default_links = true
-      link_options = { :lastmod => Time.now, :changefreq => 'always', :priority => 1.0 }
+      link_options = { :lastmod => Time.now, :changefreq => DEFAULT_CHANGEFREQ, :priority => 1.0 }
       if include_root?
         add('/', link_options)
       end
