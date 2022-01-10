@@ -121,7 +121,7 @@ Successful ping of Bing
       - [Example](#example-4)
       - [Supported options](#supported-options-4)
       - [Alternates Example](#alternates-example)
-    - [<a name="internal_mobile"></a> Mobile Sitemaps](#-mobile-sitemaps)
+    - [Mobile Sitemaps](#mobile-sitemaps)
       - [Example](#example-5)
       - [Supported options](#supported-options-5)
   - [Compatibility](#compatibility)
@@ -1141,7 +1141,7 @@ SitemapGenerator::Sitemap.create do
 end
 ```
 
-### <a name="internal_mobile"></a> Mobile Sitemaps
+### Mobile Sitemaps
 
 Mobile sitemaps include a specific `<mobile:mobile/>` tag.
 
