@@ -465,8 +465,7 @@ directory.
     Note that SitemapGenerator will automatically turn off `include_index` in this case because
     the `sitemaps_host` does not match the `default_host`.  The link to the sitemap index file
     that would otherwise be included would point to a different host than the rest of the links
-    in the sitemap, something that the sitemap rules forbid.  (Since version 3.2 this is no
-    longer an issue because [`include_index` is off by default][include_index_change].)
+    in the sitemap, something that the sitemap rules forbid.
 
 4. Verify to Google that you own the S3 url
 
@@ -576,7 +575,7 @@ In /Users/karl/projects/sitemap_generator-test/public/
 Sitemap stats: 2 links / 1 sitemaps / 0m00s
 ```
 
-Weird!  The sitemap has two links, even though we only added one!  This is because SitemapGenerator adds the root URL `/` for you by default.  (Note that prior to version 3.2 the  URL of the sitemap index file was also added to the sitemap by default but [this behaviour has been changed][include_index_change] because of Google complaining about nested indexing.  This also doesn't make sense anymore because indexes are not always needed.)  You can change the default behaviour by setting the `include_root` or `include_index` option.
+Weird!  The sitemap has two links, even though we only added one!  This is because SitemapGenerator adds the root URL `/` for you by default.  You can change the default behaviour by setting the `include_root` or `include_index` option.
 
 Now let's take a look at the file that was created.  After uncompressing and XML-tidying the contents we have:
 
@@ -589,7 +588,7 @@ Now let's take a look at the file that was created.  After uncompressing and XML
   <url>
     <loc>http://www.example.com/</loc>
     <lastmod>2011-05-21T00:03:38+00:00</lastmod>
-    <changefreq>always</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
@@ -1188,7 +1187,6 @@ Copyright (c) Karl Varga released under the MIT license
 [image_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=178636
 [news_tags]:http://www.google.com/support/news_pub/bin/answer.py?answer=74288
 [remote_hosts]:https://github.com/kjvarga/sitemap_generator/wiki/Generate-Sitemaps-on-read-only-filesystems-like-Heroku
-[include_index_change]:https://github.com/kjvarga/sitemap_generator/issues/70
 [ehoch]:https://github.com/ehoch
 [alternate_links]:http://support.google.com/webmasters/bin/answer.py?hl=en&answer=2620865
 [using_pagemaps]:https://developers.google.com/custom-search/docs/structured_data#pagemaps
