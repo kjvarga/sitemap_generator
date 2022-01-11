@@ -1,5 +1,5 @@
 if !defined?(::CarrierWave::Uploader::Base)
-  raise "Error: `CarrierWave::Uploader::Base` is not defined.\n\n"\
+  raise LoadError, "Error: `CarrierWave::Uploader::Base` is not defined.\n\n"\
         "Please `require 'carrierwave'` - or another library that defines this class."
 end
 

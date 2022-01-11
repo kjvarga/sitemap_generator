@@ -1,0 +1,11 @@
+source "https://rubygems.org"
+
+ruby ">= 2.7.0"
+
+gem "nokogiri"
+gem "rspec_junit_formatter"
+gem "sitemap_generator", path: "../../../"
+gem "sqlite3"
+gem "combustion"
+gem "rails", "~> 7.0"
+gem "rspec-rails"

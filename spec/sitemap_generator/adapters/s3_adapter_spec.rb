@@ -24,12 +24,19 @@ describe SitemapGenerator::S3Adapter do
     )
   end
 
-  before do
-    SitemapGenerator::S3Adapter # eager load
-    expect(Fog::Storage).to receive(:new).and_return(directories)
+  context 'when Fog::Storage is not defined' do
+    it 'raises a LoadError' do
+      hide_const('Fog::Storage')
+      expect do
+        load File.expand_path('./lib/sitemap_generator/adapters/s3_adapter.rb')
+      end.to raise_error(LoadError, /Error: `Fog::Storage` is not defined./)
+    end
   end
 
-  it 'should create the file in S3 with a single operation' do
-    subject.write(location, 'payload')
+  describe 'write' do
+    it 'creates the file in S3 with a single operation' do
+      expect(Fog::Storage).to receive(:new).and_return(directories)
+      subject.write(location, 'payload')
+    end
   end
 end

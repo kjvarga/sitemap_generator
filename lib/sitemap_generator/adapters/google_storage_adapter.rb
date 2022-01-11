@@ -1,5 +1,5 @@
 if !defined?(Google::Cloud::Storage)
-  raise "Error: `Google::Cloud::Storage` is not defined.\n\n"\
+  raise LoadError, "Error: `Google::Cloud::Storage` is not defined.\n\n"\
         "Please `require 'google/cloud/storage'` - or another library that defines this class."
 end
 
@@ -29,7 +29,7 @@ module SitemapGenerator
     def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
-      storage = Google::Cloud::Storage.new(@storage_options)
+      storage = Google::Cloud::Storage.new(**@storage_options)
       bucket = storage.bucket(@bucket)
       bucket.create_file(location.path, location.path_in_public, acl: 'public')
     end

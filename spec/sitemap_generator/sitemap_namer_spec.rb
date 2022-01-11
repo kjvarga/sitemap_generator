@@ -43,7 +43,8 @@ describe SitemapGenerator::SimpleNamer do
   it 'should raise if already at the start' do
     namer = SitemapGenerator::SimpleNamer.new(:sitemap)
     expect(namer.to_s).to eq('sitemap.xml.gz')
-    expect { namer.previous }.to raise_error(NameError, 'Already at the start of the series')
+    # Use a regex because in Ruby 3.1 the error message includes newlines and the first line of backtrace
+    expect { namer.previous }.to raise_error(NameError, /Already at the start of the series/)
   end
 
   it 'should handle names with underscores' do

@@ -1,0 +1,15 @@
+source "https://rubygems.org"
+
+ruby "< 3.0.0"
+
+if RUBY_VERSION =~ /2.5.*/
+  gem 'nokogiri', '1.12.5'
+else
+  gem "nokogiri"
+end
+gem "rspec_junit_formatter"
+gem "sitemap_generator", path: "../../../"
+gem "sqlite3"
+gem "combustion"
+gem "rails", "~> 6.0"
+gem "rspec-rails"
