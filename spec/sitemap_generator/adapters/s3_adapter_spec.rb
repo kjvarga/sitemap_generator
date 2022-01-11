@@ -83,6 +83,11 @@ describe SitemapGenerator::S3Adapter do
   describe 'write' do
     it 'creates the file in S3 with a single operation' do
       expect(Fog::Storage).to receive(:new).and_return(directories)
+      expect(directory.files).to receive(:create).with(
+        body: instance_of(File),
+        key: 'test/sitemap.xml.gz',
+        public: false,
+      )
       adapter.write(location, 'payload')
     end
   end
