@@ -373,6 +373,8 @@ directory.
 * `fog_storage_options` [Hash] Other options to pass to `Fog::Storage`
 * `fog_public` [Boolean] Whether the file is publicly accessible
 
+Alternatively you can use an environment variable to configure each option (except `fog_storage_options`).  The environment variables have the same
+name but capitalized, e.g. `FOG_PATH_STYLE`.
 
 ##### `SitemapGenerator::AwsSdkAdapter`
 
