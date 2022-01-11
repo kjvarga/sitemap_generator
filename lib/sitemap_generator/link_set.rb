@@ -126,7 +126,7 @@ module SitemapGenerator
         :filename => :sitemap,
         :search_engines => {
           :google         => "http://www.google.com/webmasters/tools/ping?sitemap=%s",
-          :bing           => "http://www.bing.com/ping?sitemap=%s"
+          :bing           => "http://www.bing.com/webmaster/ping.aspx?sitemap=%s"
         },
         :create_index => :auto,
         :compress => true,
@@ -438,7 +438,7 @@ module SitemapGenerator
     # in an instance variable.
     def add_default_links
       @added_default_links = true
-      link_options = { :lastmod => Time.now, :changefreq => 'always', :priority => 1.0 }
+      link_options = { :lastmod => Time.now, :priority => 1.0 }
       if include_root?
         add('/', link_options)
       end

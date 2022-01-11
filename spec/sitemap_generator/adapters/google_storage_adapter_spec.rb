@@ -3,9 +3,18 @@ require 'spec_helper'
 require 'google/cloud/storage'
 
 describe SitemapGenerator::GoogleStorageAdapter do
-  subject(:adapter) { SitemapGenerator::GoogleStorageAdapter.new(options) }
+  subject(:adapter) { described_class.new(options) }
 
   let(:options) { { credentials: 'abc', project_id: 'project_id', bucket: 'bucket' } }
+
+  context 'when Google::Cloud::Storage is not defined' do
+    it 'raises a LoadError' do
+      hide_const('Google::Cloud::Storage')
+      expect do
+        load File.expand_path('./lib/sitemap_generator/adapters/google_storage_adapter.rb')
+      end.to raise_error(LoadError, /Error: `Google::Cloud::Storage` is not defined./)
+    end
+  end
 
   describe 'write' do
     let(:location) { SitemapGenerator::SitemapLocation.new }
