@@ -16,6 +16,7 @@ module SitemapGenerator
     # @option :fog_region [String]
     # @option :fog_path_style [String]
     # @option :fog_storage_options [Hash] Other options to pass to `Fog::Storage`
+    # @option :fog_public [Boolean] Whether the file is publicly accessible
     def initialize(opts = {})
       @aws_access_key_id = opts[:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID']
       @aws_secret_access_key = opts[:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
@@ -24,7 +25,7 @@ module SitemapGenerator
       @fog_region = opts[:fog_region] || ENV['FOG_REGION']
       @fog_path_style = opts[:fog_path_style] || ENV['FOG_PATH_STYLE']
       @fog_storage_options = opts[:fog_storage_options] || {}
-      @fog_public = opts[:fog_public].to_s.present? ? opts[:fog_public] : true
+      @fog_public = opts[:fog_public].nil? ? true : opts[:fog_public]
     end
 
     # Call with a SitemapLocation and string data
