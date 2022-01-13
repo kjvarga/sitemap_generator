@@ -1,5 +1,5 @@
 if !defined?(Fog::Storage)
-  raise "Error: `Fog::Storage` is not defined.\n\n"\
+  raise LoadError, "Error: `Fog::Storage` is not defined.\n\n"\
         "Please `require 'fog-aws'` - or another library that defines this class."
 end
 
@@ -16,6 +16,10 @@ module SitemapGenerator
     # @option :fog_region [String]
     # @option :fog_path_style [String]
     # @option :fog_storage_options [Hash] Other options to pass to `Fog::Storage`
+    # @option :fog_public [Boolean] Whether the file is publicly accessible
+    #
+    # Alternatively you can use an environment variable to configure each option (except `fog_storage_options`).
+    # The environment variables have the same name but capitalized, e.g. `FOG_PATH_STYLE`.
     def initialize(opts = {})
       @aws_access_key_id = opts[:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID']
       @aws_secret_access_key = opts[:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
@@ -24,6 +28,8 @@ module SitemapGenerator
       @fog_region = opts[:fog_region] || ENV['FOG_REGION']
       @fog_path_style = opts[:fog_path_style] || ENV['FOG_PATH_STYLE']
       @fog_storage_options = opts[:fog_storage_options] || {}
+      fog_public = opts[:fog_public].nil? ? ENV['FOG_PUBLIC'] : opts[:fog_public]
+      @fog_public = SitemapGenerator::Utilities.falsy?(fog_public) ? false : true
     end
 
     # Call with a SitemapLocation and string data
@@ -47,7 +53,7 @@ module SitemapGenerator
       directory.files.create(
         :key    => location.path_in_public,
         :body   => File.open(location.path),
-        :public => true
+        :public => @fog_public
       )
     end
   end

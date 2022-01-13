@@ -28,6 +28,24 @@ describe 'SitemapGenerator::AwsSdkAdapter' do
     end
   end
 
+  context 'when Aws::S3::Resource is not defined' do
+    it 'raises a LoadError' do
+      hide_const('Aws::S3::Resource')
+      expect do
+        load File.expand_path('./lib/sitemap_generator/adapters/aws_sdk_adapter.rb')
+      end.to raise_error(LoadError, /Error: `Aws::S3::Resource` and\/or `Aws::Credentials` are not defined/)
+    end
+  end
+
+  context 'when Aws::Credentials is not defined' do
+    it 'raises a LoadError' do
+      hide_const('Aws::Credentials')
+      expect do
+        load File.expand_path('./lib/sitemap_generator/adapters/aws_sdk_adapter.rb')
+      end.to raise_error(LoadError, /Error: `Aws::S3::Resource` and\/or `Aws::Credentials` are not defined/)
+    end
+  end
+
   describe 'write' do
     context 'with no compress option' do
       let(:content_type) { 'application/xml' }

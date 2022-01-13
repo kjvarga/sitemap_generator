@@ -32,12 +32,29 @@ module SitemapGenerator
       def initialize(path, options={})
         options = SitemapGenerator::Utilities.symbolize_keys(options)
         if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
-          SitemapGenerator::Utilities.reverse_merge!(options, :host => sitemap.location.host, :lastmod => sitemap.lastmod)
+          SitemapGenerator::Utilities.reverse_merge!(
+            options,
+            :host => sitemap.location.host,
+            :lastmod => sitemap.lastmod
+          )
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(options, :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :news, :videos, :mobile, :alternate, :alternates, :pagemap)
-        SitemapGenerator::Utilities.reverse_merge!(options, :priority => 0.5, :changefreq => 'weekly', :lastmod => Time.now, :images => [], :news => {}, :videos => [], :mobile => false, :alternates => [])
+        SitemapGenerator::Utilities.assert_valid_keys(
+          options,
+          :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :news, :videos, :mobile, :alternate, :alternates, :pagemap
+        )
+        SitemapGenerator::Utilities.reverse_merge!(
+          options,
+          :priority => 0.5,
+          :changefreq => 'weekly',
+          :lastmod => Time.now,
+          :images => [],
+          :news => {},
+          :videos => [],
+          :mobile => false,
+          :alternates => []
+        )
         raise "Cannot generate a url without a host" unless SitemapGenerator::Utilities.present?(options[:host])
 
         if video = options.delete(:video)

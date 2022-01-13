@@ -1,5 +1,7 @@
 # SitemapGenerator
 
+[![CircleCI](https://circleci.com/gh/kjvarga/sitemap_generator/tree/master.svg?style=shield)](https://circleci.com/gh/kjvarga/sitemap_generator/tree/master)
+
 SitemapGenerator is the easiest way to generate Sitemaps in Ruby.  Rails integration provides access to the Rails route helpers within your sitemap config file and automatically makes the rake tasks available to you.  Or if you prefer to use another framework, you can!  You can use the rake tasks provided or run your sitemap configs as plain ruby scripts.
 
 Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
@@ -61,66 +63,69 @@ Successful ping of Bing
 
 ## Contents
 
-* [Features](#features)
-  + [Show Me](#show-me)
-* [Contents](#contents)
-* [Contribute](#contribute)
-* [Foreword](#foreword)
-* [Installation](#installation)
-  + [Ruby](#ruby)
-  + [Rails](#rails)
-* [Getting Started](#getting-started)
-  + [Preventing Output](#preventing-output)
-  + [Rake Tasks](#rake-tasks)
-  + [Pinging Search Engines](#pinging-search-engines)
-  + [Crontab](#crontab)
-  + [Robots.txt](#robotstxt)
-  + [Ruby Modules](#ruby-modules)
-  + [Deployments & Capistrano](#deployments--capistrano)
-  + [Sitemaps with no Index File](#sitemaps-with-no-index-file)
-  + [Upload Sitemaps to a Remote Host using Adapters](#upload-sitemaps-to-a-remote-host-using-adapters)
-    - [Supported Adapters](#supported-adapters)
-      * [`SitemapGenerator::FileAdapter`](#sitemapgeneratorfileadapter)
-      * [`SitemapGenerator::FogAdapter`](#sitemapgeneratorfogadapter)
-      * [`SitemapGenerator::S3Adapter`](#sitemapgenerators3adapter)
-      * [`SitemapGenerator::AwsSdkAdapter`](#sitemapgeneratorawssdkadapter)
-      * [`SitemapGenerator::WaveAdapter`](#sitemapgeneratorwaveadapter)
-      * [`SitemapGenerator::GoogleStorageAdapter`](#sitemapgeneratorgooglestorageadapter)
-    - [An Example of Using an Adapter](#an-example-of-using-an-adapter)
-  + [Generating Multiple Sitemaps](#generating-multiple-sitemaps)
-* [Sitemap Configuration](#sitemap-configuration)
-  + [A Simple Example](#a-simple-example)
-  + [Adding Links](#adding-links)
-  + [Supported Options to `add`](#supported-options-to-add)
-  + [Adding Links to the Sitemap Index](#adding-links-to-the-sitemap-index)
-  + [Accessing the LinkSet instance](#accessing-the-linkset-instance)
-  + [Speeding Things Up](#speeding-things-up)
-* [Customizing your Sitemaps](#customizing-your-sitemaps)
-  + [Sitemap Options](#sitemap-options)
-* [Sitemap Groups](#sitemap-groups)
-  + [A Groups Example](#a-groups-example)
-  + [Using `group` without a block](#using-group-without-a-block)
-* [Sitemap Extensions](#sitemap-extensions)
-  + [News Sitemaps](#news-sitemaps)
-    - [Example](#example)
-    - [Supported options](#supported-options)
-  + [Image Sitemaps](#image-sitemaps)
-    - [Example](#example-1)
-    - [Supported options](#supported-options-1)
-  + [Video Sitemaps](#video-sitemaps)
-    - [Example](#example-2)
-    - [Supported options](#supported-options-2)
-  + [PageMap Sitemaps](#pagemap-sitemaps)
-    - [Supported options](#supported-options-3)
-    - [Example:](#example)
-  + [Alternate Links](#alternate-links)
-    - [Example](#example-3)
-    - [Supported options](#supported-options-4)
-  + [Mobile Sitemaps](#-mobile-sitemaps)
-    - [Example](#example-4)
-    - [Supported options](#supported-options-5)
-* [Compatibility](#compatibility)
-* [Licence](#licence)
+- [SitemapGenerator](#sitemapgenerator)
+  - [Features](#features)
+    - [Show Me](#show-me)
+  - [Contents](#contents)
+  - [Contribute](#contribute)
+  - [Foreword](#foreword)
+  - [Installation](#installation)
+    - [Ruby](#ruby)
+    - [Rails](#rails)
+  - [Getting Started](#getting-started)
+    - [Preventing Output](#preventing-output)
+    - [Rake Tasks](#rake-tasks)
+    - [Pinging Search Engines](#pinging-search-engines)
+    - [Crontab](#crontab)
+    - [Robots.txt](#robotstxt)
+    - [Ruby Modules](#ruby-modules)
+    - [Deployments & Capistrano](#deployments--capistrano)
+    - [Sitemaps with no Index File](#sitemaps-with-no-index-file)
+    - [Upload Sitemaps to a Remote Host using Adapters](#upload-sitemaps-to-a-remote-host-using-adapters)
+      - [Supported Adapters](#supported-adapters)
+        - [`SitemapGenerator::FileAdapter`](#sitemapgeneratorfileadapter)
+        - [`SitemapGenerator::FogAdapter`](#sitemapgeneratorfogadapter)
+        - [`SitemapGenerator::S3Adapter`](#sitemapgenerators3adapter)
+        - [`SitemapGenerator::AwsSdkAdapter`](#sitemapgeneratorawssdkadapter)
+        - [`SitemapGenerator::AwsSdkAdapter (DigitalOcean Spaces)`](#sitemapgeneratorawssdkadapter-digitalocean-spaces)
+        - [`SitemapGenerator::WaveAdapter`](#sitemapgeneratorwaveadapter)
+        - [`SitemapGenerator::GoogleStorageAdapter`](#sitemapgeneratorgooglestorageadapter)
+      - [An Example of Using an Adapter](#an-example-of-using-an-adapter)
+    - [Generating Multiple Sitemaps](#generating-multiple-sitemaps)
+  - [Sitemap Configuration](#sitemap-configuration)
+    - [A Simple Example](#a-simple-example)
+    - [Adding Links](#adding-links)
+    - [Supported Options to `add`](#supported-options-to-add)
+    - [Adding Links to the Sitemap Index](#adding-links-to-the-sitemap-index)
+    - [Accessing the LinkSet instance](#accessing-the-linkset-instance)
+    - [Speeding Things Up](#speeding-things-up)
+  - [Customizing your Sitemaps](#customizing-your-sitemaps)
+    - [Sitemap Options](#sitemap-options)
+  - [Sitemap Groups](#sitemap-groups)
+    - [A Groups Example](#a-groups-example)
+    - [Using `group` without a block](#using-group-without-a-block)
+  - [Sitemap Extensions](#sitemap-extensions)
+    - [News Sitemaps](#news-sitemaps)
+      - [Example](#example)
+      - [Supported options](#supported-options)
+    - [Image Sitemaps](#image-sitemaps)
+      - [Example](#example-1)
+      - [Supported options](#supported-options-1)
+    - [Video Sitemaps](#video-sitemaps)
+      - [Example](#example-2)
+      - [Supported options](#supported-options-2)
+    - [PageMap Sitemaps](#pagemap-sitemaps)
+      - [Supported options](#supported-options-3)
+      - [Example:](#example-3)
+    - [Alternate Links](#alternate-links)
+      - [Example](#example-4)
+      - [Supported options](#supported-options-4)
+      - [Alternates Example](#alternates-example)
+    - [Mobile Sitemaps](#mobile-sitemaps)
+      - [Example](#example-5)
+      - [Supported options](#supported-options-5)
+  - [Compatibility](#compatibility)
+  - [Licence](#licence)
 
 ## Contribute
 
@@ -352,6 +357,25 @@ directory.
 
   You must `require 'fog-aws'` in your sitemap config before using this adapter.
 
+  An example of using this adapter in your sitemap configuration:
+
+  ```ruby
+  SitemapGenerator::Sitemap.adapter = SitemapGenerator::S3Adapter.new(options)
+  ```
+
+  Where `options` is a Hash with any of the following keys:
+* `aws_access_key_id` [String] Your AWS access key id
+* `aws_secret_access_key` [String] Your AWS secret access key
+* `fog_provider` [String]
+* `fog_directory` [String]
+* `fog_region` [String]
+* `fog_path_style` [String]
+* `fog_storage_options` [Hash] Other options to pass to `Fog::Storage`
+* `fog_public` [Boolean] Whether the file is publicly accessible
+
+Alternatively you can use an environment variable to configure each option (except `fog_storage_options`).  The environment variables have the same
+name but capitalized, e.g. `FOG_PATH_STYLE`.
+
 ##### `SitemapGenerator::AwsSdkAdapter`
 
   Uses `Aws::S3::Resource` to upload to Amazon S3 storage.  Includes automatic detection of your AWS
@@ -460,8 +484,7 @@ directory.
     Note that SitemapGenerator will automatically turn off `include_index` in this case because
     the `sitemaps_host` does not match the `default_host`.  The link to the sitemap index file
     that would otherwise be included would point to a different host than the rest of the links
-    in the sitemap, something that the sitemap rules forbid.  (Since version 3.2 this is no
-    longer an issue because [`include_index` is off by default][include_index_change].)
+    in the sitemap, something that the sitemap rules forbid.
 
 4. Verify to Google that you own the S3 url
 
@@ -571,7 +594,7 @@ In /Users/karl/projects/sitemap_generator-test/public/
 Sitemap stats: 2 links / 1 sitemaps / 0m00s
 ```
 
-Weird!  The sitemap has two links, even though we only added one!  This is because SitemapGenerator adds the root URL `/` for you by default.  (Note that prior to version 3.2 the  URL of the sitemap index file was also added to the sitemap by default but [this behaviour has been changed][include_index_change] because of Google complaining about nested indexing.  This also doesn't make sense anymore because indexes are not always needed.)  You can change the default behaviour by setting the `include_root` or `include_index` option.
+Weird!  The sitemap has two links, even though we only added one!  This is because SitemapGenerator adds the root URL `/` for you by default.  You can change the default behaviour by setting the `include_root` or `include_index` option.
 
 Now let's take a look at the file that was created.  After uncompressing and XML-tidying the contents we have:
 
@@ -584,7 +607,7 @@ Now let's take a look at the file that was created.  After uncompressing and XML
   <url>
     <loc>http://www.example.com/</loc>
     <lastmod>2011-05-21T00:03:38+00:00</lastmod>
-    <changefreq>always</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
@@ -1116,7 +1139,27 @@ end
     * `:nofollow` - Optional, boolean. Used to mark link as "nofollow".
     * `:media` - Optional, string.  Specify [media targets for responsive design pages][media].
 
-### <a name="internal_mobile"></a> Mobile Sitemaps
+#### Alternates Example
+
+```ruby
+SitemapGenerator::Sitemap.default_host = "http://www.example.com"
+SitemapGenerator::Sitemap.create do
+ add('/index.html', :alternates => [
+        {
+            :href => 'http://www.example.de/index.html',
+            :lang => 'de',
+            :nofollow => true
+        },
+        {
+            :href => 'http://www.example.es/index.html',
+            :lang => 'es',
+            :nofollow => true
+        }
+    ])
+end
+```
+
+### Mobile Sitemaps
 
 Mobile sitemaps include a specific `<mobile:mobile/>` tag.
 
@@ -1163,7 +1206,6 @@ Copyright (c) Karl Varga released under the MIT license
 [image_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=178636
 [news_tags]:http://www.google.com/support/news_pub/bin/answer.py?answer=74288
 [remote_hosts]:https://github.com/kjvarga/sitemap_generator/wiki/Generate-Sitemaps-on-read-only-filesystems-like-Heroku
-[include_index_change]:https://github.com/kjvarga/sitemap_generator/issues/70
 [ehoch]:https://github.com/ehoch
 [alternate_links]:http://support.google.com/webmasters/bin/answer.py?hl=en&answer=2620865
 [using_pagemaps]:https://developers.google.com/custom-search/docs/structured_data#pagemaps

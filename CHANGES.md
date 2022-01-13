@@ -1,3 +1,7 @@
+### 6.1.2
+
+* Resolve NoMethodError using URI#open for Ruby less than 2.5.0 [#353](https://github.com/kjvarga/sitemap_generator/pull/353)
+
 ### 6.1.1
 
 * Resolve deprecation warning on using Kernel#open in Ruby 2.7 (use URI.open instead) [#342](https://github.com/kjvarga/sitemap_generator/pull/342)

@@ -1,3 +1,4 @@
+.byebug_history
 .DS_Store
 *.swp
 pkg
@@ -8,3 +9,5 @@ coverage
 .idea
 public
 Gemfile.lock
+integration/Gemfile.lock
+integration/gemfiles/*.lock
