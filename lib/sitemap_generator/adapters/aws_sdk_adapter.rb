@@ -8,26 +8,28 @@ module SitemapGenerator
   class AwsSdkAdapter
     # Specify your AWS bucket name, credentials, and/or region.  By default
     # the AWS SDK will auto-detect your credentials and region, but you can use
-    # the following options to configure - or override - them manually:
-    #
-    # Options:
-    #   :aws_access_key_id [String] Your AWS access key id
-    #   :aws_secret_access_key [String] Your AWS secret access key
-    #   :aws_region [String] Your AWS region
-    #   See also: https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
+    # the options to configure them manually.
     #
     # Requires Aws::S3::Resource and Aws::Credentials to be defined.
     #
-    # @param [String] bucket Name of the S3 bucket
-    # @param [Hash] options AWS credential overrides, see above
+    # @param bucket [String] Name of the S3 bucket
+    # @param options [Hash] Options passed directly to AWS to control the Resource created.  See Options below.
+    #
+    # Options:
+    #   **Deprecated, use :access_key_id instead** :access_key_id [String] Your AWS access key id
+    #   **Deprecated, use :secret_access_key instead** :aws_secret_access_key [String] Your AWS secret access key
+    #   **Deprecated, use :region instead** :aws_region [String] Your AWS region
+    #
+    #   All other options you provide are passed directly to the AWS client.
+    #   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
+    #   for a full list of supported options.
     def initialize(bucket, aws_access_key_id:, aws_secret_access_key:, aws_region:, **options)
       @bucket = bucket
-      
       @options = options
       @options[:credentials] = Aws::Credentials.new(
-        aws_access_key_id.to_s,
-        aws_secret_access_key.to_s
-      )
+        aws_access_key_id,
+        aws_secret_access_key
+      ) if aws_access_key_id && aws_secret_access_key
       @options[:region] = aws_region
     end
 
