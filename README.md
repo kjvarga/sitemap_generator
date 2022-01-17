@@ -1167,8 +1167,8 @@ end
 
 ## Compatibility
 
-Compatible with all versions of Rails and Ruby.
-Ruby 1.9.3 support was dropped in Version 6.0.0 of this gem.
+Compatible with all versions of Rails and Ruby.  Tested up to Ruby 3.1 and Rails 7.0.
+Ruby 1.9.3 support was dropped in Version 6.0.0.
 
 ## Licence
 
