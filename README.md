@@ -379,7 +379,7 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 ##### `SitemapGenerator::AwsSdkAdapter`
 
   Uses `Aws::S3::Resource` to upload to Amazon S3 storage.  Includes automatic detection of your AWS
-  credentials using `Aws::Credentials`.
+  credentials and region.
 
   You must `require 'aws-sdk-s3'` in your sitemap config before using this adapter,
   or `require` another library that defines `Aws::S3::Resource` and `Aws::Credentials`.
@@ -388,11 +388,17 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 
   ```ruby
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AwsSdkAdapter.new('s3_bucket',
-    aws_access_key_id: 'AKIAI3SW5CRAZBL4WSTA',
-    aws_secret_access_key: 'asdfadsfdsafsadf',
-    aws_region: 'us-east-1'
+    access_key_id: 'AKIAI3SW5CRAZBL4WSTA',
+    secret_access_key: 'asdfadsfdsafsadf',
+    region: 'us-east-1'
   )
   ```
+
+  Where the first argument is the S3 bucket name, and the rest are keyword argument options which
+  are passed directly to the AWS client.
+
+  See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
+  for a full list of supported options.
 
 ##### `SitemapGenerator::AwsSdkAdapter (DigitalOcean Spaces)`
 
