@@ -63,6 +63,14 @@ describe SitemapGenerator::AwsSdkAdapter do
   end
 
   describe '#initialize' do
+    context 'with region option' do
+      let(:options) { { region: 'region' } }
+
+      it 'sets region in options' do
+        expect(adapter.instance_variable_get(:@options)[:region]).to eql('region')
+      end
+    end
+
     context 'with deprecated aws_region option' do
       let(:options) { { aws_region: 'region' } }
 
@@ -111,12 +119,22 @@ describe SitemapGenerator::AwsSdkAdapter do
       end
     end
 
+    context 'with endpoint option' do
+      let(:options) do
+        { endpoint: 'endpoint' }
+      end
+
+      it 'sets endpoint in options' do
+        expect(adapter.instance_variable_get(:@options)[:endpoint]).to eq('endpoint')
+      end
+    end
+
     context 'with deprecated aws_endpoint option' do
       let(:options) do
         { aws_endpoint: 'endpoint' }
       end
 
-      it 'sets secret_access_key in options' do
+      it 'sets endpoint in options' do
         expect(adapter.instance_variable_get(:@options)[:endpoint]).to eq('endpoint')
       end
     end
