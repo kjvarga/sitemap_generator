@@ -1,3 +1,12 @@
+### 6.2.0
+
+* Raise `LoadError` when an adapter's dependency is missing to better support Sorbet [#387](https://github.com/kjvarga/sitemap_generator/pull/387).
+* Update the Bing notification URL [#386](https://github.com/kjvarga/sitemap_generator/pull/386).
+* Setup integration testing against a matrix of Ruby and Rails versions; test against Ruby 3.1 and Rails 7.
+* Change default `changefreq` of the root URL from `always` to `monthly` [#376](https://github.com/kjvarga/sitemap_generator/pull/376).
+* `SitemapGenerator::GoogleStorageAdapter`: Update google cloud adapter to support ruby 3 kwarg changes [#375](https://github.com/kjvarga/sitemap_generator/pull/375).
+* `SitemapGenerator::S3Adapter`: Allow Fog `public` option to be Configurable [#359](https://github.com/kjvarga/sitemap_generator/pull/359).
+
 ### 6.1.2
 
 * Resolve NoMethodError using URI#open for Ruby less than 2.5.0 [#353](https://github.com/kjvarga/sitemap_generator/pull/353)
