@@ -2,9 +2,10 @@ require 'spec_helper'
 require 'aws-sdk-core'
 require 'aws-sdk-s3'
 
-describe 'SitemapGenerator::AwsSdkAdapter' do
+describe SitemapGenerator::AwsSdkAdapter do
+  subject(:adapter)  { described_class.new('bucket', **options) }
+
   let(:location) { SitemapGenerator::SitemapLocation.new(compress: compress) }
-  let(:adapter)  { SitemapGenerator::AwsSdkAdapter.new('bucket', options) }
   let(:options) { {} }
   let(:compress) { nil }
 
@@ -46,7 +47,7 @@ describe 'SitemapGenerator::AwsSdkAdapter' do
     end
   end
 
-  describe 'write' do
+  describe '#write' do
     context 'with no compress option' do
       let(:content_type) { 'application/xml' }
 
@@ -61,57 +62,62 @@ describe 'SitemapGenerator::AwsSdkAdapter' do
     end
   end
 
-  describe 's3_resource' do
-    it 'returns a new S3 resource' do
-      s3_resource_options = double(:s3_resource_options)
-      expect(adapter).to receive(:s3_resource_options).and_return(s3_resource_options)
-      expect(Aws::S3::Resource).to receive(:new).with(s3_resource_options).and_return('resource')
-      expect(adapter.send(:s3_resource)).to eql('resource')
-    end
-  end
-
-  describe 's3_resource_options' do
-    it 'does not include region' do
-      expect(adapter.send(:s3_resource_options)[:region]).to be_nil
-    end
-
-    it 'does not include credentials' do
-      expect(adapter.send(:s3_resource_options)[:credentials]).to be_nil
-    end
-
-    context 'with AWS region option' do
+  describe '#initialize' do
+    context 'with deprecated aws_region option' do
       let(:options) { { aws_region: 'region' } }
 
-      it 'includes the region' do
-        expect(adapter.send(:s3_resource_options)[:region]).to eql('region')
+      it 'sets region in options' do
+        expect(adapter.instance_variable_get(:@options)[:region]).to eql('region')
       end
     end
 
-    it 'does not include endpoint' do
-      expect(adapter.send(:s3_resource_options)[:endpoint]).to be_nil
-    end
-
-    context 'with AWS endpoint option' do
-      let(:options) { { aws_endpoint: 'endpoint' } }
-
-      it 'includes the endpoint' do
-        expect(adapter.send(:s3_resource_options)[:endpoint]).to eql('endpoint')
-      end
-    end
-
-    context 'with AWS access key id and secret access key options' do
+    context 'with access_key_id option' do
       let(:options) do
-        {
-          aws_access_key_id: 'access_key_id',
-          aws_secret_access_key: 'secret_access_key'
-        }
+        { access_key_id: 'access_key_id' }
       end
 
-      it 'includes the credentials' do
-        credentials = adapter.send(:s3_resource_options)[:credentials]
-        expect(credentials).to be_a(Aws::Credentials)
-        expect(credentials.access_key_id).to eql('access_key_id')
-        expect(credentials.secret_access_key).to eql('secret_access_key')
+      it 'sets access_key_id in options' do
+        expect(adapter.instance_variable_get(:@options)[:access_key_id]).to eq('access_key_id')
+      end
+    end
+
+    context 'with deprecated aws_access_key_id option' do
+      let(:options) do
+        { aws_access_key_id: 'access_key_id' }
+      end
+
+      it 'sets access_key_id in options' do
+        expect(adapter.instance_variable_get(:@options)[:access_key_id]).to eq('access_key_id')
+      end
+    end
+
+    context 'with secret_access_key option' do
+      let(:options) do
+        { secret_access_key: 'secret_access_key' }
+      end
+
+      it 'sets secret_access_key in options' do
+        expect(adapter.instance_variable_get(:@options)[:secret_access_key]).to eq('secret_access_key')
+      end
+    end
+
+    context 'with deprecated aws_secret_access_key option' do
+      let(:options) do
+        { aws_secret_access_key: 'secret_access_key' }
+      end
+
+      it 'sets secret_access_key in options' do
+        expect(adapter.instance_variable_get(:@options)[:secret_access_key]).to eq('secret_access_key')
+      end
+    end
+
+    context 'with deprecated aws_endpoint option' do
+      let(:options) do
+        { aws_endpoint: 'endpoint' }
+      end
+
+      it 'sets secret_access_key in options' do
+        expect(adapter.instance_variable_get(:@options)[:endpoint]).to eq('endpoint')
       end
     end
   end
