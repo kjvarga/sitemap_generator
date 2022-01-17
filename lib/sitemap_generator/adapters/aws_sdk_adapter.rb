@@ -23,7 +23,7 @@ module SitemapGenerator
     #   All other options you provide are passed directly to the AWS client.
     #   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
     #   for a full list of supported options.
-    def initialize(bucket, aws_access_key_id:, aws_secret_access_key:, aws_region:, **options)
+    def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_region: nil, **options)
       @bucket = bucket
       @options = options
       @options[:credentials] = Aws::Credentials.new(
