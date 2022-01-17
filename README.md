@@ -1179,10 +1179,6 @@ MIT. See the LICENSE.md file.
 Copyright (c) Karl Varga released under the MIT license
 
 [canonical_repo]:http://github.com/kjvarga/sitemap_generator
-[enterprise_class]:https://twitter.com/dhh/status/1631034662 "I use enterprise in the same sense the Phusion guys do - i.e. Enterprise Ruby. Please don't look down on my use of the word 'enterprise' to represent being a cut above. It doesn't mean you ever have to work for a company the size of IBM. Or constantly fight inertia, writing crappy software, adhering to change management practices and spending hours in meetings... Not that there's anything wrong with that - Wait, what?"
-[sitemaps_org]:http://www.sitemaps.org/protocol.html "http://www.sitemaps.org/protocol.html"
-[sitemaps_xml]:http://www.sitemaps.org/protocol.html#xmlTagDefinitions "XML Tag Definitions"
-[sitemap_generator_usage]:http://wiki.github.com/adamsalter/sitemap_generator/sitemapgenerator-usage "http://wiki.github.com/adamsalter/sitemap_generator/sitemapgenerator-usage"
 [sitemap_images]:http://www.google.com/support/webmasters/bin/answer.py?answer=178636
 [sitemap_video]:https://support.google.com/webmasters/answer/80471?hl=en&ref_topic=4581190
 [sitemap_news]:https://support.google.com/news/publisher/topic/2527688?hl=en&ref_topic=4359874
@@ -1193,7 +1189,6 @@ Copyright (c) Karl Varga released under the MIT license
 [image_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=178636
 [news_tags]:http://www.google.com/support/news_pub/bin/answer.py?answer=74288
 [remote_hosts]:https://github.com/kjvarga/sitemap_generator/wiki/Generate-Sitemaps-on-read-only-filesystems-like-Heroku
-[ehoch]:https://github.com/ehoch
 [alternate_links]:http://support.google.com/webmasters/bin/answer.py?hl=en&answer=2620865
 [using_pagemaps]:https://developers.google.com/custom-search/docs/structured_data#pagemaps
 [iso_4217]:http://en.wikipedia.org/wiki/ISO_4217
