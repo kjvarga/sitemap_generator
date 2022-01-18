@@ -31,7 +31,7 @@ module SitemapGenerator
       @options[:access_key_id] ||= aws_access_key_id
       @options[:secret_access_key] ||= aws_secret_access_key
       @options[:region] ||= aws_region
-      @options[:endpoint] ||= aws_endpoint
+      @options[:endpoint] ||= aws_endpoint unless aws_endpoint.nil?
     end
 
     # Call with a SitemapLocation and string data

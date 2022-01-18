@@ -137,6 +137,16 @@ describe SitemapGenerator::AwsSdkAdapter do
       it 'sets endpoint in options' do
         expect(adapter.instance_variable_get(:@options)[:endpoint]).to eq('endpoint')
       end
+
+      context 'if option is nil' do
+        let(:options) do
+          { aws_endpoint: nil }
+        end
+
+        it 'does not set endpoint in options' do
+          expect(adapter.instance_variable_get(:@options)).not_to have_key(:endpoint)
+        end
+      end
     end
   end
 end
