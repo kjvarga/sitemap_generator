@@ -28,11 +28,12 @@ module SitemapGenerator
     def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_region: nil, aws_endpoint: nil, **options)
       @bucket = bucket
       @options = options
-      @options[:access_key_id] ||= aws_access_key_id
-      @options[:secret_access_key] ||= aws_secret_access_key
-      @options[:region] ||= aws_region
-      @options[:endpoint] ||= aws_endpoint unless aws_endpoint.nil?
+      set_option_unless_set(:access_key_id, aws_access_key_id)
+      set_option_unless_set(:secret_access_key, aws_secret_access_key)
+      set_option_unless_set(:region, aws_region)
+      set_option_unless_set(:endpoint, aws_endpoint)
     end
+
 
     # Call with a SitemapLocation and string data
     def write(location, raw_data)
@@ -46,6 +47,10 @@ module SitemapGenerator
     end
 
     private
+
+    def set_option_unless_set(key, value)
+      @options[key] = value if @options[key].nil? && !value.nil?
+    end
 
     def s3_resource
       @s3_resource ||= Aws::S3::Resource.new(@options)
