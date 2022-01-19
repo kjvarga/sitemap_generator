@@ -29,6 +29,52 @@ describe SitemapGenerator::AwsSdkAdapter do
     end
   end
 
+  shared_examples "deprecated option" do |deprecated_key, new_key|
+    context 'when a deprecated option set' do
+      context 'when it is not nil' do
+        let(:options) do
+          { deprecated_key => 'value' }
+        end
+
+        it 'sets the option' do
+          expect(adapterOptions[new_key]).to eq('value')
+        end
+
+        context 'when the new option key is set' do
+          context 'when it is not nil' do
+            let(:options) do
+              { deprecated_key => 'value', new_key => 'new_endpoint' }
+            end
+
+            it 'does not override it' do
+              expect(adapterOptions[new_key]).to eq('new_endpoint')
+            end
+          end
+
+          context 'when it is nil' do
+            let(:options) do
+              { deprecated_key => 'value', new_key => nil }
+            end
+
+            it 'overrides it' do
+              expect(adapterOptions[new_key]).to eq('value')
+            end
+          end
+        end
+      end
+
+      context 'when it is nil' do
+        let(:options) do
+          { deprecated_key => nil }
+        end
+
+        it 'does not set the option' do
+          expect(adapterOptions).not_to have_key(new_key)
+        end
+      end
+    end
+  end
+
   context 'when Aws::S3::Resource is not defined' do
     it 'raises a LoadError' do
       hide_const('Aws::S3::Resource')
@@ -63,90 +109,11 @@ describe SitemapGenerator::AwsSdkAdapter do
   end
 
   describe '#initialize' do
-    context 'with region option' do
-      let(:options) { { region: 'region' } }
+    subject(:adapterOptions) { adapter.instance_variable_get(:@options) }
 
-      it 'sets region in options' do
-        expect(adapter.instance_variable_get(:@options)[:region]).to eql('region')
-      end
-    end
-
-    context 'with deprecated aws_region option' do
-      let(:options) { { aws_region: 'region' } }
-
-      it 'sets region in options' do
-        expect(adapter.instance_variable_get(:@options)[:region]).to eql('region')
-      end
-    end
-
-    context 'with access_key_id option' do
-      let(:options) do
-        { access_key_id: 'access_key_id' }
-      end
-
-      it 'sets access_key_id in options' do
-        expect(adapter.instance_variable_get(:@options)[:access_key_id]).to eq('access_key_id')
-      end
-    end
-
-    context 'with deprecated aws_access_key_id option' do
-      let(:options) do
-        { aws_access_key_id: 'access_key_id' }
-      end
-
-      it 'sets access_key_id in options' do
-        expect(adapter.instance_variable_get(:@options)[:access_key_id]).to eq('access_key_id')
-      end
-    end
-
-    context 'with secret_access_key option' do
-      let(:options) do
-        { secret_access_key: 'secret_access_key' }
-      end
-
-      it 'sets secret_access_key in options' do
-        expect(adapter.instance_variable_get(:@options)[:secret_access_key]).to eq('secret_access_key')
-      end
-    end
-
-    context 'with deprecated aws_secret_access_key option' do
-      let(:options) do
-        { aws_secret_access_key: 'secret_access_key' }
-      end
-
-      it 'sets secret_access_key in options' do
-        expect(adapter.instance_variable_get(:@options)[:secret_access_key]).to eq('secret_access_key')
-      end
-    end
-
-    context 'with endpoint option' do
-      let(:options) do
-        { endpoint: 'endpoint' }
-      end
-
-      it 'sets endpoint in options' do
-        expect(adapter.instance_variable_get(:@options)[:endpoint]).to eq('endpoint')
-      end
-    end
-
-    context 'with deprecated aws_endpoint option' do
-      let(:options) do
-        { aws_endpoint: 'endpoint' }
-      end
-
-      it 'sets endpoint in options' do
-        expect(adapter.instance_variable_get(:@options)[:endpoint]).to eq('endpoint')
-      end
-
-      context 'if option is nil' do
-        let(:options) do
-          { aws_endpoint: nil }
-        end
-
-        it 'does not set endpoint in options' do
-          expect(adapter.instance_variable_get(:@options)).not_to have_key(:endpoint)
-        end
-      end
-    end
+    it_behaves_like "deprecated option", :aws_endpoint, :endpoint
+    it_behaves_like "deprecated option", :aws_access_key_id, :access_key_id
+    it_behaves_like "deprecated option", :aws_secret_access_key, :secret_access_key
+    it_behaves_like "deprecated option", :aws_region, :region
   end
 end

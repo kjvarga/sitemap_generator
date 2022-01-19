@@ -1,3 +1,7 @@
+### 6.2.1
+
+* Bugfix: Improve handling of deprecated options in `AwsSdkAdapter`.  Fixes bug where `:region` was being set to `nil`. [#390](https://github.com/kjvarga/sitemap_generator/pull/390).
+
 ### 6.2.0
 
 * Raise `LoadError` when an adapter's dependency is missing to better support Sorbet [#387](https://github.com/kjvarga/sitemap_generator/pull/387).
