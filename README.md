@@ -387,6 +387,8 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 
   ```ruby
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AwsSdkAdapter.new('s3_bucket',
+    acl: 'private',
+    cache_control: 'public, max-age=3600',
     access_key_id: 'AKIAI3SW5CRAZBL4WSTA',
     secret_access_key: 'asdfadsfdsafsadf',
     region: 'us-east-1',
@@ -394,8 +396,8 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
   )
   ```
 
-  Where the first argument is the S3 bucket name, and the rest are keyword argument options which
-  are passed directly to the AWS client.
+  Where the first argument is the S3 bucket name, followed by optional arguments for an ACL and cache control header,
+  and the rest are keyword argument options which are passed directly to the AWS client.
 
   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
   for a full list of supported options.

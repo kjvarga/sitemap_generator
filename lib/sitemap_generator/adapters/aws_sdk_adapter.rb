@@ -13,6 +13,8 @@ module SitemapGenerator
     # Requires Aws::S3::Resource and Aws::Credentials to be defined.
     #
     # @param bucket [String] Name of the S3 bucket
+    # @param acl [String] The ACL to apply to uploaded files.
+    # @param cache_control [String] The cache control header to apply to uploaded files.
     # @param options [Hash] Options passed directly to AWS to control the Resource created.  See Options below.
     #
     # Options:
@@ -25,8 +27,10 @@ module SitemapGenerator
     #   All other options you provide are passed directly to the AWS client.
     #   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
     #   for a full list of supported options.
-    def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_region: nil, aws_endpoint: nil, **options)
+    def initialize(bucket, acl: 'public-read', cache_control: 'private, max-age=0, no-cache', aws_access_key_id: nil, aws_secret_access_key: nil, aws_region: nil, aws_endpoint: nil, **options)
       @bucket = bucket
+      @acl = acl
+      @cache_control = cache_control
       @options = options
       set_option_unless_set(:access_key_id, aws_access_key_id)
       set_option_unless_set(:secret_access_key, aws_secret_access_key)
@@ -40,8 +44,8 @@ module SitemapGenerator
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
       s3_object = s3_resource.bucket(@bucket).object(location.path_in_public)
       s3_object.upload_file(location.path,
-        acl: 'public-read',
-        cache_control: 'private, max-age=0, no-cache',
+        acl: @acl,
+        cache_control: @cache_control,
         content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
       )
     end

@@ -6,7 +6,7 @@ describe SitemapGenerator::AwsSdkAdapter do
   subject(:adapter)  { described_class.new('bucket', **options) }
 
   let(:location) { SitemapGenerator::SitemapLocation.new(compress: compress) }
-  let(:options) { {} }
+  let(:options) { { acl: 'private', cache_control: 'public, max-age=3600' } }
   let(:compress) { nil }
 
   shared_examples 'it writes the raw data to a file and then uploads that file to S3' do
@@ -20,8 +20,8 @@ describe SitemapGenerator::AwsSdkAdapter do
       expect(location).to receive(:path_in_public).and_return('path_in_public')
       expect(location).to receive(:path).and_return('path')
       expect(s3_object).to receive(:upload_file).with('path', hash_including(
-        acl: 'public-read',
-        cache_control: 'private, max-age=0, no-cache',
+        acl: 'private',
+        cache_control: 'public, max-age=3600',
         content_type: content_type
       )).and_return(nil)
       expect_any_instance_of(SitemapGenerator::FileAdapter).to receive(:write).with(location, 'raw_data')
@@ -110,6 +110,20 @@ describe SitemapGenerator::AwsSdkAdapter do
 
   describe '#initialize' do
     subject(:adapterOptions) { adapter.instance_variable_get(:@options) }
+
+    it 'sets options on the instance' do
+      expect(adapter.instance_variable_get(:@acl)).to eq('private')
+      expect(adapter.instance_variable_get(:@cache_control)).to eq('public, max-age=3600')
+    end
+
+    context 'when options are nil' do
+      let(:options) { {} }
+
+      it 'sets options to default values' do
+        expect(adapter.instance_variable_get(:@acl)).to eq('public-read')
+        expect(adapter.instance_variable_get(:@cache_control)).to eq('private, max-age=0, no-cache')
+      end
+    end
 
     it_behaves_like "deprecated option", :aws_endpoint, :endpoint
     it_behaves_like "deprecated option", :aws_access_key_id, :access_key_id
