@@ -75,13 +75,13 @@ describe 'SitemapGenerator::Builder::SitemapIndexFile' do
   describe 'add' do
     it 'should use the host provided' do
       url = SitemapGenerator::Builder::SitemapIndexUrl.new('/one', :host => 'http://newhost.com/')
-      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new).with('/one', :host => 'http://newhost.com').and_return(url)
+      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new).with('/one', { :host => 'http://newhost.com' }).and_return(url)
       index.add '/one', :host => 'http://newhost.com'
     end
 
     it 'should use the host from the location' do
       url = SitemapGenerator::Builder::SitemapIndexUrl.new('/one', :host => 'http://example.com/')
-      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new).with('/one', :host => 'http://example.com/').and_return(url)
+      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new).with('/one', { :host => 'http://example.com/' }).and_return(url)
       index.add '/one'
     end
 
