@@ -1,3 +1,7 @@
+### Unreleased
+
+* Remove Bing's deprecated sitemap submission [#400](https://github.com/kjvarga/sitemap_generator/pull/400).
+
 ### 6.2.1
 
 * Bugfix: Improve handling of deprecated options in `AwsSdkAdapter`.  Fixes bug where `:region` was being set to `nil`. [#390](https://github.com/kjvarga/sitemap_generator/pull/390).
