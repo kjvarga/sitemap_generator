@@ -35,14 +35,14 @@ describe SitemapGenerator::Interpreter do
   describe 'public interface' do
     describe 'add' do
       it 'should add a link to the sitemap' do
-        expect(link_set).to receive(:add).with('test', :option => 'value')
+        expect(link_set).to receive(:add).with('test', hash_including(:option => 'value'))
         interpreter.add('test', :option => 'value')
       end
     end
 
     describe 'group' do
       it 'should start a new group' do
-        expect(link_set).to receive(:group).with('test', :option => 'value')
+        expect(link_set).to receive(:group).with('test', hash_including(:option => 'value'))
         interpreter.group('test', :option => 'value')
       end
     end
@@ -55,7 +55,7 @@ describe SitemapGenerator::Interpreter do
 
     describe 'add_to_index' do
       it 'should add a link to the sitemap index' do
-        expect(link_set).to receive(:add_to_index).with('test', :option => 'value')
+        expect(link_set).to receive(:add_to_index).with('test', hash_including(:option => 'value'))
         interpreter.add_to_index('test', :option => 'value')
       end
     end
