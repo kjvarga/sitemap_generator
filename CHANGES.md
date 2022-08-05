@@ -1,3 +1,9 @@
+### Unreleased
+
+* Removes deprecated Bing notification URL. See advisory for alternative ways
+  to notify Bing:
+  https://blogs.bing.com/webmaster/may-2022/Spring-cleaning-Removed-Bing-anonymous-sitemap-submission
+
 ### 6.2.1
 
 * Bugfix: Improve handling of deprecated options in `AwsSdkAdapter`.  Fixes bug where `:region` was being set to `nil`. [#390](https://github.com/kjvarga/sitemap_generator/pull/390).

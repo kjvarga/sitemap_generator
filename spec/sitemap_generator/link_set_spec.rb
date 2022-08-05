@@ -130,12 +130,12 @@ describe SitemapGenerator::LinkSet do
   describe 'search_engines' do
     it 'should have search engines by default' do
       expect(ls.search_engines).to be_a(Hash)
-      expect(ls.search_engines.size).to eq(2)
+      expect(ls.search_engines.size).to eq(1)
     end
 
     it 'should support being modified' do
       ls.search_engines[:newengine] = 'abc'
-      expect(ls.search_engines.size).to eq(3)
+      expect(ls.search_engines.size).to eq(2)
     end
 
     it 'should support being set to nil' do
