@@ -386,6 +386,8 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 
   ```ruby
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AwsSdkAdapter.new('s3_bucket',
+    acl: 'public-read', # Optional. This is the default.
+    cache_control: 'private, max-age=0, no-cache', # Optional. This is the default.
     access_key_id: 'AKIAI3SW5CRAZBL4WSTA',
     secret_access_key: 'asdfadsfdsafsadf',
     region: 'us-east-1',
@@ -395,8 +397,7 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 
   Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; all other options are passed directly to the AWS client.
 
-  See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
-  for a full list of supported options.
+  See [the `SitemapGenerator::AwsSdkAdapter` docs](https://github.com/kjvarga/sitemap_generator/blob/master/lib/sitemap_generator/adapters/aws_sdk_adapter.rb), and [https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method](https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method) for the full list of supported options.
 
 ##### `SitemapGenerator::WaveAdapter`
 
