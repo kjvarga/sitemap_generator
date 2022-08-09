@@ -1,6 +1,7 @@
 ### 6.3.0
 
 * Remove Bing's deprecated sitemap submission [#400](https://github.com/kjvarga/sitemap_generator/pull/400).
+* `SitemapGenerator::AwsSdkAdapter`: Support configuring ACL and caching on the uploaded files [#409](https://github.com/kjvarga/sitemap_generator/pull/409).
 * Fix CircleCI specs for Ruby 3 [#407](https://github.com/kjvarga/sitemap_generator/pull/407).
 
 ### 6.2.1
