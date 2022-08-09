@@ -130,12 +130,12 @@ describe SitemapGenerator::LinkSet do
   describe 'search_engines' do
     it 'should have search engines by default' do
       expect(ls.search_engines).to be_a(Hash)
-      expect(ls.search_engines.size).to eq(2)
+      expect(ls.search_engines.size).to eq(1)
     end
 
     it 'should support being modified' do
       ls.search_engines[:newengine] = 'abc'
-      expect(ls.search_engines.size).to eq(3)
+      expect(ls.search_engines.size).to eq(2)
     end
 
     it 'should support being set to nil' do
@@ -679,13 +679,13 @@ describe SitemapGenerator::LinkSet do
 
     it 'should add the link to the sitemap and include the default host' do
       expect(ls).to receive(:add_default_links)
-      expect(ls.sitemap).to receive(:add).with('/home', :host => ls.default_host)
+      expect(ls.sitemap).to receive(:add).with('/home', { :host => ls.default_host })
       ls.add('/home')
     end
 
     it 'should allow setting of a custom host' do
       expect(ls).to receive(:add_default_links)
-      expect(ls.sitemap).to receive(:add).with('/home', :host => 'http://newhost.com')
+      expect(ls.sitemap).to receive(:add).with('/home', { :host => 'http://newhost.com' })
       ls.add('/home', :host => 'http://newhost.com')
     end
 
@@ -710,17 +710,17 @@ describe SitemapGenerator::LinkSet do
     describe 'host' do
       it 'should be the sitemaps_host' do
         ls.sitemaps_host = 'http://sitemapshost.com'
-        expect(ls.sitemap_index).to receive(:add).with('/home', :host => 'http://sitemapshost.com')
+        expect(ls.sitemap_index).to receive(:add).with('/home', { :host => 'http://sitemapshost.com' })
         ls.add_to_index('/home')
       end
 
       it 'should be the default_host if no sitemaps_host set' do
-        expect(ls.sitemap_index).to receive(:add).with('/home', :host => ls.default_host)
+        expect(ls.sitemap_index).to receive(:add).with('/home', { :host => ls.default_host })
         ls.add_to_index('/home')
       end
 
       it 'should allow setting a custom host' do
-        expect(ls.sitemap_index).to receive(:add).with('/home', :host => 'http://newhost.com')
+        expect(ls.sitemap_index).to receive(:add).with('/home', { :host => 'http://newhost.com' })
         ls.add_to_index('/home', :host => 'http://newhost.com')
       end
     end

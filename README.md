@@ -15,7 +15,7 @@ Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 * Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
 * Handles millions of links
 * Customizable sitemap compression
-* Notifies search engines (Google, Bing) of new sitemaps
+* Notifies search engines (Google) of new sitemaps
 * Ensures your old sitemaps stay in place if the new sitemap fails to generate
 * Gives you complete control over your sitemap contents and naming scheme
 * Intelligent sitemap indexing
@@ -58,7 +58,6 @@ In /Users/karl/projects/sitemap_generator-test/public/
 Sitemap stats: 3 links / 1 sitemaps / 0m00s
 
 Successful ping of Google
-Successful ping of Bing
 ```
 
 ## Contents
@@ -205,7 +204,7 @@ SitemapGenerator.verbose = false
 
 ### Pinging Search Engines
 
-Using `rake sitemap:refresh` will notify Google and Bing to let them know that a new sitemap
+Using `rake sitemap:refresh` will notify Google to let them know that a new sitemap
 is available.  To generate new sitemaps without notifying search engines, use `rake sitemap:refresh:no_ping`.
 
 If you want to customize the hash of search engines you can access it at:
@@ -387,6 +386,8 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 
   ```ruby
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AwsSdkAdapter.new('s3_bucket',
+    acl: 'public-read', # Optional. This is the default.
+    cache_control: 'private, max-age=0, no-cache', # Optional. This is the default.
     access_key_id: 'AKIAI3SW5CRAZBL4WSTA',
     secret_access_key: 'asdfadsfdsafsadf',
     region: 'us-east-1',
@@ -394,11 +395,9 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
   )
   ```
 
-  Where the first argument is the S3 bucket name, and the rest are keyword argument options which
-  are passed directly to the AWS client.
+  Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; all other options are passed directly to the AWS client.
 
-  See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
-  for a full list of supported options.
+  See [the `SitemapGenerator::AwsSdkAdapter` docs](https://github.com/kjvarga/sitemap_generator/blob/master/lib/sitemap_generator/adapters/aws_sdk_adapter.rb), and [https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method](https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method) for the full list of supported options.
 
 ##### `SitemapGenerator::WaveAdapter`
 

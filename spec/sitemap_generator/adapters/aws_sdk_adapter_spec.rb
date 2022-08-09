@@ -9,7 +9,7 @@ describe SitemapGenerator::AwsSdkAdapter do
   let(:options) { {} }
   let(:compress) { nil }
 
-  shared_examples 'it writes the raw data to a file and then uploads that file to S3' do
+  shared_examples 'it writes the raw data to a file and then uploads that file to S3' do |acl, cache_control, content_type|
     it 'writes the raw data to a file and then uploads that file to S3' do
       s3_object = double(:s3_object)
       s3_resource = double(:s3_resource)
@@ -20,8 +20,8 @@ describe SitemapGenerator::AwsSdkAdapter do
       expect(location).to receive(:path_in_public).and_return('path_in_public')
       expect(location).to receive(:path).and_return('path')
       expect(s3_object).to receive(:upload_file).with('path', hash_including(
-        acl: 'public-read',
-        cache_control: 'private, max-age=0, no-cache',
+        acl: acl,
+        cache_control: cache_control,
         content_type: content_type
       )).and_return(nil)
       expect_any_instance_of(SitemapGenerator::FileAdapter).to receive(:write).with(location, 'raw_data')
@@ -95,16 +95,21 @@ describe SitemapGenerator::AwsSdkAdapter do
 
   describe '#write' do
     context 'with no compress option' do
-      let(:content_type) { 'application/xml' }
-
-      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3'
+      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'public-read', 'private, max-age=0, no-cache', 'application/xml'
     end
 
     context 'with compress true' do
-      let(:content_type) { 'application/x-gzip' }
       let(:compress) { true }
 
-      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3'
+      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'public-read', 'private, max-age=0, no-cache', 'application/x-gzip'
+    end
+
+    context 'with acl and cache control configured' do
+      let(:options) do
+        { acl: 'private', cache_control: 'public, max-age=3600' }
+      end
+
+      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'private', 'public, max-age=3600', 'application/xml'
     end
   end
 
