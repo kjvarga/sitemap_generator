@@ -104,7 +104,7 @@ describe SitemapGenerator::AwsSdkAdapter do
       it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'public-read', 'private, max-age=0, no-cache', 'application/x-gzip'
     end
 
-    context 'with acl and cache control configured' do
+    context 'when acl and cache control configured' do
       let(:options) do
         { acl: 'private', cache_control: 'public, max-age=3600' }
       end
