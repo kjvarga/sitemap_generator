@@ -419,9 +419,10 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
 
   ```ruby
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::GoogleStorageAdapter.new(
+    acl: 'public', # Optional.  This is the default value.
+    bucket: 'name_of_bucket'
     credentials: 'path/to/keyfile.json',
     project_id: 'google_account_project_id',
-    bucket: 'name_of_bucket'
   )
   ```
   Also, inline with Google Authentication options, it can also pick credentials from environment variables. All [supported environment variables][google_cloud_storage_authentication] can be used, for example: `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_CREDENTIALS`.  An example of using this adapter with the environment variables is:
@@ -432,7 +433,7 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
   )
   ```
 
-  All options other than the `:bucket` option are passed to the `Google::Cloud::Storage.new` initializer giving you maximum configurability.  See the [Google Cloud Storage initializer][google_cloud_storage_initializer] for supported options.
+  All options other than the `:bucket` and `:acl` options are passed to the `Google::Cloud::Storage.new` initializer giving you maximum configurability.  See the [Google Cloud Storage initializer][google_cloud_storage_initializer] for supported options.
 
 #### An Example of Using an Adapter
 
