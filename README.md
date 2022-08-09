@@ -393,8 +393,7 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
   )
   ```
 
-  Where the first argument is the S3 bucket name, and the rest are keyword argument options which
-  are passed directly to the AWS client.
+  Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; all other options are passed directly to the AWS client.
 
   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
   for a full list of supported options.
