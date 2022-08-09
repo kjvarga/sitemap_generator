@@ -1,3 +1,8 @@
+### 6.3.0
+
+* Remove Bing's deprecated sitemap submission [#400](https://github.com/kjvarga/sitemap_generator/pull/400).
+* Fix CircleCI specs for Ruby 3 [#407](https://github.com/kjvarga/sitemap_generator/pull/407).
+
 ### 6.2.1
 
 * Bugfix: Improve handling of deprecated options in `AwsSdkAdapter`.  Fixes bug where `:region` was being set to `nil`. [#390](https://github.com/kjvarga/sitemap_generator/pull/390).
