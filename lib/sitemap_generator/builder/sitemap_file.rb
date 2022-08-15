@@ -38,6 +38,7 @@ module SitemapGenerator
               xmlns:mobile="#{SitemapGenerator::SCHEMAS['mobile']}"
               xmlns:pagemap="#{SitemapGenerator::SCHEMAS['pagemap']}"
               xmlns:xhtml="http://www.w3.org/1999/xhtml"
+              xmlns:coveo="https://www.coveo.com/en/company/about-us"
             >
         HTML
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!

@@ -42,7 +42,7 @@ module SitemapGenerator
 
         SitemapGenerator::Utilities.assert_valid_keys(
           options,
-          :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :news, :videos, :mobile, :alternate, :alternates, :pagemap
+          :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :news, :videos, :mobile, :alternate, :alternates, :pagemap, :coveo
         )
         SitemapGenerator::Utilities.reverse_merge!(
           options,
@@ -78,7 +78,8 @@ module SitemapGenerator
           :videos     => options[:videos],
           :mobile     => options[:mobile],
           :alternates => options[:alternates],
-          :pagemap    => options[:pagemap]
+          :pagemap    => options[:pagemap],
+          :coveo      => options[:coveo]
         )
       end
 
@@ -91,6 +92,14 @@ module SitemapGenerator
           builder.expires    w3c_date(self[:expires])      if self[:expires]
           builder.changefreq self[:changefreq].to_s        if self[:changefreq]
           builder.priority   format_float(self[:priority]) if self[:priority]
+
+          unless SitemapGenerator::Utilities.blank?(self[:coveo])
+            coveo_data = self[:coveo]
+            builder.coveo:metadata do
+              builder.casenumber coveo_data[:case_number].to_s if coveo_data[:case_number]
+              builder.company_name coveo_data[:company_name].to_s if coveo_data[:company_name]
+            end
+          end
 
           unless SitemapGenerator::Utilities.blank?(self[:news])
             news_data = self[:news]
