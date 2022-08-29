@@ -25,6 +25,7 @@ module SitemapGenerator
     def initialize(opts = {})
       @aws_access_key_id = opts[:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID']
       @aws_secret_access_key = opts[:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
+      @aws_session_token = opts[:aws_session_token] || ENV['AWS_SESSION_TOKEN']
       @fog_provider = opts[:fog_provider] || ENV['FOG_PROVIDER']
       @fog_directory = opts[:fog_directory] || ENV['FOG_DIRECTORY']
       @fog_region = opts[:fog_region] || ENV['FOG_REGION']
@@ -43,6 +44,7 @@ module SitemapGenerator
       if @aws_access_key_id && @aws_secret_access_key
         credentials[:aws_access_key_id] = @aws_access_key_id
         credentials[:aws_secret_access_key] = @aws_secret_access_key
+        credentials[:aws_session_token] = @aws_session_token if @aws_session_token
       else
         credentials[:use_iam_profile] = true
       end

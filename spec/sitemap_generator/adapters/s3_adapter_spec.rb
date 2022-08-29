@@ -29,6 +29,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
     {
       aws_access_key_id: 'aws_access_key_id',
       aws_secret_access_key: 'aws_secret_access_key',
+      aws_session_token: 'aws_session_token',
       fog_provider: 'fog_provider',
       fog_directory: 'fog_directory',
       fog_region: 'fog_region',
@@ -51,6 +52,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
     it 'sets options on the instance' do
       expect(adapter.instance_variable_get(:@aws_access_key_id)).to eq('aws_access_key_id')
       expect(adapter.instance_variable_get(:@aws_secret_access_key)).to eq('aws_secret_access_key')
+      expect(adapter.instance_variable_get(:@aws_session_token)).to eq('aws_session_token')
       expect(adapter.instance_variable_get(:@fog_provider)).to eq('fog_provider')
       expect(adapter.instance_variable_get(:@fog_directory)).to eq('fog_directory')
       expect(adapter.instance_variable_get(:@fog_region)).to eq('fog_region')
