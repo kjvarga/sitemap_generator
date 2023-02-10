@@ -7,7 +7,7 @@ module SitemapGenerator
     @@requires_finalization_opts = [:filename, :sitemaps_path, :sitemaps_host, :namer]
     @@new_location_opts = [:filename, :sitemaps_path, :namer]
 
-    attr_reader :default_host, :sitemaps_path, :filename, :create_index
+    attr_reader :default_host, :sitemaps_path, :filename, :create_index, :uniq_links_set
     attr_accessor :include_root, :include_index, :adapter, :yield_sitemap, :max_sitemap_links
     attr_writer :verbose
 
@@ -132,6 +132,7 @@ module SitemapGenerator
         :max_sitemap_links => SitemapGenerator::MAX_SITEMAP_LINKS
       )
       options.each_pair { |k, v| instance_variable_set("@#{k}".to_sym, v) }
+      @uniq_links_set = Set.new
 
       # If an index is passed in, protect it from modification.
       # Sitemaps can be added to the index but nothing else can be changed.
@@ -148,7 +149,10 @@ module SitemapGenerator
     #   host - host for the link, defaults to your <tt>default_host</tt>.
     def add(link, options={})
       add_default_links if !@added_default_links
-      sitemap.add(link, SitemapGenerator::Utilities.reverse_merge(options, :host => @default_host))
+      return if uniq_links_set.include?(link)
+
+      uniq_links_set.add(link)
+      sitemap.add(link, SitemapGenerator::Utilities.reverse_merge(options, :host => @default_host)) 
     rescue SitemapGenerator::SitemapFullError
       finalize_sitemap!
       retry

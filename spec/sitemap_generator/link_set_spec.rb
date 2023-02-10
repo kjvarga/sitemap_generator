@@ -693,6 +693,18 @@ describe SitemapGenerator::LinkSet do
       expect(ls).to receive(:add_default_links)
       ls.add('/home')
     end
+
+    context 'when link added twice' do
+      before do
+        ls.include_root = false
+        ls.add('/home')
+        ls.add('/home')
+      end
+      
+      it 'should not add link that already added' do
+        expect(ls.sitemap.link_count).to eq(1)
+      end
+    end
   end
 
   describe 'add_to_index' do
