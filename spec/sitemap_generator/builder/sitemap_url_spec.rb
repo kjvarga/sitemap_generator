@@ -90,8 +90,8 @@ describe SitemapGenerator::Builder::SitemapUrl do
 
   it 'should not fail if invalid characters are used in the URL' do
     special = ':$&+,;:=?@'
-    url = SitemapGenerator::Builder::SitemapUrl.new('/#{special}', :host => 'http://example.com/#{special}/')
-    expect(url[:loc]).to eq('http://example.com/#{special}/#{special}')
+    url = SitemapGenerator::Builder::SitemapUrl.new("/#{special}", :host => "http://example.com/#{special}/")
+    expect(url[:loc]).to eq("http://example.com/#{special}/#{special}")
   end
 
   describe 'w3c_date' do
