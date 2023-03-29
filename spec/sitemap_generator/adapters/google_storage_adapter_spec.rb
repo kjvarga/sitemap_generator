@@ -9,7 +9,6 @@ describe SitemapGenerator::GoogleStorageAdapter do
 
   shared_examples 'writes the raw data to a file and then uploads that file to Google Storage' do |acl|
     it 'writes the raw data to a file and then uploads that file to Google Storage' do
-      bucket = double(:bucket)
       storage = double(:storage)
       bucket_resource = double(:bucket_resource)
       expect(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc', project_id: 'project_id').and_return(storage)
