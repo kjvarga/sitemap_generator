@@ -15,7 +15,7 @@ describe SitemapGenerator::Numeric do
         numeric(1).kilobyte ** 4  => numeric(  1).terabyte,
         numeric(1024).kilobytes + numeric(2).megabytes =>   numeric(3).megabytes,
         numeric(             2).gigabytes / 4 => numeric(512).megabytes,
-        numeric(256).megabytes * 20 +numeric( 5).gigabytes => numeric(10).gigabytes,
+        numeric(256).megabytes * 20 + numeric( 5).gigabytes => numeric(10).gigabytes,
         numeric(1).kilobyte ** 5 => numeric(1).petabyte,
         numeric(1).kilobyte ** 6 => numeric(1).exabyte
       }
