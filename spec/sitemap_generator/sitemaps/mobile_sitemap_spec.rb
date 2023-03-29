@@ -4,7 +4,6 @@ describe 'SitemapGenerator' do
 
   it 'should add the mobile sitemap element' do
     loc = 'http://www.example.com/mobile_page.html'
-    format = 'html'
 
     mobile_xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('mobile_page.html',
       :host => 'http://www.example.com',
