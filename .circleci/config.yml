@@ -35,12 +35,6 @@ jobs:
       - checkout:
           path: ~/sitemap_generator
       - run:
-          name: Install sqlite3 when on Ruby 2.5
-          command: |
-            if [[ "$RUBY_VERSION" =~ 2\.5 ]]; then
-              sudo apt-get update && sudo apt-get install -y sqlite3 libsqlite3-dev
-            fi
-      - run:
           name: Install Rails dependencies
           environment:
             BUNDLE_GEMFILE: "./gemfiles/rails_<< parameters.rails-version >>.gemfile"
@@ -63,26 +57,22 @@ workflows:
           # See https://circleci.com/blog/circleci-matrix-jobs/
           matrix:
             parameters:
-              ruby-version: ["3.1", "3.0", "2.7", "2.5"]
+              ruby-version: ["3.2", "3.1", "3.0", "2.7"]
           name: gem-test-ruby-<< matrix.ruby-version >>
       - integration-test:
           # See https://circleci.com/blog/circleci-matrix-jobs/
           # See https://www.fastruby.io/blog/ruby/rails/versions/compatibility-table.html for Ruby and Rails compatibility
           matrix:
             parameters:
-              ruby-version: ["3.1", "3.0", "2.7", "2.5"]
-              rails-version: ["5_2", "6_0", "6_1", "7_0"]
+              ruby-version: ["3.2", "3.1", "3.0", "2.7"]
+              rails-version: ["6_0", "6_1", "7_0"]
             exclude:
-              - ruby-version: "2.5"
-                rails-version: "7_0"
-              - ruby-version: "2.7"
-                rails-version: "5_2"
-              - ruby-version: "3.0"
-                rails-version: "5_2"
               - ruby-version: "3.0"
                 rails-version: "6_0"
               - ruby-version: "3.1"
-                rails-version: "5_2"
-              - ruby-version: "3.1"
+                rails-version: "6_0"
+              - ruby-version: "3.2"
+                rails-version: "6_0"
+              - ruby-version: "3.2"
                 rails-version: "6_0"
           name: integration-test-ruby-<< matrix.ruby-version >>-rails-<< matrix.rails-version >>
