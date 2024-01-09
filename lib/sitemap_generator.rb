@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sitemap_generator/simple_namer'
 require 'sitemap_generator/builder'
 require 'sitemap_generator/link_set'

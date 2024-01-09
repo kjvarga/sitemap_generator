@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   module Utilities
     extend self

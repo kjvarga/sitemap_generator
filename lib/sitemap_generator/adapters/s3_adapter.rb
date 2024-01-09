@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if !defined?(Fog::Storage)
   raise LoadError, "Error: `Fog::Storage` is not defined.\n\n"\
         "Please `require 'fog-aws'` - or another library that defines this class."

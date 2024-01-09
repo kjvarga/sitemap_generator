@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   # A class for generating sitemap filenames.
   #

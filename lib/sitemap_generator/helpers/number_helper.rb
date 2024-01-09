@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # require "sitemap_generator/core_ext/big_decimal/conversions"
 require "sitemap_generator/utilities"
 

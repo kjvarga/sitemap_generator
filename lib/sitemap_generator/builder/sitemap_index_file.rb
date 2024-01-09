@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   module Builder
     class SitemapIndexFile < SitemapFile
@@ -10,8 +12,8 @@ module SitemapGenerator
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapIndexLocation.new(opts) : opts
         @link_count = 0
         @sitemaps_link_count = 0
-        @xml_content = '' # XML urlset content
-        @xml_wrapper_start = <<-HTML
+        @xml_content = +'' # XML urlset content
+        @xml_wrapper_start = +<<-HTML
           <?xml version="1.0" encoding="UTF-8"?>
             <sitemapindex
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
