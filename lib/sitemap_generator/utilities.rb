@@ -142,6 +142,7 @@ module SitemapGenerator
     end
 
     def titleize(string)
+      string = string.dup if string.frozen?
       string.gsub!(/_/, ' ')
       string.split(/(\W)/).map(&:capitalize).join
     end
