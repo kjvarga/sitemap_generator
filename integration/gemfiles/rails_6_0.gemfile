@@ -9,7 +9,7 @@ else
 end
 gem "rspec_junit_formatter"
 gem "sitemap_generator", path: "../../../"
-gem "sqlite3"
+gem "sqlite3", "~> 1.4"
 gem "combustion"
 gem "rails", "~> 6.0"
 gem "rspec-rails"
