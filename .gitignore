@@ -11,3 +11,4 @@ public
 Gemfile.lock
 integration/Gemfile.lock
 integration/gemfiles/*.lock
+gemfiles/*.lock
