@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'aws-sdk-core'
 require 'aws-sdk-s3'
 
-describe SitemapGenerator::AwsSdkAdapter do
+RSpec.describe SitemapGenerator::AwsSdkAdapter do
   subject(:adapter)  { described_class.new('bucket', **options) }
 
   let(:location) { SitemapGenerator::SitemapLocation.new(compress: compress) }

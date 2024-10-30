@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Application do
+RSpec.describe SitemapGenerator::Application do
   before do
     stub_const('Rails::VERSION', '1')
     @app = SitemapGenerator::Application.new

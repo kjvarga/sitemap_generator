@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator' do
+RSpec.describe 'SitemapGenerator' do
   let(:schema) { SitemapGenerator::SCHEMAS['pagemap'] }
 
   it 'should add the pagemap sitemap element' do

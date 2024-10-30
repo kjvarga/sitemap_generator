@@ -15,4 +15,8 @@ SitemapGenerator.verbose = false
 RSpec.configure do |config|
   config.include(FileMacros)
   config.include(XmlMacros)
+
+  # disable monkey patching
+  # see: https://rspec.info/features/3-12/rspec-core/configuration/zero-monkey-patching-mode/
+  config.disable_monkey_patching!
 end

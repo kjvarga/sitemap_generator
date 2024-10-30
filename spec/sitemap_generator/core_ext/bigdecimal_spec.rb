@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'bigdecimal'
 
-describe SitemapGenerator::BigDecimal do
+RSpec.describe SitemapGenerator::BigDecimal do
   describe 'to_yaml' do
     it 'should serialize correctly' do
       expect(SitemapGenerator::BigDecimal.new('100000.30020320320000000000000000000000000000001').to_yaml).to match(/^--- 100000\.30020320320000000000000000000000000000001\n/)

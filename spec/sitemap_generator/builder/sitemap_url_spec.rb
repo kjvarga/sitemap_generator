@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Builder::SitemapUrl do
+RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   let(:loc) {
     SitemapGenerator::SitemapLocation.new(
       :sitemaps_path => 'sitemaps/',

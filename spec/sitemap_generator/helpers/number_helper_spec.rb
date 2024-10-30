@@ -17,7 +17,7 @@ def terabytes(number)
   gigabytes(number) * 1024
 end
 
-describe SitemapGenerator::Helpers::NumberHelper do
+RSpec.describe SitemapGenerator::Helpers::NumberHelper do
   include SitemapGenerator::Helpers::NumberHelper
 
   it 'should number_with_delimiter' do

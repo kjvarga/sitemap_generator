@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Templates class' do
+RSpec.describe 'Templates class' do
 
   it 'should provide method access to each template' do
     SitemapGenerator::Templates::FILES.each do |name, file|

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Utilities do
+RSpec.describe SitemapGenerator::Utilities do
 
   describe 'assert_valid_keys' do
     it 'should raise error on invalid keys' do

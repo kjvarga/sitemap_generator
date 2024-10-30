@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Numeric do
+RSpec.describe SitemapGenerator::Numeric do
   def numeric(size)
     SitemapGenerator::Numeric.new(size)
   end

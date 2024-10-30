@@ -2,7 +2,7 @@
 require 'spec_helper'
 require 'fog-aws'
 
-describe SitemapGenerator::S3Adapter do
+RSpec.describe SitemapGenerator::S3Adapter do
   subject(:adapter) { described_class.new(options) }
 
   let(:location) do

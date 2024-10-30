@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Utilities do
+RSpec.describe SitemapGenerator::Utilities do
   describe 'rounding' do
     let(:utils) { SitemapGenerator::Utilities }
 

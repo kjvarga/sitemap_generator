@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::SitemapLocation do
+RSpec.describe SitemapGenerator::SitemapLocation do
   let(:default_host) { 'http://example.com' }
   let(:location)     { SitemapGenerator::SitemapLocation.new }
 
@@ -217,7 +217,7 @@ describe SitemapGenerator::SitemapLocation do
   end
 end
 
-describe SitemapGenerator::SitemapIndexLocation do
+RSpec.describe SitemapGenerator::SitemapIndexLocation do
   let(:location)     { SitemapGenerator::SitemapIndexLocation.new }
 
   it 'should have a default namer' do
