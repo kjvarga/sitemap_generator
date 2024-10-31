@@ -55,6 +55,8 @@ module Helpers
   end
 end
 
+puts "Running RSpec with Rails version: #{Rails.version}"
+
 # Load our own gem
 require 'sitemap_generator/tasks' # Combusition fails to load these tasks
 SitemapGenerator.verbose = false
