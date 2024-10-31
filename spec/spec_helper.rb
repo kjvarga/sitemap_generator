@@ -7,8 +7,10 @@ require_relative 'support/file_macros'
 require_relative 'support/xml_macros'
 
 # Load simplecov
-# require 'simplecov'
-# SimpleCov.start
+require 'simplecov'
+SimpleCov.start do
+  add_filter 'spec/'
+end
 
 # Configure webmock
 WebMock.disable_net_connect!

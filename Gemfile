@@ -14,6 +14,7 @@ gem 'rake'
 gem 'rspec_junit_formatter'
 gem 'rspec'
 gem 'rspec-rails'
+gem 'simplecov'
 gem 'sqlite3', '~> 1.5.0'
 gem 'webmock'
 
