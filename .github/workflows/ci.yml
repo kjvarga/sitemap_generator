@@ -162,4 +162,4 @@ jobs:
           bundler-cache: true
 
       - name: RSpec
-        run: 'echo "current_directory: ${PWD}" && bundle exec rspec --profile 10 --format RspecJunitFormatter --out ./test-results/rspec/results.xml --format progress'
+        run: 'echo "current_directory: ${PWD}" && bin/rspec --profile 10 --format RspecJunitFormatter --out ./test-results/rspec/results.xml --format progress'
