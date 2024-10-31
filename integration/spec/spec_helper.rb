@@ -1,16 +1,19 @@
-require 'bundler/setup'
-Bundler.require
+# Load combustion gem
+require 'combustion'
+
 # Setting load_schema: false results in "uninitialized constant ActiveRecord::MigrationContext" error
 Combustion.initialize! :active_record, :action_view, database_reset: false
 Combustion::Application.load_tasks
-require 'sitemap_generator/tasks' # Combusition fails to load these tasks
-SitemapGenerator.verbose = false
 
+# Load rspec gem
 require 'rspec/rails'
-require 'support/sitemap_macros'
-require '../spec/support/file_macros'
-require '../spec/support/xml_macros'
 
+# Load support files
+require_relative 'support/sitemap_macros'
+require_relative '../../spec/support/file_macros'
+require_relative '../../spec/support/xml_macros'
+
+# Configure rspec
 RSpec.configure do |config|
   config.include(FileMacros)
   config.include(XmlMacros)
@@ -35,3 +38,7 @@ module Helpers
     Rake::Task[task.to_s].reenable
   end
 end
+
+# Load our own gem
+require 'sitemap_generator/tasks' # Combusition fails to load these tasks
+SitemapGenerator.verbose = false
