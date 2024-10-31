@@ -6,7 +6,7 @@ class Holder
   end
 end
 
-describe "SitemapGenerator" do
+RSpec.describe "SitemapGenerator" do
   describe "reset!" do
     before :each do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet

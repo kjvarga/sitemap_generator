@@ -19,6 +19,18 @@ RSpec.configure do |config|
   config.include(XmlMacros)
   config.include(SitemapMacros)
 
+  # run tests in random order
+  config.order = :random
+  Kernel.srand config.seed
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+
+  # disable monkey patching
+  # see: https://rspec.info/features/3-12/rspec-core/configuration/zero-monkey-patching-mode/
+  config.disable_monkey_patching!
+
   config.after(:all) do
     clean_sitemap_files_from_rails_app
     copy_sitemap_file_to_rails_app(:create)
