@@ -19,6 +19,10 @@ RSpec.configure do |config|
   config.include(XmlMacros)
   config.include(SitemapMacros)
 
+  # Use DB agnostic schema by default
+  load Rails.root.join('db', 'schema.rb').to_s
+  load Rails.root.join('db', 'seed.rb').to_s
+
   # run tests in random order
   config.order = :random
   Kernel.srand config.seed
