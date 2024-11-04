@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Builder::SitemapIndexUrl do
+RSpec.describe SitemapGenerator::Builder::SitemapIndexUrl do
   let(:index) {
     SitemapGenerator::Builder::SitemapIndexFile.new(
       :sitemaps_path => 'sitemaps/',

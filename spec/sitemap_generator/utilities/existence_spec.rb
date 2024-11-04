@@ -11,7 +11,7 @@ end
 BLANK = [ EmptyTrue.new, nil, false, '', '   ', "  \n\t  \r ", [], {} ]
 NOT   = [ EmptyFalse.new, Object.new, true, 0, 1, 'a', [nil], { nil => 0 } ]
 
-describe Object do
+RSpec.describe Object do
   let(:utils) { SitemapGenerator::Utilities }
 
   it 'should define blankness' do

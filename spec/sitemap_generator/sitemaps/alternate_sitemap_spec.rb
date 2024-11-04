@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator' do
+RSpec.describe 'SitemapGenerator' do
   it 'should not include media element unless provided' do
     xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
       :host => 'http://www.example.com',

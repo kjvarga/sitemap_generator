@@ -1,20 +1,39 @@
-require 'bundler/setup'
-Bundler.require
+# Load combustion gem
+require 'combustion'
+
 # Setting load_schema: false results in "uninitialized constant ActiveRecord::MigrationContext" error
 Combustion.initialize! :active_record, :action_view, database_reset: false
 Combustion::Application.load_tasks
-require 'sitemap_generator/tasks' # Combusition fails to load these tasks
-SitemapGenerator.verbose = false
 
+# Load rspec gem
 require 'rspec/rails'
-require 'support/sitemap_macros'
-require '../spec/support/file_macros'
-require '../spec/support/xml_macros'
 
+# Load support files
+require_relative 'support/sitemap_macros'
+require_relative '../../spec/support/file_macros'
+require_relative '../../spec/support/xml_macros'
+
+# Configure rspec
 RSpec.configure do |config|
   config.include(FileMacros)
   config.include(XmlMacros)
   config.include(SitemapMacros)
+
+  # Use DB agnostic schema by default
+  load Rails.root.join('db', 'schema.rb').to_s
+  load Rails.root.join('db', 'seed.rb').to_s
+
+  # run tests in random order
+  config.order = :random
+  Kernel.srand config.seed
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+
+  # disable monkey patching
+  # see: https://rspec.info/features/3-12/rspec-core/configuration/zero-monkey-patching-mode/
+  config.disable_monkey_patching!
 
   config.after(:all) do
     clean_sitemap_files_from_rails_app
@@ -35,3 +54,9 @@ module Helpers
     Rake::Task[task.to_s].reenable
   end
 end
+
+puts "Running RSpec with Rails version: #{Rails.version}"
+
+# Load our own gem
+require 'sitemap_generator/tasks' # Combusition fails to load these tasks
+SitemapGenerator.verbose = false

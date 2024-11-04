@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator::Builder::SitemapIndexFile' do
+RSpec.describe 'SitemapGenerator::Builder::SitemapIndexFile' do
   let(:location) { SitemapGenerator::SitemapLocation.new(:filename => 'sitemap.xml.gz', :public_path => '/public/', :host => 'http://example.com/') }
   let(:index)    { SitemapGenerator::Builder::SitemapIndexFile.new(location) }
 

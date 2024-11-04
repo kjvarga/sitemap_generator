@@ -15,7 +15,7 @@ ensure
   SitemapGenerator::Sitemap.max_sitemap_links = original
 end
 
-describe 'SitemapGenerator' do
+RSpec.describe 'SitemapGenerator' do
   describe 'reset!' do
     before do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet

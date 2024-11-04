@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator' do
+RSpec.describe 'SitemapGenerator' do
   let(:url_options) do
     {
       :host => 'http://example.com',

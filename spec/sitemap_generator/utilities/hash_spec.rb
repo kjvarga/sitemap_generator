@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::Utilities do
+RSpec.describe SitemapGenerator::Utilities do
   let(:utils) { SitemapGenerator::Utilities }
 
   describe 'assert_valid_keys' do

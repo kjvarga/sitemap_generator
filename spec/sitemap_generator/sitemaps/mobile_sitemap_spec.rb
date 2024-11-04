@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator' do
+RSpec.describe 'SitemapGenerator' do
 
   it 'should add the mobile sitemap element' do
     loc = 'http://www.example.com/mobile_page.html'

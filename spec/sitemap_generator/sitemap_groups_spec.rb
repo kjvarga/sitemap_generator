@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Sitemap Groups' do
+RSpec.describe 'Sitemap Groups' do
   let(:linkset) { ::SitemapGenerator::LinkSet.new(:default_host => 'http://test.com') }
 
   before do

@@ -2,7 +2,7 @@
 require 'spec_helper'
 require 'fog-aws'
 
-describe SitemapGenerator::FogAdapter do
+RSpec.describe SitemapGenerator::FogAdapter do
   context 'when Fog::Storage is not defined' do
     it 'raises a LoadError' do
       hide_const('Fog::Storage')

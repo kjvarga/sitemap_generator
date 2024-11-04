@@ -2,7 +2,7 @@
 require 'spec_helper'
 require 'google/cloud/storage'
 
-describe SitemapGenerator::GoogleStorageAdapter do
+RSpec.describe SitemapGenerator::GoogleStorageAdapter do
   subject(:adapter) { described_class.new(options) }
 
   let(:options) { { credentials: 'abc', project_id: 'project_id', bucket: 'bucket' } }

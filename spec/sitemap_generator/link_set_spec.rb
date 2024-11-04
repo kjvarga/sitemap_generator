@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::LinkSet do
+RSpec.describe SitemapGenerator::LinkSet do
   let(:default_host) { 'http://example.com' }
   let(:ls)           { SitemapGenerator::LinkSet.new(:default_host => default_host) }
 

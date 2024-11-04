@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator::Builder::SitemapFile' do
+RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   let(:location) { SitemapGenerator::SitemapLocation.new(:namer => SitemapGenerator::SimpleNamer.new(:sitemap, :start => 2, :zero => 1), :public_path => 'tmp/', :sitemaps_path => 'test/', :host => 'http://example.com/') }
   let(:sitemap)  { SitemapGenerator::Builder::SitemapFile.new(location) }
 

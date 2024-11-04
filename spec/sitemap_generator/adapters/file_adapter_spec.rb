@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'SitemapGenerator::FileAdapter' do
+RSpec.describe 'SitemapGenerator::FileAdapter' do
   let(:location) { SitemapGenerator::SitemapLocation.new }
   let(:adapter)  { SitemapGenerator::FileAdapter.new }
 

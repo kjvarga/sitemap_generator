@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SitemapGenerator::SimpleNamer do
+RSpec.describe SitemapGenerator::SimpleNamer do
   it 'should generate file names' do
     namer = SitemapGenerator::SimpleNamer.new(:sitemap)
     expect(namer.to_s).to eq('sitemap.xml.gz')
