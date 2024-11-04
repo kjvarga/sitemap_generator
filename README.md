@@ -1,6 +1,6 @@
 # SitemapGenerator
 
-[![CircleCI](https://circleci.com/gh/kjvarga/sitemap_generator/tree/master.svg?style=shield)](https://circleci.com/gh/kjvarga/sitemap_generator/tree/master)
+[![CI](https://github.com/kjvarga/sitemap_generator/actions/workflows/ci.yml/badge.svg)](https://github.com/kjvarga/sitemap_generator/actions/workflows/ci.yml)
 
 SitemapGenerator is the easiest way to generate Sitemaps in Ruby.  Rails integration provides access to the Rails route helpers within your sitemap config file and automatically makes the rake tasks available to you.  Or if you prefer to use another framework, you can!  You can use the rake tasks provided or run your sitemap configs as plain ruby scripts.
 
