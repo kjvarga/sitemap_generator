@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   # Provide convenient access to template files.  E.g.
   #

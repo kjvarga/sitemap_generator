@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sitemap_generator/helpers/number_helper'
 
 module SitemapGenerator
@@ -108,7 +110,7 @@ module SitemapGenerator
     def filename
       raise SitemapGenerator::SitemapError, "No filename or namer set" unless self[:filename] || self[:namer]
       unless self[:filename]
-        self.send(:[]=, :filename, self[:namer].to_s, :super => true)
+        self.send(:[]=, :filename, +self[:namer].to_s, :super => true)
 
         # Post-process the filename for our compression settings.
         # Strip the `.gz` from the extension if we aren't compressing this file.

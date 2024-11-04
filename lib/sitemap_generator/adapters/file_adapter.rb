@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   # Class for writing out data to a file.
   class FileAdapter

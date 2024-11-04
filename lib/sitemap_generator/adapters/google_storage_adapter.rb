@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if !defined?(Google::Cloud::Storage)
   raise LoadError, "Error: `Google::Cloud::Storage` is not defined.\n\n"\
         "Please `require 'google/cloud/storage'` - or another library that defines this class."

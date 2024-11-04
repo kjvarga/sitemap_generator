@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   module Utilities
     extend self
@@ -140,6 +142,7 @@ module SitemapGenerator
     end
 
     def titleize(string)
+      string = string.dup if string.frozen?
       string.gsub!(/_/, ' ')
       string.split(/(\W)/).map(&:capitalize).join
     end

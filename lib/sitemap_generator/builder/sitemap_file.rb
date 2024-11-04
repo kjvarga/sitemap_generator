@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'zlib'
 require 'fileutils'
 require 'sitemap_generator/helpers/number_helper'
@@ -24,8 +26,8 @@ module SitemapGenerator
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapLocation.new(opts) : opts
         @link_count = 0
         @news_count = 0
-        @xml_content = '' # XML urlset content
-        @xml_wrapper_start = <<-HTML
+        @xml_content = +'' # XML urlset content
+        @xml_wrapper_start = +<<-HTML
           <?xml version="1.0" encoding="UTF-8"?>
             <urlset
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

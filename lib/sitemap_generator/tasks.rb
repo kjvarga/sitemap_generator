@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # require this file to load the tasks
 require 'rake'
 
