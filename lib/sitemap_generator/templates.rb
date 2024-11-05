@@ -13,7 +13,7 @@ module SitemapGenerator
     }
 
     # Dynamically define accessors for each key defined in <tt>FILES</tt>
-    attr_accessor(*FILES.keys)
+    attr_writer(*FILES.keys)
 
     FILES.each_key do |name|
       eval(<<-ACCESSOR, binding, __FILE__ , __LINE__ + 1)
