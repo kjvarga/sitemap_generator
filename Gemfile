@@ -15,7 +15,7 @@ gem 'rspec_junit_formatter'
 gem 'rspec'
 gem 'rspec-rails'
 gem 'simplecov'
-gem 'sqlite3', '~> 1.5.0'
+gem 'sqlite3', '~> 2.1.0'
 gem 'webmock'
 
 if RUBY_VERSION =~ /2.5.*/
