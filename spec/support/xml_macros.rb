@@ -54,10 +54,10 @@ module XmlMacros
   end
 
   def xml_data_should_have_minimal_whitespace(xml_data)
-    expect(xml_data).not_to match /^\s/
-    expect(xml_data).not_to match /\s$/
-    expect(xml_data).not_to match /\s\s+/
-    expect(xml_data).not_to match /\s[<>]/
-    expect(xml_data).not_to match /[<>]\s/
+    expect(xml_data).not_to match(/^\s/)
+    expect(xml_data).not_to match(/\s$/)
+    expect(xml_data).not_to match(/\s\s+/)
+    expect(xml_data).not_to match(/\s[<>]/)
+    expect(xml_data).not_to match(/[<>]\s/)
   end
 end
