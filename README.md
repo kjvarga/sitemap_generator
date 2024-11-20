@@ -204,10 +204,10 @@ SitemapGenerator.verbose = false
 
 ### Pinging Search Engines
 
-Using `rake sitemap:refresh` will notify Google to let them know that a new sitemap
+Using `rake sitemap:refresh` will notify configured search engines to let them know that a new sitemap
 is available.  To generate new sitemaps without notifying search engines, use `rake sitemap:refresh:no_ping`.
 
-If you want to customize the hash of search engines you can access it at:
+By default no search engines are configured. If you want to customize the hash of search engines you can access it at:
 
 ```ruby
 SitemapGenerator::Sitemap.search_engines

@@ -126,9 +126,7 @@ module SitemapGenerator
         :include_root => true,
         :include_index => false,
         :filename => :sitemap,
-        :search_engines => {
-          :google         => "http://www.google.com/webmasters/tools/ping?sitemap=%s"
-        },
+        :search_engines => {},
         :create_index => :auto,
         :compress => true,
         :max_sitemap_links => SitemapGenerator::MAX_SITEMAP_LINKS
