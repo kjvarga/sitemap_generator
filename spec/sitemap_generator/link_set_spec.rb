@@ -130,12 +130,12 @@ RSpec.describe SitemapGenerator::LinkSet do
   describe 'search_engines' do
     it 'should have search engines by default' do
       expect(ls.search_engines).to be_a(Hash)
-      expect(ls.search_engines.size).to eq(1)
+      expect(ls.search_engines.size).to eq(0)
     end
 
     it 'should support being modified' do
       ls.search_engines[:newengine] = 'abc'
-      expect(ls.search_engines.size).to eq(2)
+      expect(ls.search_engines.size).to eq(1)
     end
 
     it 'should support being set to nil' do
@@ -149,12 +149,6 @@ RSpec.describe SitemapGenerator::LinkSet do
   end
 
   describe 'ping search engines' do
-    it 'should not fail' do
-      request = stub_request(:get, //)
-      expect { ls.ping_search_engines }.not_to raise_error
-      expect(request).to have_been_requested.at_least_once
-    end
-
     it 'should raise if no host is set' do
       expect { SitemapGenerator::LinkSet.new.ping_search_engines }.to raise_error(SitemapGenerator::SitemapError, 'No value set for host')
     end
