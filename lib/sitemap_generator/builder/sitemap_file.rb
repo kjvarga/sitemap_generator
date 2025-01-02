@@ -26,8 +26,8 @@ module SitemapGenerator
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapLocation.new(opts) : opts
         @link_count = 0
         @news_count = 0
-        @xml_content = +'' # XML urlset content
-        @xml_wrapper_start = +<<-HTML
+        @xml_content = String.new # XML urlset content
+        @xml_wrapper_start = <<-HTML
           <?xml version="1.0" encoding="UTF-8"?>
             <urlset
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -138,8 +138,8 @@ module SitemapGenerator
         raise SitemapGenerator::SitemapError.new("Sitemap already written!") if written?
         finalize! unless finalized?
         reserve_name
-        @location.write(@xml_wrapper_start + @xml_content + @xml_wrapper_end, link_count)
-        @xml_content = @xml_wrapper_start = @xml_wrapper_end = ''
+        @location.write("#{@xml_wrapper_start}#{@xml_content}#{@xml_wrapper_end}", link_count)
+        @xml_content = @xml_wrapper_start = @xml_wrapper_end = String.new
         @written = true
       end
 
