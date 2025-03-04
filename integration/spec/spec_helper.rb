@@ -1,3 +1,6 @@
+# Fix uninitialized constant ActiveSupport::LoggerThreadSafeLevel::Logger
+require 'logger'
+
 # Load combustion gem
 require 'combustion'
 
