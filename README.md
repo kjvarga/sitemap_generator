@@ -1172,11 +1172,9 @@ Ruby 1.9.3 support was dropped in Version 6.0.0.
 
 ## Licence
 
-Released under the MIT License.  See the (MIT-LICENSE)[MIT-LICENSE] file.
+Released under the MIT license which is included in the [MIT-LICENSE](./MIT-LICENSE) file.
 
-MIT. See the LICENSE.md file.
-
-Copyright (c) Karl Varga released under the MIT license
+Copyright (c) Karl Varga
 
 [canonical_repo]:http://github.com/kjvarga/sitemap_generator
 [sitemap_images]:http://www.google.com/support/webmasters/bin/answer.py?answer=178636
