@@ -24,7 +24,7 @@ module SitemapGenerator
   SitemapFinalizedError = Class.new(SitemapError)
 
   Utilities.with_warnings(nil) do
-    VERSION = File.read(File.dirname(__FILE__) + "/../VERSION").strip
+    VERSION = File.read(File.dirname(__FILE__) + '/../VERSION').strip
     MAX_SITEMAP_FILES    = 50_000        # max sitemap links per index file
     MAX_SITEMAP_LINKS    = 50_000        # max links per sitemap
     MAX_SITEMAP_IMAGES   = 1_000         # max images per url
@@ -81,7 +81,7 @@ module SitemapGenerator
     !!@yield_sitemap
   end
 
-  self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../'))  # Root of the install dir, not the Rails app
+  self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../')) # Root of the install dir, not the Rails app
   self.templates = SitemapGenerator::Templates.new(self.root)
   self.app       = SitemapGenerator::Application.new
 end

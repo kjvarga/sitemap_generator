@@ -6,8 +6,8 @@ require 'builder'
 # which lists all the sitemap files written.
 module SitemapGenerator
   class LinkSet
-    @@requires_finalization_opts = [:filename, :sitemaps_path, :sitemaps_host, :namer]
-    @@new_location_opts = [:filename, :sitemaps_path, :namer]
+    @@requires_finalization_opts = %i[filename sitemaps_path sitemaps_host namer]
+    @@new_location_opts = %i[filename sitemaps_path namer]
 
     attr_reader :default_host, :sitemaps_path, :filename, :create_index
     attr_accessor :include_root, :include_index, :adapter, :yield_sitemap, :max_sitemap_links
@@ -32,17 +32,17 @@ module SitemapGenerator
     # If you are calling +create+ more than once in your sitemap configuration file,
     # make sure that you set a different +sitemaps_path+ or +filename+ for each call otherwise
     # the sitemaps may be overwritten.
-    def create(opts={}, &block)
+    def create(opts = {}, &block) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       reset!
       set_options(opts)
       if verbose
         start_time = Time.now
         puts "In '#{sitemap_index.location.public_path}':"
       end
-      interpreter.eval(:yield_sitemap => yield_sitemap?, &block)
+      interpreter.eval(yield_sitemap: yield_sitemap?, &block)
       finalize!
       end_time = Time.now if verbose
-      output(sitemap_index.stats_summary(:time_taken => end_time - start_time)) if verbose
+      output(sitemap_index.stats_summary(time_taken: end_time - start_time)) if verbose
       self
     end
 
@@ -119,19 +119,19 @@ module SitemapGenerator
     #
     # Note: When adding a new option be sure to include it in `options_for_group()` if
     # the option should be inherited by groups.
-    def initialize(options={})
+    def initialize(options = {})
       @default_host, @sitemaps_host, @yield_sitemap, @sitemaps_path, @adapter, @verbose, @protect_index, @sitemap_index, @added_default_links, @created_group, @sitemap = nil
 
       options = SitemapGenerator::Utilities.reverse_merge(options,
-        :include_root => true,
-        :include_index => false,
-        :filename => :sitemap,
-        :search_engines => {},
-        :create_index => :auto,
-        :compress => true,
-        :max_sitemap_links => SitemapGenerator::MAX_SITEMAP_LINKS
+        include_root: true,
+        include_index: false,
+        filename: :sitemap,
+        search_engines: {},
+        create_index: :auto,
+        compress: true,
+        max_sitemap_links: SitemapGenerator::MAX_SITEMAP_LINKS
       )
-      options.each_pair { |k, v| instance_variable_set("@#{k}".to_sym, v) }
+      options.each_pair { |k, v| instance_variable_set(:"@#{k}", v) }
 
       # If an index is passed in, protect it from modification.
       # Sitemaps can be added to the index but nothing else can be changed.
@@ -146,9 +146,9 @@ module SitemapGenerator
     # link - string link e.g. '/merchant', '/article/1' or whatever.
     # options - see README.
     #   host - host for the link, defaults to your <tt>default_host</tt>.
-    def add(link, options={})
-      add_default_links if !@added_default_links
-      sitemap.add(link, SitemapGenerator::Utilities.reverse_merge(options, :host => @default_host))
+    def add(link, options = {})
+      add_default_links unless @added_default_links
+      sitemap.add(link, SitemapGenerator::Utilities.reverse_merge(options, host: @default_host))
     rescue SitemapGenerator::SitemapFullError
       finalize_sitemap!
       retry
@@ -163,8 +163,8 @@ module SitemapGenerator
     #
     # The `:host` option defaults to the value of `sitemaps_host` which is the host where your
     # sitemaps reside.  If no `sitemaps_host` is set, the `default_host` is used.
-    def add_to_index(link, options={})
-      sitemap_index.add(link, SitemapGenerator::Utilities.reverse_merge(options, :host => sitemaps_host))
+    def add_to_index(link, options = {})
+      sitemap_index.add(link, SitemapGenerator::Utilities.reverse_merge(options, host: sitemaps_host))
     end
 
     # Create a new group of sitemap files.
@@ -194,7 +194,7 @@ module SitemapGenerator
     # Options like <tt>:default_host</tt> can be used and it will only affect the links
     # within the group.  Links added outside of the group will revert to the previous
     # +default_host+.
-    def group(opts={}, &block)
+    def group(opts = {}, &block) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
       @created_group = true
       original_opts = opts.dup
 
@@ -217,7 +217,7 @@ module SitemapGenerator
         @original_location = @sitemap.location.dup
         @sitemap.location.merge!(@group.sitemap_location)
         if block_given?
-          @group.interpreter.eval(:yield_sitemap => @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
+          @group.interpreter.eval(yield_sitemap: @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
           @group.finalize_sitemap!
           @sitemap.location.merge!(@original_location)
         end
@@ -236,7 +236,7 @@ module SitemapGenerator
         @group.send(:create_index=, true, true) if @group.create_index != false
 
         if block_given?
-          @group.interpreter.eval(:yield_sitemap => @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
+          @group.interpreter.eval(yield_sitemap: @yield_sitemap || SitemapGenerator.yield_sitemap?, &block)
           @group.finalize_sitemap!
         end
       end
@@ -278,7 +278,7 @@ module SitemapGenerator
     # Is equivalent to:
     #
     #   SitemapGenerator::Sitemap.ping_search_engines('http://example.com/sitemap.xml.gz', :super_engine => 'http://superengine.com/ping?url=%s')
-    def ping_search_engines(*args)
+    def ping_search_engines(*args) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       require 'cgi/session'
       require 'open-uri'
       require 'timeout'
@@ -290,16 +290,16 @@ module SitemapGenerator
       output("\n")
       output("Pinging with URL '#{unescaped_url}':")
       search_engines.merge(engines).each do |engine, link|
-        link = link % index_url
+        link %= index_url
         name = Utilities.titleize(engine.to_s)
         begin
-          Timeout::timeout(10) {
+          Timeout.timeout(10) do
             if URI.respond_to?(:open) # Available since Ruby 2.5
               URI.open(link)
             else
               open(link) # using Kernel#open became deprecated since Ruby 2.7. See https://bugs.ruby-lang.org/issues/15893
             end
-          }
+          end
           output("  Successful ping of #{name}")
         rescue Timeout::Error, StandardError => e
           output("Ping failed for #{name}: #{e.inspect} (URL #{link})")
@@ -384,26 +384,26 @@ module SitemapGenerator
     #
     # If both `filename` and `namer` are passed, set filename first so it
     # doesn't override the latter.
-    def set_options(opts={})
+    def set_options(opts = {})
       opts = opts.dup
-      %w(filename namer).each do |key|
-        if value = opts.delete(key.to_sym)
-          send("#{key}=", value)
+      %w[filename namer].each do |key|
+        if (value = opts.delete(key.to_sym))
+          send(:"#{key}=", value)
         end
       end
       opts.each_pair do |key, value|
-        send("#{key}=", value)
+        send(:"#{key}=", value)
       end
     end
 
     # Given +opts+, modify it and return it prepped for creating a new group from this LinkSet.
     # If <tt>:public_path</tt> is present in +opts+ it is removed because groups cannot
     # change the public path.
-    def options_for_group(opts)
+    def options_for_group(opts) # rubocop:disable Metrics/MethodLength
       opts = SitemapGenerator::Utilities.reverse_merge(opts,
-        :include_index => false,
-        :include_root => false,
-        :sitemap_index => sitemap_index
+        include_index: false,
+        include_root: false,
+        sitemap_index: sitemap_index
       )
       opts.delete(:public_path)
 
@@ -437,7 +437,7 @@ module SitemapGenerator
     # in an instance variable.
     def add_default_links
       @added_default_links = true
-      link_options = { :lastmod => Time.now, :priority => 1.0 }
+      link_options = { lastmod: Time.now, priority: 1.0 }
       if include_root?
         add('/', link_options)
       end
@@ -457,7 +457,8 @@ module SitemapGenerator
     # block passed to create() is empty the default links are still included in the
     # sitemap.
     def finalize_sitemap!
-      return if sitemap.finalized? || sitemap.empty? && @created_group
+      return if sitemap.finalized? || (sitemap.empty? && @created_group)
+
       add_default_links if !@added_default_links && !@created_group
       # This will finalize it.  We add to the index even if not creating an index because
       # the index keeps track of how many links are in our sitemaps and we need this info
@@ -470,6 +471,7 @@ module SitemapGenerator
     # been finalized.
     def finalize_sitemap_index!
       return if @protect_index || sitemap_index.finalized?
+
       sitemap_index.finalize!
       sitemap_index.write
     end
@@ -477,7 +479,7 @@ module SitemapGenerator
     # Return the interpreter linked to this instance.
     def interpreter
       require 'sitemap_generator/interpreter'
-      @interpreter ||= SitemapGenerator::Interpreter.new(:link_set => self)
+      @interpreter ||= SitemapGenerator::Interpreter.new(link_set: self)
     end
 
     # Reset this instance.  Keep the same options, but return to the same state
@@ -493,6 +495,7 @@ module SitemapGenerator
     # evaluated and some info output to STDOUT in a lazy fasion.
     def output(string)
       return unless verbose
+
       puts string
     end
 
@@ -576,28 +579,28 @@ module SitemapGenerator
       # Return a new +SitemapLocation+ instance with the current options included
       def sitemap_location
         SitemapGenerator::SitemapLocation.new(
-          :host => sitemaps_host,
-          :namer => namer,
-          :public_path => public_path,
-          :sitemaps_path => @sitemaps_path,
-          :adapter => @adapter,
-          :verbose => verbose,
-          :compress => @compress,
-          :max_sitemap_links => max_sitemap_links
+          host: sitemaps_host,
+          namer: namer,
+          public_path: public_path,
+          sitemaps_path: @sitemaps_path,
+          adapter: @adapter,
+          verbose: verbose,
+          compress: @compress,
+          max_sitemap_links: max_sitemap_links
         )
       end
 
       # Return a new +SitemapIndexLocation+ instance with the current options included
       def sitemap_index_location
         SitemapGenerator::SitemapLocation.new(
-          :host => sitemaps_host,
-          :namer => namer,
-          :public_path => public_path,
-          :sitemaps_path => @sitemaps_path,
-          :adapter => @adapter,
-          :verbose => verbose,
-          :create_index => @create_index,
-          :compress => @compress
+          host: sitemaps_host,
+          namer: namer,
+          public_path: public_path,
+          sitemaps_path: @sitemaps_path,
+          adapter: @adapter,
+          verbose: verbose,
+          create_index: @create_index,
+          compress: @compress
         )
       end
 
@@ -609,7 +612,7 @@ module SitemapGenerator
       # are in your sitemap.  If `false` an index file is never created.
       # If `:auto` an index file is created only if your sitemap has more than
       # one sitemap file.
-      def create_index=(value, force=false)
+      def create_index=(value, force = false)
         @create_index = value
         # Allow overriding the protected status of the index when we are creating a group.
         # Because sometimes we need to force an index in that case.  But generally we don't
@@ -658,8 +661,8 @@ module SitemapGenerator
 
       # Update the given attribute on the current sitemap index and sitemap file location objects.
       # But don't create the index or sitemap files yet if they are not already created.
-      def update_location_info(attribute, value, opts={})
-        opts = SitemapGenerator::Utilities.reverse_merge(opts, :include_index => !@protect_index)
+      def update_location_info(attribute, value, opts = {})
+        opts = SitemapGenerator::Utilities.reverse_merge(opts, include_index: !@protect_index)
         @sitemap_index.location[attribute] = value if opts[:include_index] && @sitemap_index && !@sitemap_index.finalized?
         @sitemap.location[attribute] = value if @sitemap && !@sitemap.finalized?
       end
