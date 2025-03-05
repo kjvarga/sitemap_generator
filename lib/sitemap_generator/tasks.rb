@@ -30,18 +30,18 @@ namespace :sitemap do
     require 'sitemap_generator'
   end
 
-  desc "Install a default config/sitemap.rb file"
-  task :install => ['sitemap:require'] do
+  desc 'Install a default config/sitemap.rb file'
+  task install: ['sitemap:require'] do
     SitemapGenerator::Utilities.install_sitemap_rb(verbose)
   end
 
-  desc "Delete all Sitemap files in public/ directory"
-  task :clean => ['sitemap:require'] do
+  desc 'Delete all Sitemap files in public/ directory'
+  task clean: ['sitemap:require'] do
     SitemapGenerator::Utilities.clean_files
   end
 
-  desc "Generate sitemaps and ping search engines."
-  task :refresh => ['sitemap:create'] do
+  desc 'Generate sitemaps and ping search engines.'
+  task refresh: ['sitemap:create'] do
     SitemapGenerator::Sitemap.ping_search_engines
   end
 
@@ -49,7 +49,7 @@ namespace :sitemap do
   task 'refresh:no_ping' => ['sitemap:create']
 
   desc "Generate sitemaps but don't ping search engines.  Alias for refresh:no_ping."
-  task :create => ['sitemap:require_environment'] do
-    SitemapGenerator::Interpreter.run(:config_file => ENV["CONFIG_FILE"], :verbose => verbose)
+  task create: ['sitemap:require_environment'] do
+    SitemapGenerator::Interpreter.run(config_file: ENV['CONFIG_FILE'], verbose: verbose)
   end
 end

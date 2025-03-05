@@ -24,8 +24,8 @@ module SitemapGenerator
     # * <tt>link_set</tt> - a LinkSet instance to use.  Default is SitemapGenerator::Sitemap.
     #
     # All other options are passed to the LinkSet by setting them using accessor methods.
-    def initialize(opts={}, &block)
-      opts = SitemapGenerator::Utilities.reverse_merge(opts, :link_set => SitemapGenerator::Sitemap)
+    def initialize(opts = {}, &block)
+      opts = SitemapGenerator::Utilities.reverse_merge(opts, link_set: SitemapGenerator::Sitemap)
       @linkset = opts.delete :link_set
       @linkset.send(:set_options, opts)
       eval(&block) if block_given?
@@ -55,7 +55,7 @@ module SitemapGenerator
 
     # Evaluate the block in the interpreter.  Pass :yield_sitemap => true to
     # yield the Interpreter instance to the block...for old-style calling.
-    def eval(opts={}, &block)
+    def eval(opts = {}, &block)
       if block_given?
         if opts[:yield_sitemap]
           yield @linkset
@@ -72,7 +72,7 @@ module SitemapGenerator
     # * <tt>:config_file</tt> - full path to the config file to evaluate.
     #   Default is config/sitemap.rb in your application's root directory.
     # All other options are passed to +new+.
-    def self.run(opts={}, &block)
+    def self.run(opts = {}, &block)
       opts = opts.dup
       config_file = opts.delete(:config_file)
       config_file ||= SitemapGenerator.app.root + 'config/sitemap.rb'

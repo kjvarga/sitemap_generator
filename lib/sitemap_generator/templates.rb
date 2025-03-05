@@ -9,14 +9,14 @@ module SitemapGenerator
   # Define an accessor method for each template file.
   class Templates
     FILES = {
-      :sitemap_sample => 'sitemap.rb',
+      sitemap_sample: 'sitemap.rb',
     }
 
     # Dynamically define accessors for each key defined in <tt>FILES</tt>
     attr_writer(*FILES.keys)
 
     FILES.each_key do |name|
-      eval(<<-ACCESSOR, binding, __FILE__ , __LINE__ + 1)
+      eval(<<-ACCESSOR, binding, __FILE__, __LINE__ + 1)
         define_method(:#{name}) do
           @#{name} ||= read_template(:#{name})
         end

@@ -10,13 +10,17 @@ gem "fog-aws"
 gem "google-cloud-storage"
 gem "rails", "~> 7.0.0"
 gem "rake"
-gem "rspec_junit_formatter"
 gem "rspec"
+gem "rspec_junit_formatter"
 gem "rspec-rails"
 gem "simplecov"
 gem "sqlite3", "~> 1.5.0"
 gem "webmock"
 gem "nokogiri"
+gem "rubocop", require: false
+gem "rubocop-performance", require: false
+gem "rubocop-rake", require: false
+gem "rubocop-rspec", require: false
 
 group :test do
   gem "byebug"

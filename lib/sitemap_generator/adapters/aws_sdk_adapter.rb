@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 if !defined?(Aws::S3::Resource) or !defined?(Aws::Credentials)
-  raise LoadError, "Error: `Aws::S3::Resource` and/or `Aws::Credentials` are not defined.\n\n"\
+  raise LoadError, "Error: `Aws::S3::Resource` and/or `Aws::Credentials` are not defined.\n\n" \
         "Please `require 'aws-sdk'` - or another library that defines these classes."
 end
 
