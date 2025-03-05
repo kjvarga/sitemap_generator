@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gemspec
@@ -18,7 +20,7 @@ gem 'simplecov'
 gem 'sqlite3', '~> 2.1.0'
 gem 'webmock'
 
-if RUBY_VERSION =~ /2.5.*/
+if RUBY_VERSION.match?(/2.5.*/)
   gem 'nokogiri', '1.12.5'
 else
   gem 'nokogiri'

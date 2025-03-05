@@ -11,5 +11,5 @@ Gem::Specification.new do |s|
   s.description = 'SitemapGenerator is a framework-agnostic XML Sitemap generator written in Ruby with automatic Rails integration.  It supports Video, News, Image, Mobile, PageMap and Alternate Links sitemap extensions and includes Rake tasks for managing your sitemaps, as well as many other great features.'
   s.license = 'MIT'
   s.add_dependency 'builder', '~> 3.0'
-  s.files = Dir.glob('{lib,rails,templates}/**/*') + %w(CHANGES.md MIT-LICENSE README.md VERSION)
+  s.files = Dir.glob('{lib,rails,templates}/**/*') + %w[CHANGES.md MIT-LICENSE README.md VERSION]
 end

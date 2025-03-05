@@ -22,7 +22,7 @@ module SitemapGenerator
       # * <tt>location</tt> - a SitemapGenerator::SitemapLocation instance or a Hash of options
       #   from which a SitemapLocation will be created for you.  See `SitemapGenerator::SitemapLocation` for
       #   the supported list of options.
-      def initialize(opts={})
+      def initialize(opts = {})
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapLocation.new(opts) : opts
         @link_count = 0
         @news_count = 0
@@ -43,7 +43,7 @@ module SitemapGenerator
             >
         HTML
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!
-        @xml_wrapper_end   = %q[</urlset>]
+        @xml_wrapper_end = '</urlset>'
         @filesize = SitemapGenerator::Utilities.bytesize(@xml_wrapper_start) + SitemapGenerator::Utilities.bytesize(@xml_wrapper_end)
         @written = false
         @reserved_name = nil # holds the name reserved from the namer
@@ -91,15 +91,16 @@ module SitemapGenerator
       #
       # The link added to the sitemap will use the host from its location object
       # if no host has been specified.
-      def add(link, options={})
+      def add(link, options = {})
         raise SitemapGenerator::SitemapFinalizedError if finalized?
 
-        sitemap_url = if link.is_a?(SitemapUrl)
-          link
-        else
-          options[:host] ||= @location.host
-          SitemapUrl.new(link, options)
-        end
+        sitemap_url =
+          if link.is_a?(SitemapUrl)
+            link
+          else
+            options[:host] ||= @location.host
+            SitemapUrl.new(link, options)
+          end
 
         xml = sitemap_url.to_xml
         raise SitemapGenerator::SitemapFullError if !file_can_fit?(xml)
@@ -120,6 +121,7 @@ module SitemapGenerator
       # has already been finalized.
       def finalize!
         raise SitemapGenerator::SitemapFinalizedError if finalized?
+
         @frozen = true
       end
 
@@ -135,7 +137,8 @@ module SitemapGenerator
       # A SitemapGenerator::SitemapError exception is raised if the file has
       # already been written.
       def write
-        raise SitemapGenerator::SitemapError.new("Sitemap already written!") if written?
+        raise SitemapGenerator::SitemapError.new('Sitemap already written!') if written?
+
         finalize! unless finalized?
         reserve_name
         @location.write(@xml_wrapper_start + @xml_content + @xml_wrapper_end, link_count)
