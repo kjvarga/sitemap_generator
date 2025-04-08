@@ -26,4 +26,8 @@ group :test do
   gem "byebug"
 end
 
+install_if -> { Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0") } do
+  gem "drb"
+end
+
 gemspec path: "../"
