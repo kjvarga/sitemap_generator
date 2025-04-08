@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 if !defined?(Aws::S3::Resource) or !defined?(Aws::Credentials)
-  raise LoadError, "Error: `Aws::S3::Resource` and/or `Aws::Credentials` are not defined.\n\n"\
+  raise LoadError, "Error: `Aws::S3::Resource` and/or `Aws::Credentials` are not defined.\n\n" \
         "Please `require 'aws-sdk'` - or another library that defines these classes."
 end
 
@@ -40,7 +40,6 @@ module SitemapGenerator
       set_option_unless_set(:region, aws_region)
       set_option_unless_set(:endpoint, aws_endpoint)
     end
-
 
     # Call with a SitemapLocation and string data
     def write(location, raw_data)

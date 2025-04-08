@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 # require "sitemap_generator/core_ext/big_decimal/conversions"
-require "sitemap_generator/utilities"
+require 'sitemap_generator/utilities'
 
 module SitemapGenerator
   # = SitemapGenerator Number Helpers
-  module Helpers #:nodoc:
+  module Helpers # :nodoc:
 
     # Provides methods for converting numbers into formatted strings.
     # Methods are provided for precision, positional notation and file size
@@ -54,11 +54,11 @@ module SitemapGenerator
         end
 
         defaults = {
-          :separator => ".",
-          :delimiter => ",",
-          :precision => 3,
-          :significant => false,
-          :strip_insignificant_zeros => false
+          separator: '.',
+          delimiter: ',',
+          precision: 3,
+          significant: false,
+          strip_insignificant_zeros: false
         }
         options = SitemapGenerator::Utilities.reverse_merge(options, defaults)
 
@@ -107,18 +107,18 @@ module SitemapGenerator
         end
 
         defaults = {
-          :separator => ".",
-          :delimiter => ",",
-          :precision => 3,
-          :significant => false,
-          :strip_insignificant_zeros => false
+          separator: '.',
+          delimiter: ',',
+          precision: 3,
+          significant: false,
+          strip_insignificant_zeros: false
         }
         precision_defaults = {
-          :delimiter => ""
+          delimiter: ''
         }
         defaults = defaults.merge(precision_defaults)
 
-        options = SitemapGenerator::Utilities.reverse_merge(options, defaults)  # Allow the user to unset default values: Eg.: :significant => false
+        options = SitemapGenerator::Utilities.reverse_merge(options, defaults) # Allow the user to unset default values: Eg.: :significant => false
         precision = options.delete :precision
         significant = options.delete :significant
         strip_insignificant_zeros = options.delete :strip_insignificant_zeros
@@ -128,11 +128,11 @@ module SitemapGenerator
             digits, rounded_number = 1, 0
           else
             digits = (Math.log10(number.abs) + 1).floor
-            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10 ** (digits - precision)).to_f.to_s)).round.to_f * 10 ** (digits - precision)
+            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)).round.to_f * 10**(digits - precision)
             digits = (Math.log10(rounded_number.abs) + 1).floor # After rounding, the number of digits may have changed
           end
           precision = precision - digits
-          precision = precision > 0 ? precision : 0  #don't let it be negative
+          precision = precision > 0 ? precision : 0 # don't let it be negative
         else
           rounded_number = SitemapGenerator::Utilities.round(SitemapGenerator::BigDecimal.new(number.to_s), precision).to_f
         end
@@ -193,24 +193,24 @@ module SitemapGenerator
         end
 
         defaults = {
-          :separator => ".",
-          :delimiter => ",",
-          :precision => 3,
-          :significant => false,
-          :strip_insignificant_zeros => false
+          separator: '.',
+          delimiter: ',',
+          precision: 3,
+          significant: false,
+          strip_insignificant_zeros: false
         }
         human = {
-          :delimiter => "",
-          :precision => 3,
-          :significant => true,
-          :strip_insignificant_zeros => true
+          delimiter: '',
+          precision: 3,
+          significant: true,
+          strip_insignificant_zeros: true
         }
         defaults = defaults.merge(human)
         options = SitemapGenerator::Utilities.reverse_merge(options, defaults)
-        #for backwards compatibility with those that didn't add strip_insignificant_zeros to their locale files
+        # for backwards compatibility with those that didn't add strip_insignificant_zeros to their locale files
         options[:strip_insignificant_zeros] = true if not options.key?(:strip_insignificant_zeros)
 
-        storage_units_format = "%n %u"
+        storage_units_format = '%n %u'
 
         if number.to_i < 1024
           unit = number.to_i > 1 || number.to_i == 0 ? 'Bytes' : 'Byte'
@@ -219,15 +219,15 @@ module SitemapGenerator
           max_exp  = STORAGE_UNITS.size - 1
           exponent = (Math.log(number) / Math.log(1024)).to_i # Convert to base 1024
           exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-          number  /= 1024 ** exponent
+          number  /= 1024**exponent
 
           unit_key = STORAGE_UNITS[exponent]
           units = {
-            :byte => "Bytes",
-            :kb => "KB",
-            :mb => "MB",
-            :gb => "GB",
-            :tb => "TB"
+            byte: 'Bytes',
+            kb: 'KB',
+            mb: 'MB',
+            gb: 'GB',
+            tb: 'TB'
           }
           unit = units[unit_key]
           formatted_number = number_with_precision(number, options)

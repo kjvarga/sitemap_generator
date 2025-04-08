@@ -14,6 +14,7 @@ module SitemapGenerator
     [:host, :adapter].each do |method|
       define_method(method) do
         raise SitemapGenerator::SitemapError, "No value set for #{method}" unless self[method]
+
         self[method]
       end
     end
@@ -47,7 +48,7 @@ module SitemapGenerator
     #   stripped from the filename.  If `:all_but_first`, only the `.gz` extension of the first
     #   filename is stripped off.  If `true` the extensions are left unchanged.
     # * <tt>max_sitemap_links</tt> - The maximum number of links to put in each sitemap.
-    def initialize(opts={})
+    def initialize(opts = {})
       SitemapGenerator::Utilities.assert_valid_keys(opts, [
         :adapter,
         :public_path,
@@ -68,14 +69,14 @@ module SitemapGenerator
       # sitemap index files.  However, this greatly eases testing, so I'm leaving it in
       # for now.
       if !opts[:filename] && !opts[:namer]
-        opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap, :start => 2, :zero => 1)
+        opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap, start: 2, zero: 1)
       end
       opts[:verbose] = !!opts[:verbose]
       self.merge!(opts)
     end
 
     # Return a new Location instance with the given options merged in
-    def with(opts={})
+    def with(opts = {})
       self.merge(opts)
     end
 
@@ -108,9 +109,10 @@ module SitemapGenerator
     # If using a namer once the filename has been retrieved from the namer its
     # value is locked so that it is unaffected by further changes to the namer.
     def filename
-      raise SitemapGenerator::SitemapError, "No filename or namer set" unless self[:filename] || self[:namer]
+      raise SitemapGenerator::SitemapError, 'No filename or namer set' unless self[:filename] || self[:namer]
+
       unless self[:filename]
-        self.send(:[]=, :filename, +self[:namer].to_s, :super => true)
+        self.send(:[]=, :filename, +self[:namer].to_s, super: true)
 
         # Post-process the filename for our compression settings.
         # Strip the `.gz` from the extension if we aren't compressing this file.
@@ -150,7 +152,7 @@ module SitemapGenerator
     end
 
     # If you set the filename, clear the namer and vice versa.
-    def []=(key, value, opts={})
+    def []=(key, value, opts = {})
       if !opts[:super]
         case key
         when :namer
@@ -174,12 +176,12 @@ module SitemapGenerator
       filesize = number_to_human_size(self.filesize)
       width = self.class::PATH_OUTPUT_WIDTH
       path = SitemapGenerator::Utilities.ellipsis(self.path_in_public, width)
-      "+ #{('%-'+width.to_s+'s') % path} #{'%10s' % link_count} links / #{'%10s' % filesize}"
+      "+ #{('%-' + width.to_s + 's') % path} #{'%10s' % link_count} links / #{'%10s' % filesize}"
     end
   end
 
   class SitemapIndexLocation < SitemapLocation
-    def initialize(opts={})
+    def initialize(opts = {})
       if !opts[:filename] && !opts[:namer]
         opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap)
       end
@@ -200,7 +202,7 @@ module SitemapGenerator
       filesize = number_to_human_size(self.filesize)
       width = self.class::PATH_OUTPUT_WIDTH - 3
       path = SitemapGenerator::Utilities.ellipsis(self.path_in_public, width)
-      "+ #{('%-'+width.to_s+'s') % path} #{'%10s' % link_count} sitemaps / #{'%10s' % filesize}"
+      "+ #{('%-' + width.to_s + 's') % path} #{'%10s' % link_count} sitemaps / #{'%10s' % filesize}"
     end
   end
 end
