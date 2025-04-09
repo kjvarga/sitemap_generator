@@ -11,7 +11,6 @@ Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 * Framework agnostic
 * Supports [News sitemaps][sitemap_news], [Video sitemaps][sitemap_video], [Image sitemaps][sitemap_images], [Mobile sitemaps][sitemap_mobile], [PageMap sitemaps][sitemap_pagemap] and [Alternate Links][alternate_links]
 * Supports read-only filesystems like Heroku via uploading to a remote host like Amazon S3
-* Compatible with all versions of Rails and Ruby
 * Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
 * Handles millions of links
 * Customizable sitemap compression
@@ -19,6 +18,8 @@ Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 * Ensures your old sitemaps stay in place if the new sitemap fails to generate
 * Gives you complete control over your sitemap contents and naming scheme
 * Intelligent sitemap indexing
+* Compatible with Ruby from version 2.6 to version 3.4
+* Compatible with Rails from version 6.0 to version 8.0
 
 ### Show Me
 
@@ -1167,7 +1168,7 @@ end
 
 ## Compatibility
 
-Compatible with all versions of Rails and Ruby.  Tested up to Ruby 3.1 and Rails 7.0.
+Compatible with all versions of Rails and Ruby. Tested up to Ruby 3.4 and Rails 8.0.
 Ruby 1.9.3 support was dropped in Version 6.0.0.
 
 ## Licence
