@@ -45,6 +45,10 @@ RSpec.describe 'SitemapGenerator' do
       with_max_links(10) { execute_sitemap_config }
     end
 
+    after :all do
+      delete_sitemap_file_from_rails_app
+    end
+
     it 'should create sitemaps' do
       file_should_exist(rails_path('public/sitemap.xml.gz'))
       file_should_exist(rails_path('public/sitemap1.xml.gz'))
@@ -91,6 +95,10 @@ RSpec.describe 'SitemapGenerator' do
         public/fr/new_sitemaps3.xml.gz
         public/fr/new_sitemaps4.xml.gz]
       @sitemaps = (@expected - %w[public/fr/new_sitemaps.xml.gz])
+    end
+
+    after :all do
+      delete_sitemap_file_from_rails_app
     end
 
     it 'should create sitemaps' do
@@ -545,36 +553,5 @@ RSpec.describe 'SitemapGenerator' do
       expect(SitemapGenerator::Sitemap.respond_to?(:default_host)).to be(true)
       expect(SitemapGenerator::Sitemap.respond_to?(:invalid_func)).to be(false)
     end
-  end
-
-  protected
-
-  #
-  # Helpers
-  #
-
-  def rails_path(file)
-    SitemapGenerator.app.root + file
-  end
-
-  def copy_sitemap_file_to_rails_app(extension)
-    FileUtils.cp(File.join(SitemapGenerator.root, "spec/files/sitemap.#{extension}.rb"), SitemapGenerator.app.root + 'config/sitemap.rb')
-  end
-
-  def delete_sitemap_file_from_rails_app
-    FileUtils.remove(SitemapGenerator.app.root + 'config/sitemap.rb')
-  rescue
-    nil
-  end
-
-  def clean_sitemap_files_from_rails_app
-    FileUtils.rm_rf(rails_path('public/'))
-    FileUtils.mkdir_p(rails_path('public/'))
-  end
-
-  # Better would be to just invoke the environment task and use
-  # the interpreter.
-  def execute_sitemap_config(opts={})
-   SitemapGenerator::Interpreter.run(opts)
   end
 end

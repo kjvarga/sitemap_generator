@@ -5,10 +5,18 @@ RSpec.describe SitemapGenerator::Interpreter do
   let(:link_set)    { SitemapGenerator::LinkSet.new }
   let(:interpreter) { SitemapGenerator::Interpreter.new(:link_set => link_set) }
 
+  before :all do
+    SitemapGenerator::Sitemap.reset!
+    clean_sitemap_files_from_rails_app
+    copy_sitemap_file_to_rails_app(:create)
+    with_max_links(10) { execute_sitemap_config }
+  end
+
   # The interpreter doesn't have the URL helpers included for some reason, so it
   # fails when adding links.  That messes up later specs unless we reset the sitemap object.
   after :all do
     SitemapGenerator::Sitemap.reset!
+    delete_sitemap_file_from_rails_app
   end
 
   it 'should find the config file if Rails.root doesn\'t end in a slash' do
