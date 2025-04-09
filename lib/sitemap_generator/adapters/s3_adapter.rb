@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 if !defined?(Fog::Storage)
-  raise LoadError, "Error: `Fog::Storage` is not defined.\n\n"\
+  raise LoadError, "Error: `Fog::Storage` is not defined.\n\n" \
         "Please `require 'fog-aws'` - or another library that defines this class."
 end
 
@@ -39,7 +39,7 @@ module SitemapGenerator
     def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
-      credentials = { :provider => @fog_provider }
+      credentials = { provider: @fog_provider }
 
       if @aws_access_key_id && @aws_secret_access_key
         credentials[:aws_access_key_id] = @aws_access_key_id
@@ -53,11 +53,11 @@ module SitemapGenerator
       credentials[:path_style] = @fog_path_style if @fog_path_style
 
       storage   = Fog::Storage.new(@fog_storage_options.merge(credentials))
-      directory = storage.directories.new(:key => @fog_directory)
+      directory = storage.directories.new(key: @fog_directory)
       directory.files.create(
-        :key    => location.path_in_public,
-        :body   => File.open(location.path),
-        :public => @fog_public
+        key: location.path_in_public,
+        body: File.open(location.path),
+        public: @fog_public
       )
     end
   end

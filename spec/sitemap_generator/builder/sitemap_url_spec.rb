@@ -117,7 +117,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       time = Time.at(0)
       expect(time).to receive(:respond_to?).and_return(false)
       expect(time).to receive(:respond_to?).and_return(false)
-      expect(time).to receive(:strftime).and_return('+0800', '1970-01-01T00:00:00')
+      expect(time).to receive(:strftime).and_return(+'+0800', '1970-01-01T00:00:00')
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+08:00')
     end
 

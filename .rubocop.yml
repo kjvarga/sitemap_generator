@@ -1,0 +1,16 @@
+---
+plugins:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 2.6
+  Exclude:
+    - bin/*
+    - gemfiles/*
+    - spec/**/*
+    - integration/bin/*
+    - integration/spec/**/*

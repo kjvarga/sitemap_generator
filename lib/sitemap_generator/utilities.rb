@@ -5,14 +5,14 @@ module SitemapGenerator
     extend self
 
     # Copy templates/sitemap.rb to config if not there yet.
-    def install_sitemap_rb(verbose=false)
+    def install_sitemap_rb(verbose = false)
       if File.exist?(SitemapGenerator.app.root + 'config/sitemap.rb')
-        puts "already exists: config/sitemap.rb, file not copied" if verbose
+        puts 'already exists: config/sitemap.rb, file not copied' if verbose
       else
         FileUtils.cp(
           SitemapGenerator.templates.template_path(:sitemap_sample),
           SitemapGenerator.app.root + 'config/sitemap.rb')
-        puts "created: config/sitemap.rb" if verbose
+        puts 'created: config/sitemap.rb' if verbose
       end
     end
 
@@ -33,7 +33,7 @@ module SitemapGenerator
     # strings for keys but assert symbols as keys, this will fail.
     def assert_valid_keys(hash, *valid_keys)
       unknown_keys = hash.keys - [valid_keys].flatten
-      raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(", ")}") unless unknown_keys.empty?
+      raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(', ')}") unless unknown_keys.empty?
     end
 
     # Return a new hash with all keys converted to symbols, as long as
@@ -71,7 +71,7 @@ module SitemapGenerator
     #   x.round(2) # => 1.34
     def round(float, precision = nil)
       if precision
-        magnitude = 10.0 ** precision
+        magnitude = 10.0**precision
         (float * magnitude).round / magnitude
       else
         float.round
@@ -100,7 +100,7 @@ module SitemapGenerator
     # Performs the opposite of <tt>merge</tt>, with the keys and values from the first hash taking precedence over the second.
     # Modifies the receiver in place.
     def reverse_merge!(hash, other_hash)
-      hash.merge!( other_hash ){|k,o,n| o }
+      hash.merge!(other_hash) { |k, o, n| o }
     end
 
     # An object is blank if it's false, empty, or a whitespace string.
@@ -113,7 +113,7 @@ module SitemapGenerator
     # ...to:
     #
     #   if !address.blank?
-    def blank?(object)
+    def blank?(object) # rubocop:disable Metrics/MethodLength
       case object
       when NilClass, FalseClass
         true
@@ -135,7 +135,7 @@ module SitemapGenerator
 
     # Sets $VERBOSE for the duration of the block and back to its original value afterwards.
     def with_warnings(flag)
-      old_verbose, $VERBOSE = $VERBOSE, flag
+      old_verbose, $VERBOSE = $VERBOSE, flag # rubocop:disable Style/ParallelAssignment
       yield
     ensure
       $VERBOSE = old_verbose
@@ -159,7 +159,7 @@ module SitemapGenerator
     # Returns a string.  Expects a string or Pathname object.
     def append_slash(path)
       strpath = path.to_s
-      if strpath[-1] != nil && strpath[-1].chr != '/'
+      if !strpath[-1].nil? && strpath[-1].chr != '/'
         strpath + '/'
       else
         strpath

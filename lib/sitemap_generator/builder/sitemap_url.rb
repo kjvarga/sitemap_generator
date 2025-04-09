@@ -31,13 +31,13 @@ module SitemapGenerator
       # * +mobile+
       # * +alternate+/+alternates+
       # * +pagemap+
-      def initialize(path, options={})
+      def initialize(path, options = {})
         options = SitemapGenerator::Utilities.symbolize_keys(options)
         if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
           SitemapGenerator::Utilities.reverse_merge!(
             options,
-            :host => sitemap.location.host,
-            :lastmod => sitemap.lastmod
+            host: sitemap.location.host,
+            lastmod: sitemap.lastmod
           )
           path = sitemap.location.path_in_public
         end
@@ -48,16 +48,16 @@ module SitemapGenerator
         )
         SitemapGenerator::Utilities.reverse_merge!(
           options,
-          :priority => 0.5,
-          :changefreq => 'weekly',
-          :lastmod => Time.now,
-          :images => [],
-          :news => {},
-          :videos => [],
-          :mobile => false,
-          :alternates => []
+          priority: 0.5,
+          changefreq: 'weekly',
+          lastmod: Time.now,
+          images: [],
+          news: {},
+          videos: [],
+          mobile: false,
+          alternates: []
         )
-        raise "Cannot generate a url without a host" unless SitemapGenerator::Utilities.present?(options[:host])
+        raise 'Cannot generate a url without a host' unless SitemapGenerator::Utilities.present?(options[:host])
 
         if video = options.delete(:video)
           options[:videos] = video.is_a?(Array) ? options[:videos].concat(video) : options[:videos] << video
@@ -69,23 +69,23 @@ module SitemapGenerator
         path = path.to_s.sub(/^\//, '')
         loc  = path.empty? ? options[:host] : (options[:host].to_s.sub(/\/$/, '') + '/' + path)
         self.merge!(
-          :priority   => options[:priority],
-          :changefreq => options[:changefreq],
-          :lastmod    => options[:lastmod],
-          :expires    => options[:expires],
-          :host       => options[:host],
-          :loc        => loc,
-          :images     => prepare_images(options[:images], options[:host]),
-          :news       => prepare_news(options[:news]),
-          :videos     => options[:videos],
-          :mobile     => options[:mobile],
-          :alternates => options[:alternates],
-          :pagemap    => options[:pagemap]
+          priority: options[:priority],
+          changefreq: options[:changefreq],
+          lastmod: options[:lastmod],
+          expires: options[:expires],
+          host: options[:host],
+          loc: loc,
+          images: prepare_images(options[:images], options[:host]),
+          news: prepare_news(options[:news]),
+          videos: options[:videos],
+          mobile: options[:mobile],
+          alternates: options[:alternates],
+          pagemap: options[:pagemap]
         )
       end
 
       # Return the URL as XML
-      def to_xml(builder=nil)
+      def to_xml(builder = nil)
         builder = ::Builder::XmlMarkup.new if builder.nil?
         builder.url do
           builder.loc        self[:loc]
@@ -96,8 +96,8 @@ module SitemapGenerator
 
           unless SitemapGenerator::Utilities.blank?(self[:news])
             news_data = self[:news]
-            builder.news:news do
-              builder.news:publication do
+            builder.news :news do
+              builder.news :publication do
                 builder.news :name, news_data[:publication_name].to_s if news_data[:publication_name]
                 builder.news :language, news_data[:publication_language].to_s if news_data[:publication_language]
               end
@@ -112,7 +112,7 @@ module SitemapGenerator
           end
 
           self[:images].each do |image|
-            builder.image:image do
+            builder.image :image do
               builder.image :loc, image[:loc]
               builder.image :caption, image[:caption].to_s             if image[:caption]
               builder.image :geo_location, image[:geo_location].to_s   if image[:geo_location]
@@ -126,25 +126,25 @@ module SitemapGenerator
               builder.video :thumbnail_loc, video[:thumbnail_loc].to_s
               builder.video :title, video[:title].to_s
               builder.video :description, video[:description].to_s
-              builder.video :content_loc, video[:content_loc].to_s           if video[:content_loc]
+              builder.video :content_loc, video[:content_loc].to_s if video[:content_loc]
               if video[:player_loc]
-                loc_attributes = { :allow_embed => yes_or_no_with_default(video[:allow_embed], true) }
+                loc_attributes = { allow_embed: yes_or_no_with_default(video[:allow_embed], true) }
                 loc_attributes[:autoplay] = video[:autoplay].to_s if SitemapGenerator::Utilities.present?(video[:autoplay])
                 builder.video :player_loc, video[:player_loc].to_s, loc_attributes
               end
-              builder.video :duration, video[:duration].to_s                 if video[:duration]
-              builder.video :expiration_date,  w3c_date(video[:expiration_date])  if video[:expiration_date]
-              builder.video :rating, format_float(video[:rating])       if video[:rating]
-              builder.video :view_count, video[:view_count].to_s             if video[:view_count]
+              builder.video :duration, video[:duration].to_s if video[:duration]
+              builder.video :expiration_date, w3c_date(video[:expiration_date]) if video[:expiration_date]
+              builder.video :rating, format_float(video[:rating]) if video[:rating]
+              builder.video :view_count, video[:view_count].to_s if video[:view_count]
               builder.video :publication_date, w3c_date(video[:publication_date]) if video[:publication_date]
-              video[:tags].each {|tag| builder.video :tag, tag.to_s }        if video[:tags]
+              video[:tags].each { |tag| builder.video :tag, tag.to_s }       if video[:tags]
               builder.video :tag, video[:tag].to_s                           if video[:tag]
               builder.video :category, video[:category].to_s                 if video[:category]
-              builder.video :family_friendly,  yes_or_no_with_default(video[:family_friendly], true) if video.has_key?(:family_friendly)
-              builder.video :gallery_loc, video[:gallery_loc].to_s, :title => video[:gallery_title].to_s if video[:gallery_loc]
+              builder.video :family_friendly, yes_or_no_with_default(video[:family_friendly], true) if video.has_key?(:family_friendly)
+              builder.video :gallery_loc, video[:gallery_loc].to_s, title: video[:gallery_title].to_s if video[:gallery_loc]
               builder.video :price, video[:price].to_s, prepare_video_price_attribs(video) if SitemapGenerator::Utilities.present?(video[:price])
               if video[:uploader]
-                builder.video :uploader, video[:uploader].to_s, video[:uploader_info] ? { :info => video[:uploader_info].to_s } : {}
+                builder.video :uploader, video[:uploader].to_s, video[:uploader_info] ? { info: video[:uploader_info].to_s } : {}
               end
               builder.video :live, yes_or_no_with_default(video[:live], true) if video.has_key?(:live)
               builder.video :requires_subscription, yes_or_no_with_default(video[:requires_subscription], true) if video.has_key?(:requires_subscription)
@@ -153,7 +153,7 @@ module SitemapGenerator
 
           self[:alternates].each do |alternate|
             rel = alternate[:nofollow] ? 'alternate nofollow' : 'alternate'
-            attributes = { :rel => rel, :href => alternate[:href].to_s }
+            attributes = { rel: rel, href: alternate[:href].to_s }
             attributes[:hreflang] = alternate[:lang].to_s if SitemapGenerator::Utilities.present?(alternate[:lang])
             attributes[:media] = alternate[:media].to_s if SitemapGenerator::Utilities.present?(alternate[:media])
             builder.xhtml :link, attributes
@@ -166,9 +166,9 @@ module SitemapGenerator
           unless SitemapGenerator::Utilities.blank?(self[:pagemap])
             builder.pagemap :PageMap do
               SitemapGenerator::Utilities.as_array(self[:pagemap][:dataobjects]).each do |dataobject|
-                builder.pagemap :DataObject, :type => dataobject[:type].to_s, :id => dataobject[:id].to_s do
+                builder.pagemap :DataObject, type: dataobject[:type].to_s, id: dataobject[:id].to_s do
                   SitemapGenerator::Utilities.as_array(dataobject[:attributes]).each do |attribute|
-                    builder.pagemap :Attribute, attribute[:value].to_s, :name => attribute[:name].to_s
+                    builder.pagemap :Attribute, attribute[:value].to_s, name: attribute[:name].to_s
                   end
                 end
               end
@@ -199,12 +199,12 @@ module SitemapGenerator
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
       def prepare_images(images, host)
-        images.delete_if { |key,value| key[:loc] == nil }
+        images.delete_if { |key, value| key[:loc] == nil }
         images.each do |r|
           SitemapGenerator::Utilities.assert_valid_keys(r, :loc, :caption, :geo_location, :title, :license)
           r[:loc] = URI.join(host, r[:loc]).to_s
         end
-        images[0..(SitemapGenerator::MAX_SITEMAP_IMAGES-1)]
+        images[0..(SitemapGenerator::MAX_SITEMAP_IMAGES - 1)]
       end
 
       def w3c_date(date)
@@ -213,23 +213,24 @@ module SitemapGenerator
         elsif date.respond_to?(:iso8601)
           date.iso8601.sub(/Z$/i, '+00:00')
         elsif date.is_a?(Date) && !date.is_a?(DateTime)
-          date.strftime("%Y-%m-%d")
+          date.strftime('%Y-%m-%d')
         else
-          zulutime = if date.is_a?(DateTime)
-            date.new_offset(0)
-          elsif date.respond_to?(:utc)
-            date.utc
-          elsif date.is_a?(Integer)
-            Time.at(date).utc
-          else
-            nil
-          end
+          zulutime =
+            if date.is_a?(DateTime)
+              date.new_offset(0)
+            elsif date.respond_to?(:utc)
+              date.utc
+            elsif date.is_a?(Integer)
+              Time.at(date).utc
+            else
+              nil
+            end
 
           if zulutime
-            zulutime.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+            zulutime.strftime('%Y-%m-%dT%H:%M:%S+00:00')
           else
             zone = date.strftime('%z').insert(-3, ':')
-            date.strftime("%Y-%m-%dT%H:%M:%S") + zone
+            date.strftime('%Y-%m-%dT%H:%M:%S') + zone
           end
         end
       end
@@ -239,6 +240,7 @@ module SitemapGenerator
       def yes_or_no(value)
         if value.is_a?(String)
           raise ArgumentError.new("Unrecognized value for yes/no field: #{value.inspect}") unless value =~ /^(yes|no)$/i
+
           value.downcase
         else
           value ? 'yes' : 'no'

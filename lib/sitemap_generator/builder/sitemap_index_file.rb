@@ -8,7 +8,7 @@ module SitemapGenerator
       #
       # * <tt>location</tt> - a SitemapGenerator::SitemapIndexLocation instance or a Hash of options
       #   from which a SitemapLocation will be created for you.
-      def initialize(opts={})
+      def initialize(opts = {})
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapIndexLocation.new(opts) : opts
         @link_count = 0
         @sitemaps_link_count = 0
@@ -47,7 +47,7 @@ module SitemapGenerator
       # can assume that the index is required (unless create_index is false of course).
       # This seems like the logical thing to do.
       alias_method :super_add, :add
-      def add(link, options={})
+      def add(link, options = {})
         if file = link.is_a?(SitemapFile) && link
           @sitemaps_link_count += file.link_count
           file.finalize! unless file.finalized?
@@ -61,7 +61,7 @@ module SitemapGenerator
           # for there to be an index.
           if @link_count == 0
             @first_sitemap = SitemapGenerator::Builder::LinkHolder.new(file, options)
-            @link_count += 1     # pretend it's added, but don't add it yet
+            @link_count += 1 # pretend it's added, but don't add it yet
           else
             # need an index so make sure name is reserved and first sitemap is written out
             reserve_name unless @location.create_index == false
@@ -96,13 +96,14 @@ module SitemapGenerator
         @sitemaps_link_count
       end
 
-      def stats_summary(opts={})
+      def stats_summary(opts = {})
         str = "Sitemap stats: #{number_with_delimiter(@sitemaps_link_count)} links / #{@link_count} sitemaps"
-        str += " / %dm%02ds" % opts[:time_taken].divmod(60) if opts[:time_taken]
+        str += ' / %dm%02ds' % opts[:time_taken].divmod(60) if opts[:time_taken]
       end
 
       def finalize!
         raise SitemapGenerator::SitemapFinalizedError if finalized?
+
         reserve_name if create_index?
         write_first_sitemap
         @frozen = true
@@ -140,7 +141,7 @@ module SitemapGenerator
         if @first_sitemap
           @first_sitemap.link.write unless @first_sitemap.link.written?
           super_add(SitemapGenerator::Builder::SitemapIndexUrl.new(@first_sitemap.link, @first_sitemap.options))
-          @link_count -= 1   # we already counted it, don't count it twice
+          @link_count -= 1 # we already counted it, don't count it twice
           # Store the URL because if create_index is false, this is the
           # "index" URL
           @first_sitemap_url = @first_sitemap.link.location.url

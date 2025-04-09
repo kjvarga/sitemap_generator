@@ -31,6 +31,7 @@ module SitemapGenerator
     def rails_root
       return ::Rails.root.to_s if defined?(::Rails.root) && ::Rails.root
       return RAILS_ROOT.to_s if defined?(RAILS_ROOT)
+
       nil
     end
 
@@ -42,6 +43,7 @@ module SitemapGenerator
     def rails_env
       return ::Rails.env.to_s if defined?(::Rails.env)
       return RAILS_ENV.to_s if defined?(RAILS_ENV)
+
       nil
     end
   end

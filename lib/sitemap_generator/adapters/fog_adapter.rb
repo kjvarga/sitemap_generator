@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 if !defined?(Fog::Storage)
-  raise LoadError, "Error: `Fog::Storage` is not defined.\n\n"\
+  raise LoadError, "Error: `Fog::Storage` is not defined.\n\n" \
         "Please `require 'fog'` - or another library that defines this class."
 end
 
@@ -23,11 +23,11 @@ module SitemapGenerator
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
       storage   = Fog::Storage.new(@fog_credentials)
-      directory = storage.directories.new(:key => @fog_directory)
+      directory = storage.directories.new(key: @fog_directory)
       directory.files.create(
-        :key    => location.path_in_public,
-        :body   => File.open(location.path),
-        :public => true
+        key: location.path_in_public,
+        body: File.open(location.path),
+        public: true
       )
     end
   end

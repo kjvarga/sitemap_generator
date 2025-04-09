@@ -28,11 +28,11 @@ module SitemapGenerator
   #                is used, and subsequent names would be 'sitemap1.xml.gz', 'sitemap2.xml.gz', etc.
   #                In these examples the `base` string is assumed to be 'sitemap'.
   class SimpleNamer
-    def initialize(base, options={})
+    def initialize(base, options = {})
       @options = SitemapGenerator::Utilities.reverse_merge(options,
-        :zero => nil,  # identifies the marker for the start of the series
-        :extension => '.xml.gz',
-        :start => 1
+        zero: nil, # identifies the marker for the start of the series
+        extension: '.xml.gz',
+        start: 1
       )
       @base = base
       reset
@@ -65,7 +65,8 @@ module SitemapGenerator
 
     # Return this instance set to the previous name
     def previous
-      raise NameError, "Already at the start of the series" if start?
+      raise NameError, 'Already at the start of the series' if start?
+
       if @count <= @options[:start]
         @count = @options[:zero]
       else
