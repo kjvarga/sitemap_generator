@@ -26,8 +26,7 @@ module SitemapGenerator
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapLocation.new(opts) : opts
         @link_count = 0
         @news_count = 0
-        @xml_content = +'' # XML urlset content
-        @xml_wrapper_start = +<<-HTML
+        @xml_wrapper_start = <<-HTML
           <?xml version="1.0" encoding="UTF-8"?>
             <urlset
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -45,6 +44,7 @@ module SitemapGenerator
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!
         @xml_wrapper_end = '</urlset>'
         @filesize = SitemapGenerator::Utilities.bytesize(@xml_wrapper_start) + SitemapGenerator::Utilities.bytesize(@xml_wrapper_end)
+        @xml_content = @xml_wrapper_start
         @written = false
         @reserved_name = nil # holds the name reserved from the namer
         @frozen = false      # rather than actually freeze, use this boolean
@@ -141,8 +141,9 @@ module SitemapGenerator
 
         finalize! unless finalized?
         reserve_name
-        @location.write(@xml_wrapper_start + @xml_content + @xml_wrapper_end, link_count)
-        @xml_content = @xml_wrapper_start = @xml_wrapper_end = ''
+        @xml_content << @xml_wrapper_end
+        @location.write(@xml_content, link_count)
+        @xml_content = @xml_wrapper_end = ''
         @written = true
       end
 
