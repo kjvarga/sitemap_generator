@@ -28,6 +28,7 @@ end
 
 install_if -> { Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0") } do
   gem "drb"
+  gem "mutex_m"
 end
 
 gemspec path: "../"

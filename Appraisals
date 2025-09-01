@@ -9,6 +9,7 @@ appraise 'rails_6.0' do
   # You can add drb to your Gemfile or gemspec to silence this warning.
   install_if '-> { Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0") }' do
     gem 'drb'
+    gem 'mutex_m'
   end
 end
 
@@ -21,6 +22,7 @@ appraise 'rails_6.1' do
   # You can add drb to your Gemfile or gemspec to silence this warning.
   install_if '-> { Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0") }' do
     gem 'drb'
+    gem 'mutex_m'
   end
 end
 
@@ -33,6 +35,7 @@ appraise 'rails_7.0' do
   # You can add drb to your Gemfile or gemspec to silence this warning.
   install_if '-> { Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.4.0") }' do
     gem 'drb'
+    gem 'mutex_m'
   end
 end
 
