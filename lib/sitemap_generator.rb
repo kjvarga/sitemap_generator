@@ -11,6 +11,7 @@ require 'sitemap_generator/sitemap_location'
 module SitemapGenerator
   autoload(:Interpreter,              'sitemap_generator/interpreter')
   autoload(:FileAdapter,              'sitemap_generator/adapters/file_adapter')
+  autoload(:ActiveStorageAdapter,     'sitemap_generator/adapters/active_storage_adapter') if defined?(::ActiveStorage)
   autoload(:S3Adapter,                'sitemap_generator/adapters/s3_adapter')
   autoload(:AwsSdkAdapter,            'sitemap_generator/adapters/aws_sdk_adapter')
   autoload(:WaveAdapter,              'sitemap_generator/adapters/wave_adapter')
