@@ -336,6 +336,10 @@ directory.
 
   Standard adapter, writes out to a file.
 
+##### `SitemapGenerator::ActiveStorageAdapter`
+
+  Uses `ActiveStorage::Blob` to store the sitemap.
+
 ##### `SitemapGenerator::FogAdapter`
 
   Uses `Fog::Storage` to upload to any service supported by Fog.
