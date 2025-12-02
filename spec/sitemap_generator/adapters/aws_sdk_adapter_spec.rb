@@ -11,15 +11,15 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
 
   shared_examples 'it writes the raw data to a file and then uploads that file to S3' do |acl, cache_control, content_type|
     it 'writes the raw data to a file and then uploads that file to S3' do
-      s3_object = double(:s3_object)
-      s3_resource = double(:s3_resource)
-      s3_bucket_resource = double(:s3_bucket_resource)
-      expect(adapter).to receive(:s3_resource).and_return(s3_resource)
-      expect(s3_resource).to receive(:bucket).with('bucket').and_return(s3_bucket_resource)
-      expect(s3_bucket_resource).to receive(:object).with('path_in_public').and_return(s3_object)
+      s3_client = double(:s3_client)
+      transfer_manager = double(:transfer_manager)
+      expect(Aws::S3::Client).to receive(:new).and_return(s3_client)
+      expect(Aws::S3::TransferManager).to receive(:new).with(client: s3_client).and_return(transfer_manager)
       expect(location).to receive(:path_in_public).and_return('path_in_public')
       expect(location).to receive(:path).and_return('path')
-      expect(s3_object).to receive(:upload_file).with('path', hash_including(
+      expect(transfer_manager).to receive(:upload_file).with('path', hash_including(
+        bucket: 'bucket',
+        key: 'path_in_public',
         acl: acl,
         cache_control: cache_control,
         content_type: content_type
