@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'uri'
 
 RSpec.describe SitemapGenerator::LinkSet do
   let(:default_host) { 'http://example.com' }
@@ -156,7 +157,7 @@ RSpec.describe SitemapGenerator::LinkSet do
     it 'should use the sitemap index url provided' do
       index_url = 'http://example.com/index.xml'
       ls = SitemapGenerator::LinkSet.new(:search_engines => { :google => 'http://google.com/?url=%s' })
-      request = stub_request(:get, "http://google.com/?url=#{CGI.escape(index_url)}")
+      request = stub_request(:get, "http://google.com/?url=#{URI.encode_www_form_component(index_url)}")
       ls.ping_search_engines(index_url)
       expect(request).to have_been_requested
     end
@@ -166,7 +167,7 @@ RSpec.describe SitemapGenerator::LinkSet do
         :default_host => default_host,
         :search_engines => { :google => 'http://google.com/?url=%s' })
       index_url = ls.sitemap_index_url
-      request = stub_request(:get, "http://google.com/?url=#{CGI.escape(index_url)}")
+      request = stub_request(:get, "http://google.com/?url=#{URI.encode_www_form_component(index_url)}")
       ls.ping_search_engines
       expect(request).to have_been_requested
     end

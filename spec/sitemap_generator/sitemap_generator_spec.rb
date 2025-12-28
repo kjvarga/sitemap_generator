@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'cgi'
+require 'uri'
 
 class Holder
   class << self
@@ -324,7 +324,7 @@ RSpec.describe 'SitemapGenerator' do
     }
 
     let!(:request) do
-      stub_request(:get, "http://google.com/?url=#{CGI.escape('http://example.com/sitemap.xml.gz')}")
+      stub_request(:get, "http://google.com/?url=#{URI.encode_www_form_component('http://example.com/sitemap.xml.gz')}")
     end
 
     before do
