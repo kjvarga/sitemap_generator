@@ -19,6 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby:
+          - '4.0'
           - '3.4'
           - '3.3'
           - '3.2'
