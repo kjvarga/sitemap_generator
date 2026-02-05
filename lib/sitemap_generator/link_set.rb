@@ -40,7 +40,7 @@ module SitemapGenerator
         puts "In '#{sitemap_index.location.public_path}':"
       end
       interpreter.eval(yield_sitemap: yield_sitemap?, &block)
-      finalize!
+      finalize! if block_given?
       end_time = Time.now if verbose
       output(sitemap_index.stats_summary(time_taken: end_time - start_time)) if verbose
       self

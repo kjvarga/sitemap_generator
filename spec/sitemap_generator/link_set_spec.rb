@@ -482,10 +482,6 @@ RSpec.describe SitemapGenerator::LinkSet do
   end
 
   describe 'options to create' do
-    before do
-      expect(ls).to receive(:finalize!)
-    end
-
     it 'should set include_index' do
       original = ls.include_index
       expect(ls.create(:include_index => !original).include_index).not_to eq(original)
@@ -564,6 +560,20 @@ RSpec.describe SitemapGenerator::LinkSet do
     it 'should set create_index' do
       ls.create(:create_index => :auto)
       expect(ls.create_index).to eq(:auto)
+    end
+
+    it 'should not call finalize!' do
+      expect(ls).to receive(:finalize!).never
+      ls.create({})
+    end
+
+    context 'when block is given' do
+      it 'should finalize! after the block' do
+        expect(ls).to receive(:finalize!)
+        ls.create do
+          add('/test')
+        end
+      end
     end
   end
 
