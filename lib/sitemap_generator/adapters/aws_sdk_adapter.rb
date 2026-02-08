@@ -44,21 +44,35 @@ module SitemapGenerator
     # Call with a SitemapLocation and string data
     def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
-      client = Aws::S3::Client.new(@options)
-      transfer_manager = Aws::S3::TransferManager.new(client: client)
-      transfer_manager.upload_file(location.path,
-        bucket: @bucket,
-        key: location.path_in_public,
-        acl: @acl,
-        cache_control: @cache_control,
-        content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
-      )
+
+      if defined?(Aws::S3::TransferManager)
+        client = Aws::S3::Client.new(@options)
+        transfer_manager = Aws::S3::TransferManager.new(client: client)
+        transfer_manager.upload_file(location.path,
+          bucket: @bucket,
+          key: location.path_in_public,
+          acl: @acl,
+          cache_control: @cache_control,
+          content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
+        )
+      else
+        s3_object = s3_resource.bucket(@bucket).object(location.path_in_public)
+        s3_object.upload_file(location.path, {
+          acl: @acl,
+          cache_control: @cache_control,
+          content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
+        }.compact)
+      end
     end
 
     private
 
     def set_option_unless_set(key, value)
       @options[key] = value if @options[key].nil? && !value.nil?
+    end
+
+    def s3_resource
+      @s3_resource ||= Aws::S3::Resource.new(@options)
     end
   end
 end
