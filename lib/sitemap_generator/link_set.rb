@@ -40,7 +40,7 @@ module SitemapGenerator
         puts "In '#{sitemap_index.location.public_path}':"
       end
       interpreter.eval(yield_sitemap: yield_sitemap?, &block)
-      finalize!
+      finalize! if block_given?
       end_time = Time.now if verbose
       output(sitemap_index.stats_summary(time_taken: end_time - start_time)) if verbose
       self
@@ -279,13 +279,13 @@ module SitemapGenerator
     #
     #   SitemapGenerator::Sitemap.ping_search_engines('http://example.com/sitemap.xml.gz', :super_engine => 'http://superengine.com/ping?url=%s')
     def ping_search_engines(*args) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-      require 'cgi/session'
       require 'open-uri'
       require 'timeout'
+      require 'uri'
 
       engines = args.last.is_a?(Hash) ? args.pop : {}
       unescaped_url = args.shift || sitemap_index_url
-      index_url = CGI.escape(unescaped_url)
+      index_url = URI.encode_www_form_component(unescaped_url)
 
       output("\n")
       output("Pinging with URL '#{unescaped_url}':")

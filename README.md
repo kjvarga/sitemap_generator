@@ -18,8 +18,8 @@ Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 * Ensures your old sitemaps stay in place if the new sitemap fails to generate
 * Gives you complete control over your sitemap contents and naming scheme
 * Intelligent sitemap indexing
-* Compatible with Ruby from version 2.6 to version 3.4
-* Compatible with Rails from version 6.0 to version 8.0
+* Compatible with Ruby from version 2.6 to version 4.0
+* Compatible with Rails from version 6.0 to version 8.1
 
 ### Show Me
 
@@ -335,6 +335,10 @@ directory.
 ##### `SitemapGenerator::FileAdapter`
 
   Standard adapter, writes out to a file.
+
+##### `SitemapGenerator::ActiveStorageAdapter`
+
+  Uses `ActiveStorage::Blob` to store the sitemap.
 
 ##### `SitemapGenerator::FogAdapter`
 
