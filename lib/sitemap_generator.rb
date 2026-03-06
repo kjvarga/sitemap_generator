@@ -40,7 +40,7 @@ module SitemapGenerator
     }
 
     # Lazy-initialize the LinkSet instance
-    Sitemap = (Class.new do
+    Sitemap = (Config = Class.new do
       # Use a new LinkSet instance
       def reset!
         @link_set = LinkSet.new
