@@ -4,6 +4,7 @@ Gem::Specification.new do |s|
   s.name = 'sitemap_generator'
   s.version = File.read('VERSION').chomp
   s.platform = Gem::Platform::RUBY
+  s.required_ruby_version = '>= 2.6'
   s.authors = ['Karl Varga']
   s.email = 'kjvarga@gmail.com'
   s.homepage = 'https://github.com/kjvarga/sitemap_generator'
