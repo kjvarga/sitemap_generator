@@ -3,6 +3,10 @@ require 'spec_helper'
 RSpec.describe SitemapGenerator::Sitemap do
   subject { described_class }
 
+  it "has a class name" do
+    expect(subject.class.name).to match "SitemapGenerator::"
+  end
+
   describe "method missing" do
     it "should not be public" do
       expect(subject.methods).to_not include :method_missing
