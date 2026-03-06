@@ -49,7 +49,7 @@ module SitemapGenerator
       private
 
       def method_missing(*args, &block)
-        (@link_set ||= reset!).send(*args, &block)
+        (@link_set ||= reset!).__send__(*args, &block)
       end
 
       def respond_to_missing?(name, include_private = false)
