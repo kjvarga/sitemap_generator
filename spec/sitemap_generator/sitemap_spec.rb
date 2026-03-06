@@ -11,5 +11,15 @@ RSpec.describe SitemapGenerator::Sitemap do
     it "responds properly" do
       expect(subject.method :default_host).to be_a Method
     end
+
+    it "respects inheritance" do
+      subject.class.include Module.new {
+        def method_missing(*args) = :inherited
+        def respond_to_missing?(name, *) = name == :something_inherited
+      }
+
+      expect(subject).to respond_to :something_inherited
+      expect(subject.linkset_doesnt_know).to be :inherited
+    end
   end
 end
