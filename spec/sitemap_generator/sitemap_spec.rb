@@ -26,8 +26,8 @@ RSpec.describe SitemapGenerator::Sitemap do
       expect(subject.linkset_doesnt_know).to be :inherited
     end
 
-    it "respects privacy" do
-      expect { subject.add_default_links }.to raise_error NoMethodError
+    it "delegates private methods" do
+      expect { subject.add_default_links }.to_not raise_error
     end
   end
 end
