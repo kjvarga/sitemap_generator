@@ -18,8 +18,12 @@ RSpec.describe SitemapGenerator::Sitemap do
 
     it "respects inheritance" do
       subject.class.include Module.new {
-        def method_missing(*args) = :inherited
-        def respond_to_missing?(name, *) = name == :something_inherited
+        def method_missing(*args)
+          :inherited
+        end
+        def respond_to_missing?(name, *)
+          name == :something_inherited
+        end
       }
 
       expect(subject).to respond_to :something_inherited
