@@ -40,18 +40,21 @@ module SitemapGenerator
     }
 
     # Lazy-initialize the LinkSet instance
-    Sitemap = (Class.new do
-      def method_missing(*args, &block)
-        (@link_set ||= reset!).send(*args, &block)
-      end
-
-      def respond_to?(name, include_private = false)
-        (@link_set ||= reset!).respond_to?(name, include_private)
-      end
-
+    Sitemap = (Config = Class.new do
       # Use a new LinkSet instance
       def reset!
         @link_set = LinkSet.new
+      end
+
+      private
+
+      def method_missing(name, *args, &block)
+        @link_set ||= reset!
+        @link_set.respond_to?(name, true) ? @link_set.__send__(name, *args, &block) : super
+      end
+
+      def respond_to_missing?(name, include_private = false)
+        (@link_set ||= reset!).respond_to?(name, include_private) || super
       end
     end).new
   end
