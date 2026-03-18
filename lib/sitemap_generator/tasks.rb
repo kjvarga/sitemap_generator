@@ -10,46 +10,32 @@ namespace :sitemap do
   # Require sitemap_generator only.  When installed as a plugin the require will fail, so in
   # that case, load the environment first.
   task :require do
-    begin
-      require 'sitemap_generator'
-    rescue LoadError => e
-      if defined?(Rails::VERSION)
-        Rake::Task['sitemap:require_environment'].invoke
-      else
-        raise e
-      end
-    end
-  end
-
-  # Require sitemap_generator after loading the Rails environment.  We still need the require
-  # in case we are installed as a gem and are setup to not automatically be required.
-  task :require_environment do
-    if defined?(Rails::VERSION)
-      Rake::Task['environment'].invoke
-    end
     require 'sitemap_generator'
   end
+  # In a Rails app, we need to boot Rails.
+  # Ensure gem is required in case it wasn't automatically loaded.
+  Rake::Task[:require].enhance([:environment]) if defined?(Rails)
 
   desc 'Install a default config/sitemap.rb file'
-  task install: ['sitemap:require'] do
+  task install: :require do
     SitemapGenerator::Utilities.install_sitemap_rb(verbose)
   end
 
   desc 'Delete all Sitemap files in public/ directory'
-  task clean: ['sitemap:require'] do
+  task clean: :require do
     SitemapGenerator::Utilities.clean_files
   end
 
   desc 'Generate sitemaps and ping search engines.'
-  task refresh: ['sitemap:create'] do
+  task refresh: :create do
     SitemapGenerator::Sitemap.ping_search_engines
   end
 
   desc "Generate sitemaps but don't ping search engines."
-  task 'refresh:no_ping' => ['sitemap:create']
+  task 'refresh:no_ping' => :create
 
   desc "Generate sitemaps but don't ping search engines.  Alias for refresh:no_ping."
-  task create: ['sitemap:require_environment'] do
+  task create: :require do
     SitemapGenerator::Interpreter.run(config_file: ENV['CONFIG_FILE'], verbose: verbose)
   end
 end
