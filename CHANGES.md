@@ -1,4 +1,4 @@
-### 7.0.0
+### 7.0.1
 
 * **Breaking:** Default search engines list is empty. `rake sitemap:refresh` and `ping_search_engines` perform no HTTP pings unless you configure engine URLs on `search_engines` or pass them into `ping_search_engines` (Google’s ping endpoint is deprecated upstream). [#444](https://github.com/kjvarga/sitemap_generator/pull/444)
 * **Breaking:** `LinkSet#create` runs `finalize!` only when a block is given. Calling `create` without a block requires `finalize!` when you are done adding links (supported workflow for programmatic builds). [#463](https://github.com/kjvarga/sitemap_generator/pull/463)
