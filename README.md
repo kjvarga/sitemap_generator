@@ -385,15 +385,15 @@ name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AwsSdkAdapter.new('s3_bucket',
     acl: 'public-read', # Optional. This is the default.
     cache_control: 'private, max-age=0, no-cache', # Optional. This is the default.
-    aws_access_key_id: 'YOUR_AWS_ACCESS_KEY_ID',
-    aws_secret_access_key: 'YOUR_AWS_SECRET_ACCESS_KEY',
-    aws_session_token: 'YOUR_AWS_SESSION_TOKEN', # Optional; use with temporary credentials.
-    aws_region: 'us-east-1',
-    aws_endpoint: 'https://sfo2.digitaloceanspaces.com'
+    access_key_id: 'YOUR_AWS_ACCESS_KEY_ID',
+    secret_access_key: 'YOUR_AWS_SECRET_ACCESS_KEY',
+    session_token: 'YOUR_AWS_SESSION_TOKEN', # Optional; use with temporary credentials.
+    region: 'us-east-1',
+    endpoint: 'https://sfo2.digitaloceanspaces.com'
   )
   ```
 
-  Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; `aws_session_token` supports STS-style credentials (or set `AWS_SESSION_TOKEN` and rely on SDK defaults). All other keyword options are passed directly to the AWS client.
+  Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; `session_token` supports STS-style credentials (or set `AWS_SESSION_TOKEN` and rely on SDK defaults). All other keyword options are passed directly to the AWS client.
 
   See [the `SitemapGenerator::AwsSdkAdapter` docs](https://github.com/kjvarga/sitemap_generator/blob/master/lib/sitemap_generator/adapters/aws_sdk_adapter.rb), and [https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method](https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method) for the full list of supported options.
 
