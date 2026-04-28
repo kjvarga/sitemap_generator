@@ -2,6 +2,8 @@ require 'spec_helper'
 require 'sitemap_generator/interpreter'
 
 RSpec.describe SitemapGenerator::Interpreter do
+  include SitemapHelpers
+
   let(:link_set)    { SitemapGenerator::LinkSet.new }
   let(:interpreter) { SitemapGenerator::Interpreter.new(:link_set => link_set) }
 

@@ -19,3 +19,5 @@ integration/gemfiles/*.lock
 
 /config/*
 !/config/.keep
+
+.claude

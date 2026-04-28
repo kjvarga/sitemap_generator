@@ -69,6 +69,8 @@ RSpec.describe "SitemapGenerator" do
     end
   end
 
+  # This group of tests needs reworked.
+  # They fail if rails app is reloaded or prepare hooks are re-run.
   describe "generate sitemap with normal config" do
     before :all do
       SitemapGenerator::Sitemap.reset!

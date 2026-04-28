@@ -7,15 +7,9 @@ class Holder
   end
 end
 
-def with_max_links(num)
-  original = SitemapGenerator::Sitemap.max_sitemap_links
-  SitemapGenerator::Sitemap.max_sitemap_links = num
-  yield
-ensure
-  SitemapGenerator::Sitemap.max_sitemap_links = original
-end
-
 RSpec.describe 'SitemapGenerator' do
+  include SitemapHelpers
+
   describe 'reset!' do
     before do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet

@@ -1,16 +1,17 @@
-# Load dev/test libs
-require 'byebug'
-require 'webmock/rspec'
-
-# Load support files
-require_relative 'support/file_macros'
-require_relative 'support/xml_macros'
-
 # Load simplecov
 require 'simplecov'
 SimpleCov.start do
   add_filter 'spec/'
 end
+
+# Load dev/test libs
+require 'bundler/setup'
+Bundler.require
+
+# Load support files
+require_relative 'support/file_macros'
+require_relative 'support/xml_macros'
+require_relative 'support/sitemap_helpers'
 
 # Configure webmock
 WebMock.disable_net_connect!

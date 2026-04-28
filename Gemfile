@@ -8,6 +8,7 @@ gemspec
 gem 'appraisal', git: 'https://github.com/thoughtbot/appraisal.git'
 gem 'aws-sdk-core'
 gem 'aws-sdk-s3'
+gem 'byebug'
 gem 'combustion'
 gem 'fog-aws'
 gem 'google-cloud-storage'
@@ -19,11 +20,7 @@ gem 'rspec_junit_formatter'
 gem 'rspec-rails'
 gem 'simplecov'
 gem 'sqlite3', '~> 2.1.0'
-gem 'webmock'
-
-group :test do
-  gem 'byebug'
-end
+gem 'webmock', require: 'webmock/rspec'
 
 # Dev tools / linter
 gem 'rubocop',             require: false

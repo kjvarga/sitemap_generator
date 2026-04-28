@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gem "appraisal", git: "https://github.com/thoughtbot/appraisal.git"
 gem "aws-sdk-core"
 gem "aws-sdk-s3"
+gem "byebug"
 gem "combustion"
 gem "fog-aws"
 gem "google-cloud-storage"
@@ -15,15 +16,11 @@ gem "rspec_junit_formatter"
 gem "rspec-rails"
 gem "simplecov"
 gem "sqlite3", "~> 2.1.0"
-gem "webmock"
+gem "webmock", require: "webmock/rspec"
 gem "nokogiri"
 gem "rubocop", require: false
 gem "rubocop-performance", require: false
 gem "rubocop-rake", require: false
 gem "rubocop-rspec", require: false
-
-group :test do
-  gem "byebug"
-end
 
 gemspec path: "../"

@@ -100,4 +100,47 @@ RSpec.describe SitemapGenerator::Utilities do
       expect(SitemapGenerator::Utilities.ellipsis('aaa', 1)).to eq('...')
     end
   end
+
+  describe 'find_adapter' do
+    require 'active_support/core_ext/string/inflections'
+
+    context 'when candidate is an adapter (#write)' do
+      let(:candidate) { SitemapGenerator::FileAdapter.new }
+      it "returns the same candidate" do
+        expect(subject.find_adapter candidate).to be candidate
+      end
+    end
+
+    context 'when candidate is a callable (proc, lambda, #call)' do
+      it "invokes call and returns that" do
+        expect(subject.find_adapter -> { SitemapGenerator::FileAdapter.new }).to be_a SitemapGenerator::FileAdapter
+      end
+
+      it "recurses on the return" do
+        expect(subject.find_adapter -> { SitemapGenerator::FileAdapter }).to be_a SitemapGenerator::FileAdapter
+        expect(subject.find_adapter -> { :file }).to be_a SitemapGenerator::FileAdapter
+      end
+    end
+
+    context 'when candidate is a class (#new)' do
+      it "instantiates the class" do
+        expect(subject.find_adapter SitemapGenerator::FileAdapter).to be_a SitemapGenerator::FileAdapter
+      end
+    end
+
+    context 'when candidate is a class name' do
+      it "constantizes" do
+        expect(subject.find_adapter :file).to be_a SitemapGenerator::FileAdapter
+        expect(subject.find_adapter "file").to be_a SitemapGenerator::FileAdapter
+        expect(subject.find_adapter 'sitemap_generator/file_adapter').to be_a SitemapGenerator::FileAdapter
+      end
+    end
+
+    context 'when candidate is anything else' do
+      let(:candidate) { double }
+      it "returns the same candidate" do
+        expect(subject.find_adapter candidate).to be candidate
+      end
+    end
+  end
 end

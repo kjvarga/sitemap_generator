@@ -180,5 +180,29 @@ module SitemapGenerator
     def bytesize(string)
       string.respond_to?(:bytesize) ? string.bytesize : string.length
     end
+
+    # Looks up an adapter from various sources:
+    # 1. symbol/string names are camelized and constantized
+    #   - :fog becomes SitemapGenerator::FogAdapter
+    #   - 'external/adapter_class' becomes External::AdapterClass
+    # 2. classes are instantiated
+    # 3. callables (procs, lambdas, #call) are "called"
+    # All steps recurse, so a proc could return a string that names a class that is instantiated.
+    #
+    # This method is used by the Rails railtie and as such,
+    # safely depends on ActiveSupport::Inflector.
+    def find_adapter(candidate)
+      if candidate.is_a?(Symbol) || candidate.is_a?(String)
+        candidate.to_s.camelize.then { |name|
+          "SitemapGenerator::#{name}Adapter".safe_constantize || name.safe_constantize
+        }.then { |c| find_adapter(c) }
+      elsif candidate.respond_to?(:new)
+        find_adapter candidate.new
+      elsif candidate.respond_to?(:call)
+        find_adapter candidate.call
+      else
+        candidate
+      end
+    end
   end
 end
