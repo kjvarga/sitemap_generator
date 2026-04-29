@@ -12,6 +12,7 @@ gem 'byebug'
 gem 'combustion'
 gem 'fog-aws'
 gem 'google-cloud-storage'
+gem 'nokogiri'
 gem 'rails'
 gem 'rake'
 gem 'rspec'
@@ -20,12 +21,6 @@ gem 'rspec-rails'
 gem 'simplecov'
 gem 'sqlite3', '~> 2.1.0'
 gem 'webmock', require: 'webmock/rspec'
-
-if RUBY_VERSION.match?(/2.5.*/)
-  gem 'nokogiri', '1.12.5'
-else
-  gem 'nokogiri'
-end
 
 # Dev tools / linter
 gem 'rubocop',             require: false

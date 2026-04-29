@@ -14,7 +14,7 @@ Sitemaps adhere to the [Sitemap 0.9 protocol][sitemap_protocol] specification.
 * Adheres to the [Sitemap 0.9 protocol][sitemap_protocol]
 * Handles millions of links
 * Customizable sitemap compression
-* Notifies search engines (Google) of new sitemaps
+* Optional HTTP notification of search engines when `search_engines` is configured
 * Ensures your old sitemaps stay in place if the new sitemap fails to generate
 * Gives you complete control over your sitemap contents and naming scheme
 * Intelligent sitemap indexing
@@ -42,7 +42,6 @@ SitemapGenerator::Sitemap.create do
   add '/home', :changefreq => 'daily', :priority => 0.9
   add '/contact_us', :changefreq => 'weekly'
 end
-SitemapGenerator::Sitemap.ping_search_engines # Not needed if you use the rake tasks
 ```
 
 Run it:
@@ -57,8 +56,6 @@ Output:
 In /Users/karl/projects/sitemap_generator-test/public/
 + sitemap.xml.gz                                           3 links /  364 Bytes
 Sitemap stats: 3 links / 1 sitemaps / 0m00s
-
-Successful ping of Google
 ```
 
 ## Contents
@@ -67,7 +64,6 @@ Successful ping of Google
   - [Features](#features)
     - [Show Me](#show-me)
   - [Contents](#contents)
-  - [Contribute](#contribute)
   - [Foreword](#foreword)
   - [Installation](#installation)
     - [Ruby](#ruby)
@@ -79,11 +75,12 @@ Successful ping of Google
     - [Crontab](#crontab)
     - [Robots.txt](#robotstxt)
     - [Ruby Modules](#ruby-modules)
-    - [Deployments & Capistrano](#deployments--capistrano)
+    - [Deployments \& Capistrano](#deployments--capistrano)
     - [Sitemaps with no Index File](#sitemaps-with-no-index-file)
     - [Upload Sitemaps to a Remote Host using Adapters](#upload-sitemaps-to-a-remote-host-using-adapters)
       - [Supported Adapters](#supported-adapters)
         - [`SitemapGenerator::FileAdapter`](#sitemapgeneratorfileadapter)
+        - [`SitemapGenerator::ActiveStorageAdapter`](#sitemapgeneratoractivestorageadapter)
         - [`SitemapGenerator::FogAdapter`](#sitemapgeneratorfogadapter)
         - [`SitemapGenerator::S3Adapter`](#sitemapgenerators3adapter)
         - [`SitemapGenerator::AwsSdkAdapter`](#sitemapgeneratorawssdkadapter)
@@ -97,6 +94,7 @@ Successful ping of Google
     - [Supported Options to `add`](#supported-options-to-add)
     - [Adding Links to the Sitemap Index](#adding-links-to-the-sitemap-index)
     - [Accessing the LinkSet instance](#accessing-the-linkset-instance)
+    - [Using `create` without a block](#using-create-without-a-block)
     - [Speeding Things Up](#speeding-things-up)
   - [Customizing your Sitemaps](#customizing-your-sitemaps)
     - [Sitemap Options](#sitemap-options)
@@ -153,7 +151,7 @@ The Rake tasks expect your sitemap to be at `config/sitemap.rb` but if you need 
 
 ### Rails
 
-SitemapGenerator works with all versions of Rails and has been tested in Rails 2, 3 and 4.
+SitemapGenerator targets Rails 6.0 through 8.1 (see [Compatibility](#compatibility)).
 
 Add the gem to your `Gemfile`:
 
@@ -218,7 +216,7 @@ directly in the call, as in the following example:
 SitemapGenerator::Sitemap.ping_search_engines(newengine: 'http://newengine.com/ping?url=%s')
 ```
 
-The key gives the name of the search engine, as a string or symbol, and the value is the full URL to ping, with a string interpolation that will be replaced by the CGI escaped sitemap index URL.  If you have any literal percent characters in your URL you need to escape them with `%%`.
+The key gives the name of the search engine, as a string or symbol, and the value is the full URL to ping, with a string interpolation that will be replaced by the URL-encoded (percent-encoded) sitemap index URL.  If you have any literal percent characters in your URL you need to escape them with `%%`.
 
 If you are calling `SitemapGenerator::Sitemap.ping_search_engines` from outside of your sitemap config file, then you will need to set `SitemapGenerator::Sitemap.default_host` and any other options that you set in your sitemap config which affect the location of the sitemap index file.  For example:
 
@@ -362,6 +360,7 @@ directory.
   Where `options` is a Hash with any of the following keys:
 * `aws_access_key_id` [String] Your AWS access key id
 * `aws_secret_access_key` [String] Your AWS secret access key
+* `aws_session_token` [String] Session token for temporary credentials (optional)
 * `fog_provider` [String]
 * `fog_directory` [String]
 * `fog_region` [String]
@@ -370,7 +369,7 @@ directory.
 * `fog_public` [Boolean] Whether the file is publicly accessible
 
 Alternatively you can use an environment variable to configure each option (except `fog_storage_options`).  The environment variables have the same
-name but capitalized, e.g. `FOG_PATH_STYLE`.
+name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
 
 ##### `SitemapGenerator::AwsSdkAdapter`
 
@@ -386,14 +385,15 @@ name but capitalized, e.g. `FOG_PATH_STYLE`.
   SitemapGenerator::Sitemap.adapter = SitemapGenerator::AwsSdkAdapter.new('s3_bucket',
     acl: 'public-read', # Optional. This is the default.
     cache_control: 'private, max-age=0, no-cache', # Optional. This is the default.
-    access_key_id: 'AKIAI3SW5CRAZBL4WSTA',
-    secret_access_key: 'asdfadsfdsafsadf',
+    access_key_id: 'YOUR_AWS_ACCESS_KEY_ID',
+    secret_access_key: 'YOUR_AWS_SECRET_ACCESS_KEY',
+    session_token: 'YOUR_AWS_SESSION_TOKEN', # Optional; use with temporary credentials.
     region: 'us-east-1',
     endpoint: 'https://sfo2.digitaloceanspaces.com'
   )
   ```
 
-  Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; all other options are passed directly to the AWS client.
+  Where the first argument is the S3 bucket name, and the rest are keyword argument options.  Options `:acl` and `:cache_control` configure access and caching of the uploaded files; `session_token` supports STS-style credentials (or set `AWS_SESSION_TOKEN` and rely on SDK defaults). All other keyword options are passed directly to the AWS client.
 
   See [the `SitemapGenerator::AwsSdkAdapter` docs](https://github.com/kjvarga/sitemap_generator/blob/master/lib/sitemap_generator/adapters/aws_sdk_adapter.rb), and [https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method](https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method) for the full list of supported options.
 
@@ -533,7 +533,6 @@ SitemapGenerator::Sitemap.create do
   add '/home'
 end
 ```
-
 
 To generate each one specify the configuration file to run by passing the `CONFIG_FILE` option to `rake sitemap:refresh`, e.g.:
 
@@ -778,10 +777,20 @@ In /Users/karl/projects/sitemap_generator-test/public/
 Sitemap stats: 3 links / 4 sitemaps / 0m00s
 ```
 
+### Using `create` without a block
+
+You can call `create` without a block, add links (and use `group` as needed), then call `finalize!` on the returned link set when finished.
+
+```ruby
+sitemap = SitemapGenerator::Sitemap.create(default_host: 'http://www.example.com')
+sitemap.add('/home')
+# ... add more links or use groups, then:
+sitemap.finalize!
+```
+
 ### Speeding Things Up
 
 For large ActiveRecord collections with thousands of records it is advisable to iterate through them in batches to avoid loading all records into memory at once.  For this reason in the example above we use `Content.find_each` which is a batched iterator available since Rails 2.3.2, rather than `Content.all`.
-
 
 ## Customizing your Sitemaps
 
@@ -1165,8 +1174,9 @@ end
 
 ## Compatibility
 
-Compatible with all versions of Rails and Ruby. Tested up to Ruby 3.4 and Rails 8.0.
-Ruby 1.9.3 support was dropped in Version 6.0.0.
+Ruby 2.6 through 4.0 and Rails 6.0 through 8.1 are supported.
+Ruby 2.5 and Rails 5.2 were dropped in v7.0.0.
+Ruby 1.9.3 support was dropped in v6.0.0.
 
 ## Licence
 

@@ -1,17 +1,18 @@
-### 6.4.0
+### 7.0.1
 
-* Support AWS Lambda [#415](https://github.com/kjvarga/sitemap_generator/pull/415)
-* Add "frozen_string_literal: true" magic header [#430](https://github.com/kjvarga/sitemap_generator/pull/430)
-* Drop Ruby 2.5, Rails 5.2 [#438](https://github.com/kjvarga/sitemap_generator/pull/438)
+* **Breaking:** Default search engines list is empty. `rake sitemap:refresh` and `ping_search_engines` perform no HTTP pings unless you configure engine URLs on `search_engines` or pass them into `ping_search_engines` (Google’s ping endpoint is deprecated upstream). [#444](https://github.com/kjvarga/sitemap_generator/pull/444)
+* **Breaking:** `LinkSet#create` runs `finalize!` only when a block is given. Calling `create` without a block requires `finalize!` when you are done adding links (supported workflow for programmatic builds). [#463](https://github.com/kjvarga/sitemap_generator/pull/463)
+* **Breaking:** Drop Ruby 2.5, Rails 5.2 [#438](https://github.com/kjvarga/sitemap_generator/pull/438)
+* Migrate continuous integration from CircleCI to GitHub Actions with expanded Ruby × Rails CI matrix.
+* Support AWS temporary credentials (`aws_session_token` / `AWS_SESSION_TOKEN`) for S3 uploads in AWS Lambda [#415](https://github.com/kjvarga/sitemap_generator/pull/415)
+* Add `frozen_string_literal: true` magic comments [#430](https://github.com/kjvarga/sitemap_generator/pull/430)
 * Add support for Rails 8.0 [#441](https://github.com/kjvarga/sitemap_generator/pull/441)
-* Google ping is deprecated [#444](https://github.com/kjvarga/sitemap_generator/pull/444)
 * Fix uninitialized constant ActiveSupport::LoggerThreadSafeLevel::Logger [#449](https://github.com/kjvarga/sitemap_generator/pull/449)
 * Add support for Ruby 3.4 [#451](https://github.com/kjvarga/sitemap_generator/pull/451)
 * Add support for Rails 8.1 [#461](https://github.com/kjvarga/sitemap_generator/pull/461)
-* Remove cgi dependency (fix Ruby 4 error) [#465](https://github.com/kjvarga/sitemap_generator/pull/465)
+* Replace CGI-based escaping with `URI.encode_www_form_component` for ping URLs; remove reliance on `cgi` (Ruby 4 compatibility) [#465](https://github.com/kjvarga/sitemap_generator/pull/465)
 * Add support for Ruby 4.0 [#466](https://github.com/kjvarga/sitemap_generator/pull/466)
-* Support for building sitemaps without block [#463](https://github.com/kjvarga/sitemap_generator/pull/463)
-* Make an ActiveStorage adapter [#467](https://github.com/kjvarga/sitemap_generator/pull/467)
+* Add ActiveStorage adapter (`ActiveStorage::Blob`) [#467](https://github.com/kjvarga/sitemap_generator/pull/467)
 
 ### 6.3.0
 
