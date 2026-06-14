@@ -142,9 +142,9 @@ module SitemapGenerator
     end
 
     def titleize(string)
-      string = string.dup if string.frozen?
-      string.gsub!(/_/, ' ')
-      string.split(/(\W)/).map(&:capitalize).join
+      result = string.tr('_', ' ')
+      result.gsub!(/\b\w/) { |match| match.upcase }
+      result
     end
 
     def truthy?(value)
