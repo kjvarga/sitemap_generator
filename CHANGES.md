@@ -1,3 +1,7 @@
+### 7.0.2
+
+* Reduce string copies and improve compatibility with `frozen_string_literal`. [#456](https://github.com/kjvarga/sitemap_generator/pull/456)
+
 ### 7.0.1
 
 * **Breaking:** Default search engines list is empty. `rake sitemap:refresh` and `ping_search_engines` perform no HTTP pings unless you configure engine URLs on `search_engines` or pass them into `ping_search_engines` (Google’s ping endpoint is deprecated upstream). [#444](https://github.com/kjvarga/sitemap_generator/pull/444)
