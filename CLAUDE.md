@@ -31,7 +31,7 @@ bundle exec rubocop
 # Build the gem
 bundle exec rake build
 
-# Release (tag + push + publish)
+# Release (tag + push to Git; then push gem manually)
 bundle exec rake release
 ```
 

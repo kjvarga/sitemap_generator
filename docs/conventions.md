@@ -24,7 +24,7 @@
 ## Error handling
 
 - Domain errors subclass `SitemapGenerator::SitemapError` (itself a `StandardError`):
-  - `SitemapFullError` — raised when adding a link to a finalized or full sitemap.
+  - `SitemapFullError` — raised when a sitemap file is full (link count, filesize, or news count limit reached).
   - `SitemapFinalizedError` — raised when mutating a finalized sitemap file.
 - Adapters raise `LoadError` (not a custom error) when their required dependency gem is not loaded — include a descriptive message telling the user which gem to `require`.
 - Errors propagate up to the caller; the library does not swallow exceptions internally.
