@@ -14,3 +14,7 @@ AllCops:
     - spec/**/*
     - integration/bin/*
     - integration/spec/**/*
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
