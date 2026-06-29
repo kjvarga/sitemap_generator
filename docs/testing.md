@@ -56,8 +56,7 @@ cd integration && bundle exec rspec
 2. Add `require 'spec_helper'` at the top.
 3. Use `RSpec.describe SitemapGenerator::ClassName` at the top level.
 4. Use `describe '#method_name'` for instance methods, `describe '.method_name'` for class methods.
-5. Use `context 'when <condition>'` for branches; `it 'returns/raises/writes ...'` in declarative present tense.
-   - **Rule:** conditions belong in a `context` block, not embedded in the `it` description. Wrong: `it 'returns nil when user is absent'`. Right: `context 'when user is absent' do; it 'returns nil'`.
+5. Follow the `context`/`it` and `should` conventions in [docs/conventions.md](conventions.md#naming-conventions).
 6. For adapter tests that write files, use a temp path under `tmp/test/` and clean up in an `after` hook.
 
 Example skeleton:
@@ -102,4 +101,3 @@ RSpec.describe SitemapGenerator::MyAdapter do
 end
 ```
 
-**Do not** use `should` in `it` descriptions — use declarative present tense ("raises", "writes", "returns").

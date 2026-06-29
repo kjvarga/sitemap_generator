@@ -18,6 +18,8 @@
 - Constants: `SCREAMING_SNAKE_CASE` (e.g. `MAX_SITEMAP_LINKS`).
 - Adapter class names must end with `Adapter` (e.g. `AwsSdkAdapter`).
 - Spec describe blocks use `RSpec.describe ClassName` at the top level; nested blocks use `describe '#method_name'` for instance methods and `describe '.method_name'` for class methods.
+- Use `context 'when <condition>'` for branches. Conditions belong in the `context` description, not embedded in the `it` description. Wrong: `it 'returns nil when user is absent'`. Right: `context 'when user is absent' do / it 'returns nil'`.
+- Use declarative present-tense `it` descriptions ("raises", "writes", "returns") — never `should`.
 
 ## Error handling
 
