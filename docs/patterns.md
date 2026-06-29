@@ -112,26 +112,4 @@ config.sitemap.adapter = :aws_sdk  # resolves to SitemapGenerator::AwsSdkAdapter
 
 ## Writing a spec for a new class
 
-Mirror the lib path in spec. Use `RSpec.describe`, `describe` for methods, `context` for conditions, `let` for subjects:
-
-```ruby
-# spec/sitemap_generator/adapters/my_adapter_spec.rb
-# frozen_string_literal: true
-
-require 'spec_helper'
-
-RSpec.describe SitemapGenerator::MyAdapter do
-  let(:adapter)  { described_class.new }
-  let(:location) { instance_double(SitemapGenerator::SitemapLocation, path: '/tmp/sitemap.xml.gz', directory: '/tmp') }
-
-  describe '#write' do
-    context 'when the backend is available' do
-      it 'writes the file' do
-        expect { adapter.write(location, '<xml/>') }.not_to raise_error
-      end
-    end
-  end
-end
-```
-
-**Do not** use `should` in `it` descriptions — use declarative present tense ("raises", "writes", "returns").
+See [docs/testing.md](testing.md) for the spec skeleton, structure rules, and examples.

@@ -19,12 +19,14 @@
 3. Add a `### X.Y.Z` section to `CHANGES.md` describing changes since the last release.
 4. Commit both files: `git commit -m "Release X.Y.Z"`.
 5. Run `bundle exec rake release`.
+6. Push the gem to RubyGems: `gem push pkg/sitemap_generator-X.Y.Z.gem`
 
 `rake release` does the following:
 - Builds `pkg/sitemap_generator-X.Y.Z.gem`
 - Creates git tag `vX.Y.Z` (skipped if the tag already exists at HEAD)
 - Pushes the branch and tag to `origin`
-- Pushes the built gem to RubyGems.org
+
+**Note:** `rake release` does **not** push to RubyGems. Step 6 is a separate manual command.
 
 ### Versioning
 
@@ -45,6 +47,6 @@ GitHub Actions runs the full Ruby × Rails matrix on every push and PR (see `.gi
 
 ## Rollback
 
-A bad gem release cannot be deleted from RubyGems.org (yanking is discouraged and only removes the gem from search/install by default). Instead:
-- Cut a patch release (`X.Y.Z+1`) that reverts or fixes the problem.
-- If the release introduced a breaking change unintentionally, bump the major version and document the revert.
+1. Yank the bad version: `gem yank sitemap_generator -v X.Y.Z` — this removes it from `gem install` but preserves the download history.
+2. Prepare a fix: cut a new patch release (`X.Y.Z+1`) that reverts or corrects the problem.
+3. If the bad release introduced a breaking change unintentionally, bump the major version and document the revert in `CHANGES.md`.

@@ -10,17 +10,18 @@ If the change is associated with a GitHub issue, suffix the branch with the issu
 
 ## Commit format
 
-No enforced convention. Write clear, present-tense imperative messages describing the effect:
+Use [Conventional Commits](https://www.conventionalcommits.org/) — `<type>(<scope>): <description>` — lowercase, no trailing period:
 
 ```
-Fix AWS SDK upload deprecation in AwsSdkAdapter
-Enhance Rails railtie to respect existing rails configuration
-Add support for Ruby 4.0
+fix(adapters): replace deprecated S3 upload path with TransferManager
+feat(railtie): infer default_host from Rails url_options
+chore: bump VERSION to 7.0.2
+docs: add CLAUDE.md and architecture docs
 ```
 
-Avoid commit messages that only describe what changed (not why), e.g. `Update aws_sdk_adapter.rb`.
+Types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `perf`. Scope is optional but useful for adapters, railtie, builder, etc.
 
-For release commits, the convention is `Release X.Y.Z` (see `rake release`).
+For release commits the convention is `chore: release X.Y.Z`.
 
 ## Opening a PR
 
@@ -31,7 +32,7 @@ Before opening a PR:
 - `CHANGES.md` is updated with a bullet under the next version heading
 - `VERSION` is bumped if this is a release PR
 
-PR title: short imperative phrase describing the effect (not the files changed).
+PR title: use semantic commit style — `<type>(<scope>): <description>` — matching the commit format above.
 
 PR description: what the change does and why; link to the relevant issue if applicable.
 
@@ -40,9 +41,11 @@ PR description: what the change does and why; link to the relevant issue if appl
 Maintainer review is required before merging. Reviews focus on:
 - Correctness across the Ruby × Rails version matrix
 - No new runtime gem dependencies
-- `frozen_string_literal: true` present on new Ruby files
+- `frozen_string_literal: true` present on new Ruby files (enforced by RuboCop)
 - Adapter changes don't eagerly `require` backend gems
 - Public API changes are documented in `CHANGES.md`
+- Breaking changes are clearly called out in `CHANGES.md` under `**Breaking:**` and require a major version bump
+- Backwards compatibility is preserved across all supported Ruby and Rails versions
 
 ## Getting merged
 
@@ -50,9 +53,4 @@ The maintainer merges accepted PRs. Squash merging is preferred to keep history 
 
 ## Releasing a new version
 
-1. Update `VERSION` with the new version string.
-2. Add a section to `CHANGES.md` describing what changed.
-3. Commit: `git commit -m "Release X.Y.Z"`.
-4. Run `bundle exec rake release` — this builds the gem, creates the git tag, pushes to GitHub, and publishes to RubyGems.
-
-If the tag already exists and points at HEAD, the release task skips tagging and continues.
+See [docs/deployment.md](docs/deployment.md) for the full release process.

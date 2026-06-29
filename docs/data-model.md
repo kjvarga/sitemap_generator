@@ -34,7 +34,7 @@ Invariants:
 
 ### SitemapFile
 
-Purpose: Represents one `.xml.gz` file being built. Buffers `<url>` entries and finalizes when full.
+Purpose: Represents one sitemap file being built (compressed `.xml.gz` or uncompressed `.xml` depending on the `compress` setting). Buffers `<url>` entries and finalizes when full.
 
 Key fields:
 - `location` — a `SitemapLocation` resolving the file path and URL

@@ -58,6 +58,7 @@ cd integration && bundle exec rspec
 3. Use `RSpec.describe SitemapGenerator::ClassName` at the top level.
 4. Use `describe '#method_name'` for instance methods, `describe '.method_name'` for class methods.
 5. Use `context 'when <condition>'` for branches; `it 'returns/raises/writes ...'` in declarative present tense.
+   - **Rule:** conditions belong in a `context` block, not embedded in the `it` description. Wrong: `it 'returns nil when user is absent'`. Right: `context 'when user is absent' do; it 'returns nil'`.
 6. For adapter tests that write files, use a temp path under `tmp/test/` and clean up in an `after` hook.
 
 Example skeleton:
@@ -79,3 +80,27 @@ RSpec.describe SitemapGenerator::MyClass do
   end
 end
 ```
+
+For an adapter spec, use `instance_double` for the location:
+
+```ruby
+# spec/sitemap_generator/adapters/my_adapter_spec.rb
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe SitemapGenerator::MyAdapter do
+  let(:adapter)  { described_class.new }
+  let(:location) { instance_double(SitemapGenerator::SitemapLocation, path: '/tmp/sitemap.xml.gz', directory: '/tmp') }
+
+  describe '#write' do
+    context 'when the backend is available' do
+      it 'writes the file' do
+        expect { adapter.write(location, '<xml/>') }.not_to raise_error
+      end
+    end
+  end
+end
+```
+
+**Do not** use `should` in `it` descriptions — use declarative present tense ("raises", "writes", "returns").

@@ -13,7 +13,7 @@
 | `SitemapGenerator::Sitemap` | `lib/sitemap_generator.rb` | Top-level singleton (a `Config` instance); delegates all method calls to an internal `LinkSet` via `method_missing`. |
 | `LinkSet` | `lib/sitemap_generator/link_set.rb` | Orchestrates sitemap creation: owns configuration (host, path, adapter), drives the `Interpreter`, and coordinates `SitemapFile` / `SitemapIndexFile` lifecycle. |
 | `Interpreter` | `lib/sitemap_generator/interpreter.rb` | Evaluates the user's sitemap config block; includes Rails URL helpers when available; exposes `add` and `group`. |
-| `SitemapFile` | `lib/sitemap_generator/builder/sitemap_file.rb` | Builds one `.xml.gz` file; buffers `<url>` entries until full (50k links or 50 MB), then calls `finalize!`. |
+| `SitemapFile` | `lib/sitemap_generator/builder/sitemap_file.rb` | Builds one sitemap file (compressed or uncompressed); buffers `<url>` entries until full (50k links or 50 MB), then calls `finalize!`. |
 | `SitemapIndexFile` | `lib/sitemap_generator/builder/sitemap_index_file.rb` | Builds the index file listing all sitemap files; finalized after all sitemaps are written. |
 | `SitemapLocation` | `lib/sitemap_generator/sitemap_location.rb` | Value object combining public path, host, filename, and compression flag into a resolved file path + URL. |
 | Adapters | `lib/sitemap_generator/adapters/` | Pluggable write backends: `FileAdapter` (default), `AwsSdkAdapter`, `S3Adapter`, `FogAdapter`, `GoogleStorageAdapter`, `ActiveStorageAdapter`, `WaveAdapter`. Each must implement `write(location, raw_data)`. |

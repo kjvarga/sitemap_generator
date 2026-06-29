@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 module SitemapGenerator
   # Class for uploading sitemaps to ActiveStorage.
   class ActiveStorageAdapter
     attr_reader :key, :filename
 
-    def initialize key: :sitemap, filename: 'sitemap.xml.gz'
-      @key, @filename = key, filename
+    def initialize(key: :sitemap, filename: 'sitemap.xml.gz')
+      @key = key
+      @filename = filename
     end
 
     def write(location, raw_data)
