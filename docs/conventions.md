@@ -49,3 +49,29 @@
 
 - Do not add new runtime gem dependencies without strong justification — the gem's only runtime dependency is `builder`.
 - Do not use `CGI` for URL encoding (removed for Ruby 4 compatibility); use `URI.encode_www_form_component` instead.
+
+## Frozen string literals
+
+All source files must have `# frozen_string_literal: true`. The CI matrix also runs with
+`RUBYOPT=--enable=frozen-string-literal`, which is stricter: it freezes interpolated heredocs
+on Ruby 2.x (the file-level magic comment does not).
+
+**Rule:** prefix any heredoc you intend to mutate with the unary `+` operator to make it
+explicitly mutable:
+
+```ruby
+# correct — string is mutable; gsub! works on all Ruby versions
+@xml = +<<-HTML
+  ...
+HTML
+@xml.gsub!(...)
+
+# wrong — frozen on Ruby 2.x with --enable=frozen-string-literal
+@xml = <<-HTML
+  ...
+HTML
+@xml.gsub!(...)  # FrozenError on Ruby 2.x
+```
+
+This pattern already exists in `SitemapFile` and `SitemapIndexFile`. Apply it anywhere a
+heredoc is assigned and subsequently mutated in place.
