@@ -1,4 +1,3 @@
-<!-- DRAFT: review and edit before committing -->
 
 # Contributing
 
