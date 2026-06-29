@@ -56,6 +56,13 @@ task release: [:build] do
     puts 'You must be on the master branch to release!'
     exit!
   end
-  sh "git tag v#{version}"
+  tag = "v#{version}"
+  existing = `git rev-parse --verify #{tag} 2>/dev/null`.chomp
+  head = `git rev-parse HEAD`.chomp
+  if existing.empty?
+    sh "git tag #{tag}"
+  elsif existing != head
+    abort "Tag #{tag} already exists and points to #{existing[0, 7]}, not HEAD (#{head[0, 7]})"
+  end
   sh 'git push origin master --tags'
 end
