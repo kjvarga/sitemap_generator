@@ -26,6 +26,9 @@ module SitemapGenerator
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapLocation.new(opts) : opts
         @link_count = 0
         @news_count = 0
+        # The + prefix makes this string explicitly mutable. Ruby 2.x with
+        # --enable=frozen-string-literal freezes interpolated heredocs, and
+        # gsub! below requires a mutable string.
         @xml_wrapper_start = +<<-HTML
           <?xml version="1.0" encoding="UTF-8"?>
             <urlset
