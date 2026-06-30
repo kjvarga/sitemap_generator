@@ -30,10 +30,9 @@ module SitemapGenerator
   class SimpleNamer
     def initialize(base, options = {})
       @options = SitemapGenerator::Utilities.reverse_merge(options,
-        zero: nil, # identifies the marker for the start of the series
-        extension: '.xml.gz',
-        start: 1
-      )
+                                                           zero: nil, # identifies the marker for the start of the series
+                                                           extension: '.xml.gz',
+                                                           start: 1)
       @base = base
       reset
     end

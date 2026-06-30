@@ -11,7 +11,7 @@ module SitemapGenerator
 
     PATH_OUTPUT_WIDTH = 47 # Character width of the path in the summary lines
 
-    [:host, :adapter].each do |method|
+    %i[host adapter].each do |method|
       define_method(method) do
         raise SitemapGenerator::SitemapError, "No value set for #{method}" unless self[method]
 
@@ -19,7 +19,7 @@ module SitemapGenerator
       end
     end
 
-    [:public_path, :sitemaps_path].each do |method|
+    %i[public_path sitemaps_path].each do |method|
       define_method(method) do
         Pathname.new(SitemapGenerator::Utilities.append_slash(self[method]))
       end
@@ -49,35 +49,33 @@ module SitemapGenerator
     #   filename is stripped off.  If `true` the extensions are left unchanged.
     # * <tt>max_sitemap_links</tt> - The maximum number of links to put in each sitemap.
     def initialize(opts = {})
-      SitemapGenerator::Utilities.assert_valid_keys(opts, [
-        :adapter,
-        :public_path,
-        :sitemaps_path,
-        :host,
-        :filename,
-        :namer,
-        :verbose,
-        :create_index,
-        :compress,
-        :max_sitemap_links
-      ])
+      SitemapGenerator::Utilities.assert_valid_keys(opts, %i[
+                                                      adapter
+                                                      public_path
+                                                      sitemaps_path
+                                                      host
+                                                      filename
+                                                      namer
+                                                      verbose
+                                                      create_index
+                                                      compress
+                                                      max_sitemap_links
+                                                    ])
       opts[:adapter] ||= SitemapGenerator::FileAdapter.new
-      opts[:public_path] ||= SitemapGenerator.app.root + 'public/'
+      opts[:public_path] ||= SitemapGenerator.app.root + 'public/'  # rubocop:disable Style/StringConcatenation
       # This is a bit of a hack to make the SimpleNamer act like the old SitemapNamer.
       # It doesn't really make sense to create a default namer like this because the
       # namer instance should be shared by the location objects of the sitemaps and
       # sitemap index files.  However, this greatly eases testing, so I'm leaving it in
       # for now.
-      if !opts[:filename] && !opts[:namer]
-        opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap, start: 2, zero: 1)
-      end
-      opts[:verbose] = !!opts[:verbose]
-      self.merge!(opts)
+      opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap, start: 2, zero: 1) if !opts[:filename] && !opts[:namer]
+      opts[:verbose] = !!opts[:verbose]  # rubocop:disable Style/DoubleNegation
+      merge!(opts)
     end
 
     # Return a new Location instance with the given options merged in
     def with(opts = {})
-      self.merge(opts)
+      merge(opts)
     end
 
     # Full path to the directory of the file.
@@ -112,7 +110,7 @@ module SitemapGenerator
       raise SitemapGenerator::SitemapError, 'No filename or namer set' unless self[:filename] || self[:namer]
 
       unless self[:filename]
-        self.send(:[]=, :filename, +self[:namer].to_s, super: true)
+        send(:[]=, :filename, +self[:namer].to_s, super: true)
 
         # Post-process the filename for our compression settings.
         # Strip the `.gz` from the extension if we aren't compressing this file.
@@ -120,7 +118,7 @@ module SitemapGenerator
         # expected.  Ultimately I should force using a namer in all circumstances.
         # Changing the filename here will affect how the FileAdapter writes out the file.
         if self[:compress] == false ||
-           (self[:namer] && self[:namer].start? && self[:compress] == :all_but_first)
+           (self[:namer]&.start? && self[:compress] == :all_but_first)
           self[:filename].gsub!(/\.gz$/, '')
         end
       end
@@ -153,7 +151,7 @@ module SitemapGenerator
 
     # If you set the filename, clear the namer and vice versa.
     def []=(key, value, opts = {})
-      if !opts[:super]
+      unless opts[:super]
         case key
         when :namer
           super(:filename, nil)
@@ -175,17 +173,15 @@ module SitemapGenerator
     def summary(link_count)
       filesize = number_to_human_size(self.filesize)
       width = self.class::PATH_OUTPUT_WIDTH
-      path = SitemapGenerator::Utilities.ellipsis(self.path_in_public, width)
-      "+ #{('%-' + width.to_s + 's') % path} #{'%10s' % link_count} links / #{'%10s' % filesize}"
+      path = SitemapGenerator::Utilities.ellipsis(path_in_public, width)
+      "+ #{"%-#{width}s" % path} #{'%10s' % link_count} links / #{'%10s' % filesize}"
     end
   end
 
   class SitemapIndexLocation < SitemapLocation
     def initialize(opts = {})
-      if !opts[:filename] && !opts[:namer]
-        opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap)
-      end
-      super(opts)
+      opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap) if !opts[:filename] && !opts[:namer]
+      super
     end
 
     # Whether to create a sitemap index.  Default `:auto`.  See <tt>LinkSet::create_index=</tt>
@@ -201,8 +197,8 @@ module SitemapGenerator
     def summary(link_count)
       filesize = number_to_human_size(self.filesize)
       width = self.class::PATH_OUTPUT_WIDTH - 3
-      path = SitemapGenerator::Utilities.ellipsis(self.path_in_public, width)
-      "+ #{('%-' + width.to_s + 's') % path} #{'%10s' % link_count} sitemaps / #{'%10s' % filesize}"
+      path = SitemapGenerator::Utilities.ellipsis(path_in_public, width)
+      "+ #{"%-#{width}s" % path} #{'%10s' % link_count} sitemaps / #{'%10s' % filesize}"
     end
   end
 end

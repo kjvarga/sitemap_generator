@@ -10,7 +10,6 @@ module SitemapGenerator
     # A Hash-like class for holding information about a sitemap URL and
     # generating an XML <url> element suitable for sitemaps.
     class SitemapUrl < Hash
-
       # Return a new instance with options configured on it.
       #
       # == Arguments
@@ -33,7 +32,7 @@ module SitemapGenerator
       # * +pagemap+
       def initialize(path, options = {})
         options = SitemapGenerator::Utilities.symbolize_keys(options)
-        if sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path
+        if (sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path)
           SitemapGenerator::Utilities.reverse_merge!(
             options,
             host: sitemap.location.host,
@@ -59,16 +58,17 @@ module SitemapGenerator
         )
         raise 'Cannot generate a url without a host' unless SitemapGenerator::Utilities.present?(options[:host])
 
-        if video = options.delete(:video)
+        if (video = options.delete(:video))
           options[:videos] = video.is_a?(Array) ? options[:videos].concat(video) : options[:videos] << video
         end
-        if alternate = options.delete(:alternate)
-          options[:alternates] = alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
+        if (alternate = options.delete(:alternate))
+          options[:alternates] =
+            alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
         end
 
-        path = path.to_s.sub(/^\//, '')
-        loc  = path.empty? ? options[:host] : (options[:host].to_s.sub(/\/$/, '') + '/' + path)
-        self.merge!(
+        path = path.to_s.sub(%r{^/}, '')
+        loc  = path.empty? ? options[:host] : "#{options[:host].to_s.sub(%r{/$}, '')}/#{path}"
+        merge!(
           priority: options[:priority],
           changefreq: options[:changefreq],
           lastmod: options[:lastmod],
@@ -129,7 +129,9 @@ module SitemapGenerator
               builder.video :content_loc, video[:content_loc].to_s if video[:content_loc]
               if video[:player_loc]
                 loc_attributes = { allow_embed: yes_or_no_with_default(video[:allow_embed], true) }
-                loc_attributes[:autoplay] = video[:autoplay].to_s if SitemapGenerator::Utilities.present?(video[:autoplay])
+                if SitemapGenerator::Utilities.present?(video[:autoplay])
+                  loc_attributes[:autoplay] = video[:autoplay].to_s
+                end
                 builder.video :player_loc, video[:player_loc].to_s, loc_attributes
               end
               builder.video :duration, video[:duration].to_s if video[:duration]
@@ -137,17 +139,30 @@ module SitemapGenerator
               builder.video :rating, format_float(video[:rating]) if video[:rating]
               builder.video :view_count, video[:view_count].to_s if video[:view_count]
               builder.video :publication_date, w3c_date(video[:publication_date]) if video[:publication_date]
-              video[:tags].each { |tag| builder.video :tag, tag.to_s }       if video[:tags]
+              video[:tags]&.each { |tag| builder.video :tag, tag.to_s }
               builder.video :tag, video[:tag].to_s                           if video[:tag]
               builder.video :category, video[:category].to_s                 if video[:category]
-              builder.video :family_friendly, yes_or_no_with_default(video[:family_friendly], true) if video.has_key?(:family_friendly)
-              builder.video :gallery_loc, video[:gallery_loc].to_s, title: video[:gallery_title].to_s if video[:gallery_loc]
-              builder.video :price, video[:price].to_s, prepare_video_price_attribs(video) if SitemapGenerator::Utilities.present?(video[:price])
-              if video[:uploader]
-                builder.video :uploader, video[:uploader].to_s, video[:uploader_info] ? { info: video[:uploader_info].to_s } : {}
+              if video.key?(:family_friendly)
+                builder.video :family_friendly,
+                              yes_or_no_with_default(video[:family_friendly], true)
               end
-              builder.video :live, yes_or_no_with_default(video[:live], true) if video.has_key?(:live)
-              builder.video :requires_subscription, yes_or_no_with_default(video[:requires_subscription], true) if video.has_key?(:requires_subscription)
+              if video[:gallery_loc]
+                builder.video :gallery_loc, video[:gallery_loc].to_s,
+                              title: video[:gallery_title].to_s
+              end
+              if SitemapGenerator::Utilities.present?(video[:price])
+                builder.video :price, video[:price].to_s, prepare_video_price_attribs(video)
+              end
+              if video[:uploader]
+                builder.video :uploader, video[:uploader].to_s,
+                              video[:uploader_info] ? { info: video[:uploader_info].to_s } : {}
+              end
+              builder.video :live, yes_or_no_with_default(video[:live], true) if video.key?(:live)
+              if video.key?(:requires_subscription)
+                builder.video :requires_subscription,
+                              yes_or_no_with_default(video[:requires_subscription],
+                                                     true)
+              end
             end
           end
 
@@ -159,9 +174,7 @@ module SitemapGenerator
             builder.xhtml :link, attributes
           end
 
-          unless SitemapGenerator::Utilities.blank?(self[:mobile])
-            builder.mobile :mobile
-          end
+          builder.mobile :mobile unless SitemapGenerator::Utilities.blank?(self[:mobile])
 
           unless SitemapGenerator::Utilities.blank?(self[:pagemap])
             builder.pagemap :PageMap do
@@ -188,18 +201,23 @@ module SitemapGenerator
         attribs = {}
         attribs[:currency] = video[:price_currency].to_s # required
         attribs[:type] = video[:price_type] if SitemapGenerator::Utilities.present?(video[:price_type])
-        attribs[:resolution] = video[:price_resolution] if SitemapGenerator::Utilities.present?(video[:price_resolution])
+        if SitemapGenerator::Utilities.present?(video[:price_resolution])
+          attribs[:resolution] = video[:price_resolution]
+        end
         attribs
       end
 
       def prepare_news(news)
-        SitemapGenerator::Utilities.assert_valid_keys(news, :publication_name, :publication_language, :publication_date, :genres, :access, :title, :keywords, :stock_tickers) unless news.empty?
+        unless news.empty?
+          SitemapGenerator::Utilities.assert_valid_keys(news, :publication_name, :publication_language,
+                                                        :publication_date, :genres, :access, :title, :keywords, :stock_tickers)
+        end
         news
       end
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
       def prepare_images(images, host)
-        images.delete_if { |key, value| key[:loc] == nil }
+        images.delete_if { |key, _value| key[:loc].nil? }
         images.each do |r|
           SitemapGenerator::Utilities.assert_valid_keys(r, :loc, :caption, :geo_location, :title, :license)
           r[:loc] = URI.join(host, r[:loc]).to_s
@@ -222,8 +240,6 @@ module SitemapGenerator
               date.utc
             elsif date.is_a?(Integer)
               Time.at(date).utc
-            else
-              nil
             end
 
           if zulutime
@@ -239,7 +255,9 @@ module SitemapGenerator
       # value must be 'yes' or 'no'.  Pass the default value as a boolean using `default`.
       def yes_or_no(value)
         if value.is_a?(String)
-          raise ArgumentError.new("Unrecognized value for yes/no field: #{value.inspect}") unless value =~ /^(yes|no)$/i
+          unless /^(yes|no)$/i.match?(value)
+            raise ArgumentError, "Unrecognized value for yes/no field: #{value.inspect}"
+          end
 
           value.downcase
         else

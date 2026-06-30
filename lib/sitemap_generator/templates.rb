@@ -9,8 +9,8 @@ module SitemapGenerator
   # Define an accessor method for each template file.
   class Templates
     FILES = {
-      sitemap_sample: 'sitemap.rb',
-    }
+      sitemap_sample: 'sitemap.rb'
+    }.freeze
 
     # Dynamically define accessors for each key defined in <tt>FILES</tt>
     attr_writer(*FILES.keys)
