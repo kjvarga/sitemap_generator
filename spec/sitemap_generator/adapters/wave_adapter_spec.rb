@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'spec_helper'
 
 RSpec.describe 'SitemapGenerator::WaveAdapter' do
