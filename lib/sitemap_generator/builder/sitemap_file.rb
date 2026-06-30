@@ -15,6 +15,7 @@ module SitemapGenerator
     #
     class SitemapFile
       include SitemapGenerator::Helpers::NumberHelper
+
       attr_reader :link_count, :filesize, :location, :news_count
 
       # === Options
@@ -59,19 +60,19 @@ module SitemapGenerator
       # mess up the name-assignment sequence.
       def lastmod
         File.mtime(location.path) if location.reserved_name?
-      rescue
+      rescue StandardError
         nil
       end
 
       def empty?
-        @link_count == 0
+        @link_count.zero?
       end
 
       # Return a boolean indicating whether the sitemap file can fit another link
       # of <tt>bytes</tt> bytes in size.  You can also pass a string and the
       # bytesize will be calculated for you.
       def file_can_fit?(bytes)
-        bytes = bytes.is_a?(String) ? SitemapGenerator::Utilities.bytesize(bytes) : bytes
+        bytes = SitemapGenerator::Utilities.bytesize(bytes) if bytes.is_a?(String)
         (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < max_sitemap_links && @news_count < SitemapGenerator::MAX_SITEMAP_NEWS
       end
 
@@ -106,11 +107,9 @@ module SitemapGenerator
           end
 
         xml = sitemap_url.to_xml
-        raise SitemapGenerator::SitemapFullError if !file_can_fit?(xml)
+        raise SitemapGenerator::SitemapFullError unless file_can_fit?(xml)
 
-        if sitemap_url.news?
-          @news_count += 1
-        end
+        @news_count += 1 if sitemap_url.news?
 
         # Add the XML to the sitemap
         @xml_content << xml
@@ -140,7 +139,7 @@ module SitemapGenerator
       # A SitemapGenerator::SitemapError exception is raised if the file has
       # already been written.
       def write
-        raise SitemapGenerator::SitemapError.new('Sitemap already written!') if written?
+        raise SitemapGenerator::SitemapError, 'Sitemap already written!' if written?
 
         finalize! unless finalized?
         reserve_name

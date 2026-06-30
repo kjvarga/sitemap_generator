@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-if !defined?(Aws::S3::Resource) or !defined?(Aws::Credentials)
+if !defined?(Aws::S3::Resource) || !defined?(Aws::Credentials)
   raise LoadError, "Error: `Aws::S3::Resource` and/or `Aws::Credentials` are not defined.\n\n" \
-        "Please `require 'aws-sdk'` - or another library that defines these classes."
+                   "Please `require 'aws-sdk'` - or another library that defines these classes."
 end
 
 module SitemapGenerator
@@ -29,7 +29,8 @@ module SitemapGenerator
     #   All other options you provide are passed directly to the AWS client.
     #   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
     #   for a full list of supported options.
-    def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_session_token: nil, aws_region: nil, aws_endpoint: nil, acl: 'public-read', cache_control: 'private, max-age=0, no-cache', **options)
+    def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_session_token: nil, aws_region: nil,
+                   aws_endpoint: nil, acl: 'public-read', cache_control: 'private, max-age=0, no-cache', **options)
       @bucket = bucket
       @acl = acl
       @cache_control = cache_control
@@ -49,12 +50,11 @@ module SitemapGenerator
         client = Aws::S3::Client.new(@options)
         transfer_manager = Aws::S3::TransferManager.new(client: client)
         transfer_manager.upload_file(location.path,
-          bucket: @bucket,
-          key: location.path_in_public,
-          acl: @acl,
-          cache_control: @cache_control,
-          content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
-        )
+                                     bucket: @bucket,
+                                     key: location.path_in_public,
+                                     acl: @acl,
+                                     cache_control: @cache_control,
+                                     content_type: location[:compress] ? 'application/x-gzip' : 'application/xml')
       else
         s3_object = s3_resource.bucket(@bucket).object(location.path_in_public)
         s3_object.upload_file(location.path, {

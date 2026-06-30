@@ -13,7 +13,7 @@ module SitemapGenerator
     # @return [Boolean]
     def is_at_least_rails3?
       is_rails? && Rails.version.to_f >= 3
-    rescue
+    rescue StandardError
       false # Rails.version defined in 2.1.0
     end
 

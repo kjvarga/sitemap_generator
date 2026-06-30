@@ -3,15 +3,11 @@
 require 'sitemap_generator'
 
 module SitemapGenerator
-
   # Provide a class for evaluating blocks, making the URL helpers from the framework
   # and API methods available to it.
   class Interpreter
-
     if SitemapGenerator.app.is_at_least_rails3?
-      if !::Rails.application.nil?
-        include ::Rails.application.routes.url_helpers
-      end
+      include ::Rails.application.routes.url_helpers unless ::Rails.application.nil?
     elsif SitemapGenerator.app.is_rails?
       require 'action_controller'
       include ActionController::UrlWriter
@@ -56,12 +52,12 @@ module SitemapGenerator
     # Evaluate the block in the interpreter.  Pass :yield_sitemap => true to
     # yield the Interpreter instance to the block...for old-style calling.
     def eval(opts = {}, &block)
-      if block_given?
-        if opts[:yield_sitemap]
-          yield @linkset
-        else
-          instance_eval(&block)
-        end
+      return unless block_given?
+
+      if opts[:yield_sitemap]
+        yield @linkset
+      else
+        instance_eval(&block)
       end
     end
 
@@ -72,11 +68,11 @@ module SitemapGenerator
     # * <tt>:config_file</tt> - full path to the config file to evaluate.
     #   Default is config/sitemap.rb in your application's root directory.
     # All other options are passed to +new+.
-    def self.run(opts = {}, &block)
+    def self.run(opts = {})
       opts = opts.dup
       config_file = opts.delete(:config_file)
       config_file ||= SitemapGenerator.app.root + 'config/sitemap.rb'
-      interpreter = self.new(opts)
+      interpreter = new(opts)
       interpreter.instance_eval(File.read(config_file), config_file.to_s)
       interpreter
     end

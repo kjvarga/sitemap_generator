@@ -2,7 +2,7 @@
 
 module SitemapGenerator
   module Utilities
-    extend self
+    module_function
 
     # Copy templates/sitemap.rb to config if not there yet.
     def install_sitemap_rb(verbose = false)
@@ -11,16 +11,17 @@ module SitemapGenerator
       else
         FileUtils.cp(
           SitemapGenerator.templates.template_path(:sitemap_sample),
-          SitemapGenerator.app.root + 'config/sitemap.rb')
+          SitemapGenerator.app.root + 'config/sitemap.rb'
+        )
         puts 'created: config/sitemap.rb' if verbose
       end
     end
 
     # Remove config/sitemap.rb if exists.
     def uninstall_sitemap_rb
-      if File.exist?(SitemapGenerator.app.root + 'config/sitemap.rb')
-        File.rm(SitemapGenerator.app.root + 'config/sitemap.rb')
-      end
+      return unless File.exist?(SitemapGenerator.app.root + 'config/sitemap.rb')
+
+      File.rm(SitemapGenerator.app.root + 'config/sitemap.rb')
     end
 
     # Clean sitemap files in output directory.
@@ -46,7 +47,11 @@ module SitemapGenerator
     # to +to_sym+.
     def symbolize_keys!(hash)
       hash.keys.each do |key|
-        hash[(key.to_sym rescue key) || key] = hash.delete(key)
+        hash[begin
+          key.to_sym
+        rescue StandardError
+          key
+        end || key] = hash.delete(key)
       end
       hash
     end
@@ -100,7 +105,7 @@ module SitemapGenerator
     # Performs the opposite of <tt>merge</tt>, with the keys and values from the first hash taking precedence over the second.
     # Modifies the receiver in place.
     def reverse_merge!(hash, other_hash)
-      hash.merge!(other_hash) { |k, o, n| o }
+      hash.merge!(other_hash) { |_k, o, _n| o }
     end
 
     # An object is blank if it's false, empty, or a whitespace string.
@@ -143,7 +148,7 @@ module SitemapGenerator
 
     def titleize(string)
       result = string.tr('_', ' ')
-      result.gsub!(/\b\w/) { |match| match.upcase }
+      result.gsub!(/\b\w/, &:upcase)
       result
     end
 
@@ -160,7 +165,7 @@ module SitemapGenerator
     def append_slash(path)
       strpath = path.to_s
       if !strpath[-1].nil? && strpath[-1].chr != '/'
-        strpath + '/'
+        "#{strpath}/"
       else
         strpath
       end
@@ -170,7 +175,7 @@ module SitemapGenerator
     # or bigger than max.
     def ellipsis(string, max)
       if string.size > max
-        (string[0, max - 3] || '') + '...'
+        "#{string[0, max - 3] || ''}..."
       else
         string
       end
@@ -193,9 +198,9 @@ module SitemapGenerator
     # safely depends on ActiveSupport::Inflector.
     def find_adapter(candidate)
       if candidate.is_a?(Symbol) || candidate.is_a?(String)
-        candidate.to_s.camelize.then { |name|
+        candidate.to_s.camelize.then do |name|
           "SitemapGenerator::#{name}Adapter".safe_constantize || name.safe_constantize
-        }.then { |c| find_adapter(c) }
+        end.then { |c| find_adapter(c) }
       elsif candidate.respond_to?(:new)
         find_adapter candidate.new
       elsif candidate.respond_to?(:call)

@@ -16,11 +16,11 @@ module SitemapGenerator
       if !File.exist?(dir)
         FileUtils.mkdir_p(dir)
       elsif !File.directory?(dir)
-        raise SitemapError.new("#{dir} should be a directory!")
+        raise SitemapError, "#{dir} should be a directory!"
       end
 
       stream = open(location.path, 'wb')
-      if location.path.to_s =~ /.gz$/
+      if /.gz$/.match?(location.path.to_s)
         gzip(stream, raw_data)
       else
         plain(stream, raw_data)
