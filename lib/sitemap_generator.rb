@@ -93,7 +93,8 @@ module SitemapGenerator
     !!@yield_sitemap
   end
 
-  self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../')) # Root of the install dir, not the Rails app # rubocop:disable Layout/LineLength
+  # Root of the install dir, not the Rails app
+  self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../'))
   self.templates = SitemapGenerator::Templates.new(root)
   self.app       = SitemapGenerator::Application.new
 end
