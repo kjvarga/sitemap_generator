@@ -178,7 +178,10 @@ module SitemapGenerator
     end
   end
 
-  class SitemapIndexLocation < SitemapLocation # rubocop:disable Style/Documentation
+  # SitemapLocation subclass for the sitemap index file.
+  # Defaults the namer to +:sitemap+ (no numeric suffix on the first name) and
+  # exposes the +create_index+ option.
+  class SitemapIndexLocation < SitemapLocation
     def initialize(opts = {})
       opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap) if !opts[:filename] && !opts[:namer]
       super

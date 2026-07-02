@@ -12,7 +12,9 @@ require 'yaml'
 
 # Define our own class rather than modify the global class
 module SitemapGenerator
-  class BigDecimal # rubocop:disable Style/Documentation
+  # Scoped BigDecimal wrapper that serializes to YAML without scientific notation.
+  # Defined here rather than reopening the global BigDecimal class.
+  class BigDecimal
     YAML_TAG = 'tag:yaml.org,2002:float'
     YAML_MAPPING = { 'Infinity' => '.Inf', '-Infinity' => '-.Inf', 'NaN' => '.NaN' }.freeze
 

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module SitemapGenerator
-  module Utilities # rubocop:disable Metrics/ModuleLength, Style/Documentation
+  # Internal utility functions: hash merging, string manipulation, byte calculation,
+  # and warning suppression. Not part of the public API.
+  module Utilities # rubocop:disable Metrics/ModuleLength
     module_function
 
     # Copy templates/sitemap.rb to config if not there yet.

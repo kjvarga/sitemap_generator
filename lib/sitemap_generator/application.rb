@@ -3,7 +3,9 @@
 require 'pathname'
 
 module SitemapGenerator
-  class Application # rubocop:disable Style/Documentation
+  # Thin abstraction over the host application environment.
+  # Provides the app +root+ path and Rails version detection.
+  class Application
     def is_rails? # rubocop:disable Naming/PredicatePrefix
       !!defined?(Rails::VERSION)
     end

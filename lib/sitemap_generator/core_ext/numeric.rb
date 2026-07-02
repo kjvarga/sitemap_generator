@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module SitemapGenerator
-  class Numeric # rubocop:disable Style/Documentation
+  # Scoped Numeric wrapper providing byte-unit helpers (+kilobytes+, +megabytes+, etc.).
+  # Defined here rather than reopening the global Numeric class.
+  class Numeric
     KILOBYTE = 1024
     MEGABYTE = KILOBYTE * 1024
     GIGABYTE = MEGABYTE * 1024

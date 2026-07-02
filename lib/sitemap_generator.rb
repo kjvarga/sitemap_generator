@@ -8,7 +8,9 @@ require 'sitemap_generator/utilities'
 require 'sitemap_generator/application'
 require 'sitemap_generator/sitemap_location'
 
-module SitemapGenerator # rubocop:disable Style/Documentation
+# Top-level namespace for the gem. +SitemapGenerator::Sitemap+ is the public entry point;
+# adapters, builders, and utilities are nested here.
+module SitemapGenerator
   autoload(:Interpreter,              'sitemap_generator/interpreter')
   autoload(:FileAdapter,              'sitemap_generator/adapters/file_adapter')
   autoload(:ActiveStorageAdapter,     'sitemap_generator/adapters/active_storage_adapter') if defined?(::ActiveStorage)

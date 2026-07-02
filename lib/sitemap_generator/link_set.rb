@@ -5,7 +5,10 @@ require 'builder'
 # A LinkSet provisions a bunch of links to sitemap files.  It also writes the index file
 # which lists all the sitemap files written.
 module SitemapGenerator
-  class LinkSet # rubocop:disable Metrics/ClassLength, Style/Documentation
+  # Top-level configuration and orchestration object for a sitemap generation run.
+  # Owns the adapter, host, paths, and namer; manages the lifecycle of sitemap files
+  # from creation through finalization. See +SitemapGenerator::Sitemap+ for the public API.
+  class LinkSet # rubocop:disable Metrics/ClassLength
     @@requires_finalization_opts = %i[filename sitemaps_path sitemaps_host namer] # rubocop:disable Style/ClassVars
     @@new_location_opts = %i[filename sitemaps_path namer] # rubocop:disable Style/ClassVars
 
@@ -492,7 +495,9 @@ module SitemapGenerator
       puts string
     end
 
-    module LocationHelpers # rubocop:disable Style/Documentation
+    # Setters that propagate location configuration (host, paths, adapter) to the
+    # active sitemap and index files whenever a value changes on the LinkSet.
+    module LocationHelpers
       # Set the host name, including protocol, that will be used by default on each
       # of your sitemap links.  You can pass a different host in your options to `add`
       # if you need to change it on a per-link basis.

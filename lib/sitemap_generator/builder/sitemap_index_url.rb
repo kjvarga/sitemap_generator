@@ -4,7 +4,8 @@ require 'builder'
 
 module SitemapGenerator
   module Builder
-    class SitemapIndexUrl < SitemapUrl # rubocop:disable Style/Documentation
+    # Wraps a sitemap file reference as a +<sitemap>+ XML entry for use in a sitemap index.
+    class SitemapIndexUrl < SitemapUrl
       def initialize(path, options = {})
         if (index = path.is_a?(SitemapGenerator::Builder::SitemapIndexFile) && path)
           options = SitemapGenerator::Utilities.reverse_merge(options, host: index.location.host, lastmod: Time.now,

@@ -2,7 +2,10 @@
 
 module SitemapGenerator
   module Builder
-    class SitemapIndexFile < SitemapFile # rubocop:disable Style/Documentation
+    # Builds the sitemap index XML file, listing all sitemap files.
+    # Manages deferred naming (waits for a second sitemap before reserving the index name)
+    # and controls whether an index is written at all via +create_index+.
+    class SitemapIndexFile < SitemapFile
       # === Options
       #
       # * <tt>location</tt> - a SitemapGenerator::SitemapIndexLocation instance or a Hash of options
