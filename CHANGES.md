@@ -1,3 +1,9 @@
+### 7.0.3
+
+* **Regression fix:** Revert railtie enhancements (#478) that were unintentionally included in 7.0.2. Those changes introduced an `ArgumentError: Missing host to link to!` during `assets:precompile` and other Rails boot contexts where no host is configured (reported in [#488](https://github.com/kjvarga/sitemap_generator/issues/488)). The railtie is restored to its 7.0.1 behaviour: it loads rake tasks only. The enhancements will return in a future release with proper documentation and test coverage. [#489](https://github.com/kjvarga/sitemap_generator/pull/489)
+* **Bugfix:** Restore sitemap generation on Ruby 2.x when `--enable=frozen-string-literal` is set globally. Ruby 2.6/2.7 freezes interpolated heredocs under that flag, causing `gsub!` to raise `FrozenError`. [#486](https://github.com/kjvarga/sitemap_generator/pull/486)
+* Internal: skip duplicate git tag creation in the release task if the tag already points at HEAD.
+
 ### 7.0.2
 
 * Reduce string copies and improve compatibility with `frozen_string_literal`. [#456](https://github.com/kjvarga/sitemap_generator/pull/456)
