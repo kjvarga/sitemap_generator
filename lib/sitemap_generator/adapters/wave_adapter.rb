@@ -15,7 +15,9 @@ module SitemapGenerator
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
       directory = File.dirname(location.path_in_public)
       self.store_dir = directory if directory != '.'
-      store!(File.open(location.path, 'rb'))
+      File.open(location.path, 'rb') do |io|
+        store!(io)
+      end
     end
   end
 end
