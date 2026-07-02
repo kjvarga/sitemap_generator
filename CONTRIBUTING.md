@@ -1,4 +1,3 @@
-
 # Contributing
 
 ## Branch naming
@@ -11,7 +10,7 @@ If the change is associated with a GitHub issue, suffix the branch with the issu
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) — `<type>(<scope>): <description>` — lowercase, no trailing period:
 
-```
+```sh
 fix(adapters): replace deprecated S3 upload path with TransferManager
 feat(railtie): infer default_host from Rails url_options
 chore: bump VERSION to 7.0.2
@@ -25,6 +24,7 @@ For release commits the convention is `chore: release X.Y.Z`.
 ## Opening a PR
 
 Before opening a PR:
+
 - All specs pass: `bundle exec rake spec`
 - Lint is clean: `bundle exec rubocop`
 - New behaviour is covered by tests
@@ -38,6 +38,7 @@ PR description: what the change does and why; link to the relevant issue if appl
 ## Review process
 
 Maintainer review is required before merging. Reviews focus on:
+
 - Correctness across the Ruby × Rails version matrix
 - No new runtime gem dependencies
 - `frozen_string_literal: true` present on new Ruby files (enforced by RuboCop)

@@ -27,7 +27,7 @@ This is a simple standalone example.  For Rails installation see the [Rails inst
 
 Install:
 
-```
+```sh
 gem install sitemap_generator
 ```
 
@@ -46,13 +46,13 @@ end
 
 Run it:
 
-```
+```sh
 ruby sitemap.rb
 ```
 
 Output:
 
-```
+```text
 In /Users/karl/projects/sitemap_generator-test/public/
 + sitemap.xml.gz                                           3 links /  364 Bytes
 Sitemap stats: 3 links / 1 sitemaps / 0m00s
@@ -60,69 +60,69 @@ Sitemap stats: 3 links / 1 sitemaps / 0m00s
 
 ## Contents
 
-- [SitemapGenerator](#sitemapgenerator)
-  - [Features](#features)
-    - [Show Me](#show-me)
-  - [Contents](#contents)
-  - [Foreword](#foreword)
-  - [Installation](#installation)
-    - [Ruby](#ruby)
-    - [Rails](#rails)
-  - [Getting Started](#getting-started)
-    - [Preventing Output](#preventing-output)
-    - [Rake Tasks](#rake-tasks)
-    - [Pinging Search Engines](#pinging-search-engines)
-    - [Crontab](#crontab)
-    - [Robots.txt](#robotstxt)
-    - [Ruby Modules](#ruby-modules)
-    - [Deployments \& Capistrano](#deployments--capistrano)
-    - [Sitemaps with no Index File](#sitemaps-with-no-index-file)
-    - [Upload Sitemaps to a Remote Host using Adapters](#upload-sitemaps-to-a-remote-host-using-adapters)
-      - [Supported Adapters](#supported-adapters)
-        - [`SitemapGenerator::FileAdapter`](#sitemapgeneratorfileadapter)
-        - [`SitemapGenerator::ActiveStorageAdapter`](#sitemapgeneratoractivestorageadapter)
-        - [`SitemapGenerator::FogAdapter`](#sitemapgeneratorfogadapter)
-        - [`SitemapGenerator::S3Adapter`](#sitemapgenerators3adapter)
-        - [`SitemapGenerator::AwsSdkAdapter`](#sitemapgeneratorawssdkadapter)
-        - [`SitemapGenerator::WaveAdapter`](#sitemapgeneratorwaveadapter)
-        - [`SitemapGenerator::GoogleStorageAdapter`](#sitemapgeneratorgooglestorageadapter)
-      - [An Example of Using an Adapter](#an-example-of-using-an-adapter)
-    - [Generating Multiple Sitemaps](#generating-multiple-sitemaps)
-  - [Sitemap Configuration](#sitemap-configuration)
-    - [A Simple Example](#a-simple-example)
-    - [Adding Links](#adding-links)
-    - [Supported Options to `add`](#supported-options-to-add)
-    - [Adding Links to the Sitemap Index](#adding-links-to-the-sitemap-index)
-    - [Accessing the LinkSet instance](#accessing-the-linkset-instance)
-    - [Using `create` without a block](#using-create-without-a-block)
-    - [Speeding Things Up](#speeding-things-up)
-  - [Customizing your Sitemaps](#customizing-your-sitemaps)
-    - [Sitemap Options](#sitemap-options)
-  - [Sitemap Groups](#sitemap-groups)
-    - [A Groups Example](#a-groups-example)
-    - [Using `group` without a block](#using-group-without-a-block)
-  - [Sitemap Extensions](#sitemap-extensions)
-    - [News Sitemaps](#news-sitemaps)
-      - [Example](#example)
-      - [Supported options](#supported-options)
-    - [Image Sitemaps](#image-sitemaps)
-      - [Example](#example-1)
-      - [Supported options](#supported-options-1)
-    - [Video Sitemaps](#video-sitemaps)
-      - [Example](#example-2)
-      - [Supported options](#supported-options-2)
-    - [PageMap Sitemaps](#pagemap-sitemaps)
-      - [Supported options](#supported-options-3)
-      - [Example:](#example-3)
-    - [Alternate Links](#alternate-links)
-      - [Example](#example-4)
-      - [Supported options](#supported-options-4)
-      - [Alternates Example](#alternates-example)
-    - [Mobile Sitemaps](#mobile-sitemaps)
-      - [Example](#example-5)
-      - [Supported options](#supported-options-5)
-  - [Compatibility](#compatibility)
-  - [Licence](#licence)
+* [SitemapGenerator](#sitemapgenerator)
+  * [Features](#features)
+    * [Show Me](#show-me)
+  * [Contents](#contents)
+  * [Foreword](#foreword)
+  * [Installation](#installation)
+    * [Ruby](#ruby)
+    * [Rails](#rails)
+  * [Getting Started](#getting-started)
+    * [Preventing Output](#preventing-output)
+    * [Rake Tasks](#rake-tasks)
+    * [Pinging Search Engines](#pinging-search-engines)
+    * [Crontab](#crontab)
+    * [Robots.txt](#robotstxt)
+    * [Ruby Modules](#ruby-modules)
+    * [Deployments \& Capistrano](#deployments--capistrano)
+    * [Sitemaps with no Index File](#sitemaps-with-no-index-file)
+    * [Upload Sitemaps to a Remote Host using Adapters](#upload-sitemaps-to-a-remote-host-using-adapters)
+      * [Supported Adapters](#supported-adapters)
+        * [`SitemapGenerator::FileAdapter`](#sitemapgeneratorfileadapter)
+        * [`SitemapGenerator::ActiveStorageAdapter`](#sitemapgeneratoractivestorageadapter)
+        * [`SitemapGenerator::FogAdapter`](#sitemapgeneratorfogadapter)
+        * [`SitemapGenerator::S3Adapter`](#sitemapgenerators3adapter)
+        * [`SitemapGenerator::AwsSdkAdapter`](#sitemapgeneratorawssdkadapter)
+        * [`SitemapGenerator::WaveAdapter`](#sitemapgeneratorwaveadapter)
+        * [`SitemapGenerator::GoogleStorageAdapter`](#sitemapgeneratorgooglestorageadapter)
+      * [An Example of Using an Adapter](#an-example-of-using-an-adapter)
+    * [Generating Multiple Sitemaps](#generating-multiple-sitemaps)
+  * [Sitemap Configuration](#sitemap-configuration)
+    * [A Simple Example](#a-simple-example)
+    * [Adding Links](#adding-links)
+    * [Supported Options to `add`](#supported-options-to-add)
+    * [Adding Links to the Sitemap Index](#adding-links-to-the-sitemap-index)
+    * [Accessing the LinkSet instance](#accessing-the-linkset-instance)
+    * [Using `create` without a block](#using-create-without-a-block)
+    * [Speeding Things Up](#speeding-things-up)
+  * [Customizing your Sitemaps](#customizing-your-sitemaps)
+    * [Sitemap Options](#sitemap-options)
+  * [Sitemap Groups](#sitemap-groups)
+    * [A Groups Example](#a-groups-example)
+    * [Using `group` without a block](#using-group-without-a-block)
+  * [Sitemap Extensions](#sitemap-extensions)
+    * [News Sitemaps](#news-sitemaps)
+      * [Example](#example)
+      * [Supported options](#supported-options)
+    * [Image Sitemaps](#image-sitemaps)
+      * [Example](#example-1)
+      * [Supported options](#supported-options-1)
+    * [Video Sitemaps](#video-sitemaps)
+      * [Example](#example-2)
+      * [Supported options](#supported-options-2)
+    * [PageMap Sitemaps](#pagemap-sitemaps)
+      * [Supported options](#supported-options-3)
+      * [Example:](#example-3)
+    * [Alternate Links](#alternate-links)
+      * [Example](#example-4)
+      * [Supported options](#supported-options-4)
+      * [Alternates Example](#alternates-example)
+    * [Mobile Sitemaps](#mobile-sitemaps)
+      * [Example](#example-5)
+      * [Supported options](#supported-options-5)
+  * [Compatibility](#compatibility)
+  * [Licence](#licence)
 
 ## Foreword
 
@@ -132,12 +132,11 @@ Those who knew him know what an amazing guy he was, and what an excellent Rails 
 
 The canonical repository is: [http://github.com/kjvarga/sitemap_generator][canonical_repo]
 
-
 ## Installation
 
 ### Ruby
 
-```
+```sh
 gem install 'sitemap_generator'
 ```
 
@@ -248,7 +247,7 @@ end
 
 You should add the URL of the sitemap index file to `public/robots.txt` to help search engines find your sitemaps.  The URL should be the complete URL to the sitemap index.  For example:
 
-```
+```text
 Sitemap: http://www.example.com/sitemap.xml.gz
 ```
 
@@ -309,6 +308,7 @@ To never create an index:
 ```ruby
 SitemapGenerator::Sitemap.create_index = false
 ```
+
 Your sitemaps will still be called `sitemap.xml.gz`, `sitemap1.xml.gz`, `sitemap2.xml.gz`, etc.
 
 And the default "intelligent" behaviour:
@@ -423,6 +423,7 @@ name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
     project_id: 'google_account_project_id',
   )
   ```
+
   Also, inline with Google Authentication options, it can also pick credentials from environment variables. All [supported environment variables][google_cloud_storage_authentication] can be used, for example: `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_CREDENTIALS`.  An example of using this adapter with the environment variables is:
 
   ```ruby
@@ -438,7 +439,7 @@ name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
 1. Please see [this wiki page][remote_hosts] for more information about setting up SitemapGenerator to upload to a
    remote host.
 
-2. This example uses the CarrierWave adapter.  It shows some common settings that are used when the hostname hosting
+1. This example uses the CarrierWave adapter.  It shows some common settings that are used when the hostname hosting
    the sitemaps differs from the hostname of the sitemap links.
 
      ```ruby
@@ -458,7 +459,7 @@ name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
      SitemapGenerator::Sitemap.adapter = SitemapGenerator::WaveAdapter.new
      ```
 
-3. Update your `robots.txt` file to point robots to the remote sitemap index file, e.g:
+1. Update your `robots.txt` file to point robots to the remote sitemap index file, e.g:
 
     ```
     Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap.xml.gz
@@ -471,7 +472,7 @@ name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
     that would otherwise be included would point to a different host than the rest of the links
     in the sitemap, something that the sitemap rules forbid.
 
-4. Verify to Google that you own the S3 url
+1. Verify to Google that you own the S3 url
 
     In order for Google to use your sitemap, you need to prove you own the S3 bucket through [google webmaster tools](https://www.google.com/webmasters/tools/home?hl=en).  In the example above, you would add the site `http://s3.amazonaws.com/sitemap-generator/sitemaps`.  Once you have verified you own the directory, then add your
     sitemap index to the list of sitemaps for the site.
@@ -497,7 +498,7 @@ end
 
 Outputs:
 
-```
+```text
 + sitemaps/google/sitemap1.xml.gz             2 links /  822 Bytes /  328 Bytes gzipped
 + sitemaps/google/sitemap.xml.gz           1 sitemaps /  389 Bytes /  217 Bytes gzipped
 Sitemap stats: 2 links / 1 sitemaps / 0m00s
@@ -536,7 +537,7 @@ end
 
 To generate each one specify the configuration file to run by passing the `CONFIG_FILE` option to `rake sitemap:refresh`, e.g.:
 
-```
+```sh
 rake sitemap:refresh CONFIG_FILE="config/google_sitemap.rb"
 rake sitemap:refresh CONFIG_FILE="config/apple_sitemap.rb"
 rake sitemap:refresh CONFIG_FILE="config/bing_sitemap.rb"
@@ -548,7 +549,7 @@ A sitemap configuration file contains all the information needed to generate you
 
 If you want to use a non-standard configuration file, or have multiple configuration files, you can specify which one to run by passing the `CONFIG_FILE` option like so:
 
-```
+```sh
 rake sitemap:refresh CONFIG_FILE="config/geo_sitemap.rb"
 ```
 
@@ -572,7 +573,7 @@ A few things to note:
 
 Now let's see what is output when we run this configuration with `rake sitemap:refresh:no_ping`:
 
-```
+```text
 In /Users/karl/projects/sitemap_generator-test/public/
 + sitemap.xml.gz                                           2 links /  347 Bytes
 Sitemap stats: 2 links / 1 sitemaps / 0m00s
@@ -581,7 +582,6 @@ Sitemap stats: 2 links / 1 sitemaps / 0m00s
 Weird!  The sitemap has two links, even though we only added one!  This is because SitemapGenerator adds the root URL `/` for you by default.  You can change the default behaviour by setting the `include_root` or `include_index` option.
 
 Now let's take a look at the file that was created.  After uncompressing and XML-tidying the contents we have:
-
 
 * `public/sitemap.xml.gz`
 
@@ -617,7 +617,7 @@ end
 
 And the output:
 
-```
+```text
 In /Users/karl/projects/sitemap_generator-test/public/
 + sitemap1.xml.gz                                          2 links /  347 Bytes
 + sitemap.xml.gz                                        1 sitemaps /  228 Bytes
@@ -662,7 +662,7 @@ In the example about we pass a `lastmod` (last modified) option with the value o
 
 Looking at the output from running this sitemap, we see that we have a few more links than before:
 
-```
+```text
 + sitemap.xml.gz                   12 links /     2.3 KB /  365 Bytes gzipped
 Sitemap stats: 12 links / 1 sitemaps / 0m00s
 ```
@@ -770,7 +770,7 @@ end
 
 The output looks something like this:
 
-```
+```text
 In /Users/karl/projects/sitemap_generator-test/public/
 + sitemap4.xml.gz                                          3 links /  355 Bytes
 + sitemap.xml.gz                                        4 sitemaps /  242 Bytes
@@ -848,8 +848,8 @@ The following options are supported.
 * `:public_path` - String.  A **full or relative path** to the `public` directory or the directory you want to write sitemaps into.  Defaults to `public/` under your application root or relative to the current working directory.
 
 * `:sitemaps_host` - String.  **Host including protocol** to use when generating a link to a sitemap file i.e. the hostname of the server where the sitemaps are hosted.  The value will differ from the hostname in your sitemap links.  For example: `'http://amazon.aws.com/'`.  Note that `include_index` is
-automatically turned off when the `sitemaps_host` does not match `default_host`.
-Because the link to the sitemap index file that would otherwise be added would point to a different host than the rest of the links in the sitemap.  Something that the sitemap rules forbid.
+  automatically turned off when the `sitemaps_host` does not match `default_host`.
+  Because the link to the sitemap index file that would otherwise be added would point to a different host than the rest of the links in the sitemap.  Something that the sitemap rules forbid.
 
 * `:namer` - A `SitemapGenerator::SimpleNamer` instance **for generating sitemap names**.  You can read about Sitemap Namers by reading the API docs.  Allows you to set the name, extension and number sequence for sitemap files, as well as modify the name of the first file in the sequence, which is often the index file.  A simple example if we want to generate files like 'newname.xml.gz', 'newname1.xml.gz', etc is `SitemapGenerator::SimpleNamer.new(:newname)`.
 
@@ -860,9 +860,9 @@ Because the link to the sitemap index file that would otherwise be added would p
 * `:adapter` - Instance.  The default adapter is a `SitemapGenerator::FileAdapter` which simply writes files to the filesystem.  You can use a `SitemapGenerator::WaveAdapter` for uploading sitemaps to remote servers - useful for read-only hosts such as Heroku.  Or you can provide an instance of your own class to provide custom behavior.  Your class must define a write method which takes a `SitemapGenerator::Location` and raw XML data.
 
 * `:compress` - Specifies which files to compress with gzip.  Default is `true`. Accepted values:
-    * `true` - Boolean; compress all files.
-    * `false` - Boolean; Do not compress any files.
-    * `:all_but_first` - Symbol; leave the first file uncompressed but compress all remaining files.
+  * `true` - Boolean; compress all files.
+  * `false` - Boolean; Do not compress any files.
+  * `:all_but_first` - Symbol; leave the first file uncompressed but compress all remaining files.
 
   The compression setting applies to groups too.  So `:all_but_first` will have the same effect (the first file in the group will not be compressed, the rest will).  So if you require different behaviour for your groups, pass in a `:compress` option e.g. `group(:compress => false) { add('/link') }`
 
@@ -903,7 +903,7 @@ end
 
 And the output from running the above:
 
-```
+```text
 In /Users/karl/projects/sitemap_generator-test/public/
 + en/english.xml.gz                                        1 links /  328 Bytes
 + fr/french.xml.gz                                         1 links /  329 Bytes
@@ -952,7 +952,7 @@ end
 
 And the output from running the above:
 
-```
+```text
 In '/Users/kvarga/Projects/sitemap_generator-test/public/':
 + odds.xml.gz                                             10 links /  371 Bytes
 + evens.xml.gz                                            10 links /  371 Bytes
@@ -987,14 +987,14 @@ end
 #### Supported options
 
 * `:news` - Hash
-    * `:publication_name`
-    * `:publication_language`
-    * `:publication_date`
-    * `:genres`
-    * `:access`
-    * `:title`
-    * `:keywords`
-    * `:stock_tickers`
+  * `:publication_name`
+  * `:publication_language`
+  * `:publication_date`
+  * `:genres`
+  * `:access`
+  * `:title`
+  * `:keywords`
+  * `:stock_tickers`
 
 ### Image Sitemaps
 
@@ -1014,11 +1014,11 @@ end
 #### Supported options
 
 * `:images` - Array of hashes
-    * `:loc` Required, location of the image
-    * `:caption`
-    * `:geo_location`
-    * `:title`
-    * `:license`
+  * `:loc` Required, location of the image
+  * `:caption`
+  * `:geo_location`
+  * `:title`
+  * `:license`
 
 ### Video Sitemaps
 
@@ -1045,32 +1045,32 @@ end
 #### Supported options
 
 * `:video` or `:videos` - Hash or array of hashes, respectively
-    * `:thumbnail_loc` - Required.  String, URL of the thumbnail image.
-    * `:title` - Required.  String, title of the video.
-    * `:description` - Required.  String, description of the video.
-    * `:content_loc` - Depends. String, URL.  One of content_loc or player_loc must be present.
-    * `:player_loc` - Depends. String, URL.  One of content_loc or player_loc must be present.
-    * `:allow_embed` - Boolean, attribute of player_loc.
-    * `:autoplay` - Boolean, default true.  Attribute of player_loc.
-    * `:duration` - Recommended. Integer or string.  Duration in seconds.
-    * `:expiration_date` - Recommended when applicable.  The date after which the video will no longer be available.
-    * `:rating` - Optional
-    * `:view_count` - Optional. Integer or string.
-    * `:publication_date` - Optional
-    * `:tags` - Optional. Array of string tags.
-    * `:tag` - Optional. String, single tag.
-    * `:category` - Optional
-    * `:family_friendly`- Optional. Boolean
-    * `:gallery_loc` - Optional. String, URL.
-    * `:gallery_title` - Optional. Title attribute of the gallery location element
-    * `:uploader` - Optional.
-    * `:uploader_info` - Optional. Info attribute of uploader element
-    * `:price` - Optional. Only one price supported at this time
-        * `:price_currency` - Required.  In [ISO_4217][iso_4217] format.
-        * `:price_type` - Optional. `rent` or `own`
-        * `:price_resolution` - Optional. `HD` or `SD`
-    * `:live` - Optional. Boolean.
-    * `:requires_subscription` - Optional. Boolean.
+  * `:thumbnail_loc` - Required.  String, URL of the thumbnail image.
+  * `:title` - Required.  String, title of the video.
+  * `:description` - Required.  String, description of the video.
+  * `:content_loc` - Depends. String, URL.  One of content_loc or player_loc must be present.
+  * `:player_loc` - Depends. String, URL.  One of content_loc or player_loc must be present.
+  * `:allow_embed` - Boolean, attribute of player_loc.
+  * `:autoplay` - Boolean, default true.  Attribute of player_loc.
+  * `:duration` - Recommended. Integer or string.  Duration in seconds.
+  * `:expiration_date` - Recommended when applicable.  The date after which the video will no longer be available.
+  * `:rating` - Optional
+  * `:view_count` - Optional. Integer or string.
+  * `:publication_date` - Optional
+  * `:tags` - Optional. Array of string tags.
+  * `:tag` - Optional. String, single tag.
+  * `:category` - Optional
+  * `:family_friendly`- Optional. Boolean
+  * `:gallery_loc` - Optional. String, URL.
+  * `:gallery_title` - Optional. Title attribute of the gallery location element
+  * `:uploader` - Optional.
+  * `:uploader_info` - Optional. Info attribute of uploader element
+  * `:price` - Optional. Only one price supported at this time
+  * `:price_currency` - Required.  In [ISO_4217][iso_4217] format.
+  * `:price_type` - Optional. `rent` or `own`
+  * `:price_resolution` - Optional. `HD` or `SD`
+  * `:live` - Optional. Boolean.
+  * `:requires_subscription` - Optional. Boolean.
 
 ### PageMap Sitemaps
 
@@ -1079,14 +1079,14 @@ Pagemaps can be added by passing a `:pagemap` hash to `add`. The hash must conta
 #### Supported options
 
 * `:pagemap` - Hash
-    * `:dataobjects` - Required, array of hashes
-        * `:type` - Required, string, type of the object
-        * `:id` - String, ID of the object
-        * `:attributes` - Array of hashes
-            * `:name` - Required, string, name of the attribute.
-            * `:value` - String, value of the attribute.
+  * `:dataobjects` - Required, array of hashes
+    * `:type` - Required, string, type of the object
+    * `:id` - String, ID of the object
+    * `:attributes` - Array of hashes
+      * `:name` - Required, string, name of the attribute.
+      * `:value` - String, value of the attribute.
 
-#### Example:
+#### Example
 
 ```ruby
 SitemapGenerator::Sitemap.default_host = "http://www.example.com"
@@ -1128,10 +1128,10 @@ end
 #### Supported options
 
 * `:alternate`/`:alternates` - Hash or array of hashes, respectively
-    * `:href` - Required, string.
-    * `:lang`  - Optional, string.
-    * `:nofollow` - Optional, boolean. Used to mark link as "nofollow".
-    * `:media` - Optional, string.  Specify [media targets for responsive design pages][media].
+  * `:href` - Required, string.
+  * `:lang`  - Optional, string.
+  * `:nofollow` - Optional, boolean. Used to mark link as "nofollow".
+  * `:media` - Optional, string.  Specify [media targets for responsive design pages][media].
 
 #### Alternates Example
 
