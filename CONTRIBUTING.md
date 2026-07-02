@@ -26,7 +26,7 @@ For release commits the convention is `chore: release X.Y.Z`.
 Before opening a PR:
 
 - All specs pass: `bundle exec rake spec`
-- Lint is clean: `bundle exec rubocop`
+- Lint is clean: `bundle exec rubocop` and `bundle exec rake mdl`
 - New behaviour is covered by tests
 - `CHANGES.md` is updated with a bullet under the next version heading
 - `VERSION` is bumped if this is a release PR
