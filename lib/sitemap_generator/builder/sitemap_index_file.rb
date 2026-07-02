@@ -3,7 +3,6 @@
 module SitemapGenerator
   module Builder
     class SitemapIndexFile < SitemapFile
-
       # === Options
       #
       # * <tt>location</tt> - a SitemapGenerator::SitemapIndexLocation instance or a Hash of options
@@ -49,9 +48,9 @@ module SitemapGenerator
       # If a link is being added to the index manually as a string, then we
       # can assume that the index is required (unless create_index is false of course).
       # This seems like the logical thing to do.
-      alias_method :super_add, :add
+      alias super_add add
       def add(link, options = {})
-        if file = link.is_a?(SitemapFile) && link
+        if (file = link.is_a?(SitemapFile) && link)
           @sitemaps_link_count += file.link_count
           file.finalize! unless file.finalized?
 
@@ -62,7 +61,7 @@ module SitemapGenerator
           # first name (the index, or the sitemap).  If the item is not a SitemapFile,
           # then it has been manually added and we can be sure that the user intends
           # for there to be an index.
-          if @link_count == 0
+          if @link_count.zero?
             @first_sitemap = SitemapGenerator::Builder::LinkHolder.new(file, options)
             @link_count += 1 # pretend it's added, but don't add it yet
           else
@@ -90,7 +89,7 @@ module SitemapGenerator
       # of <tt>bytes</tt> bytes in size.  You can also pass a string and the
       # bytesize will be calculated for you.
       def file_can_fit?(bytes)
-        bytes = bytes.is_a?(String) ? SitemapGenerator::Utilities.bytesize(bytes) : bytes
+        bytes = SitemapGenerator::Utilities.bytesize(bytes) if bytes.is_a?(String)
         (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < SitemapGenerator::MAX_SITEMAP_FILES
       end
 
@@ -101,7 +100,7 @@ module SitemapGenerator
 
       def stats_summary(opts = {})
         str = "Sitemap stats: #{number_with_delimiter(@sitemaps_link_count)} links / #{@link_count} sitemaps"
-        str += ' / %dm%02ds' % opts[:time_taken].divmod(60) if opts[:time_taken]
+        str + (' / %dm%02ds' % opts[:time_taken].divmod(60)) if opts[:time_taken]
       end
 
       def finalize!
@@ -122,7 +121,7 @@ module SitemapGenerator
       # If a link is added manually and create_index is not false, we force index
       # creation because they obviously intend for there to be an index.  False otherwise.
       def create_index?
-        @create_index || @location.create_index == true || @location.create_index == :auto && @link_count > 1
+        @create_index || @location.create_index == true || (@location.create_index == :auto && @link_count > 1)
       end
 
       # Return the index file URL.  If create_index is true, this is the URL
@@ -141,15 +140,15 @@ module SitemapGenerator
 
       # Make sure the first sitemap has been written out and added to the index
       def write_first_sitemap
-        if @first_sitemap
-          @first_sitemap.link.write unless @first_sitemap.link.written?
-          super_add(SitemapGenerator::Builder::SitemapIndexUrl.new(@first_sitemap.link, @first_sitemap.options))
-          @link_count -= 1 # we already counted it, don't count it twice
-          # Store the URL because if create_index is false, this is the
-          # "index" URL
-          @first_sitemap_url = @first_sitemap.link.location.url
-          @first_sitemap = nil
-        end
+        return unless @first_sitemap
+
+        @first_sitemap.link.write unless @first_sitemap.link.written?
+        super_add(SitemapGenerator::Builder::SitemapIndexUrl.new(@first_sitemap.link, @first_sitemap.options))
+        @link_count -= 1 # we already counted it, don't count it twice
+        # Store the URL because if create_index is false, this is the
+        # "index" URL
+        @first_sitemap_url = @first_sitemap.link.location.url
+        @first_sitemap = nil
       end
     end
   end

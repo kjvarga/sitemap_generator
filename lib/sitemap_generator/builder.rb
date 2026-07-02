@@ -5,6 +5,8 @@ require 'sitemap_generator/builder/sitemap_index_file'
 require 'sitemap_generator/builder/sitemap_url'
 require 'sitemap_generator/builder/sitemap_index_url'
 
-module SitemapGenerator::Builder
-  LinkHolder = Struct.new(:link, :options)
+module SitemapGenerator
+  module Builder
+    LinkHolder = Struct.new(:link, :options)
+  end
 end

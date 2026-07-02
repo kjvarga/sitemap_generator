@@ -6,7 +6,6 @@ require 'sitemap_generator/utilities'
 module SitemapGenerator
   # = SitemapGenerator Number Helpers
   module Helpers # :nodoc:
-
     # Provides methods for converting numbers into formatted strings.
     # Methods are provided for precision, positional notation and file size
     # and pretty printing.
@@ -14,11 +13,11 @@ module SitemapGenerator
     # Most methods expect a +number+ argument, and will return it
     # unchanged if can't be converted into a valid number.
     module NumberHelper
-
       # Raised when argument +number+ param given to the helpers is invalid and
       # the option :raise is set to  +true+.
       class InvalidNumberError < StandardError
         attr_accessor :number
+
         def initialize(number)
           @number = number
         end
@@ -46,11 +45,9 @@ module SitemapGenerator
         begin
           Float(number)
         rescue ArgumentError, TypeError
-          if options[:raise]
-            raise InvalidNumberError, number
-          else
-            return number
-          end
+          raise InvalidNumberError, number if options[:raise]
+
+          return number
         end
 
         defaults = {
@@ -99,11 +96,9 @@ module SitemapGenerator
         number = begin
           Float(number)
         rescue ArgumentError, TypeError
-          if options[:raise]
-            raise InvalidNumberError, number
-          else
-            return number
-          end
+          raise InvalidNumberError, number if options[:raise]
+
+          return number
         end
 
         defaults = {
@@ -123,18 +118,20 @@ module SitemapGenerator
         significant = options.delete :significant
         strip_insignificant_zeros = options.delete :strip_insignificant_zeros
 
-        if significant and precision > 0
-          if number == 0
-            digits, rounded_number = 1, 0
+        if significant && precision.positive?
+          if number.zero?
+            digits = 1
+            rounded_number = 0
           else
             digits = (Math.log10(number.abs) + 1).floor
-            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)).round.to_f * 10**(digits - precision)
+            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)).round.to_f * (10**(digits - precision))
             digits = (Math.log10(rounded_number.abs) + 1).floor # After rounding, the number of digits may have changed
           end
-          precision = precision - digits
-          precision = precision > 0 ? precision : 0 # don't let it be negative
+          precision -= digits
+          precision = 0 unless precision.positive? # don't let it be negative
         else
-          rounded_number = SitemapGenerator::Utilities.round(SitemapGenerator::BigDecimal.new(number.to_s), precision).to_f
+          rounded_number = SitemapGenerator::Utilities.round(SitemapGenerator::BigDecimal.new(number.to_s),
+                                                             precision).to_f
         end
         formatted_number = number_with_delimiter("%01.#{precision}f" % rounded_number, options)
         if strip_insignificant_zeros
@@ -143,12 +140,11 @@ module SitemapGenerator
         else
           formatted_number
         end
-
       end
 
-      STORAGE_UNITS = [:byte, :kb, :mb, :gb, :tb].freeze
-      DECIMAL_UNITS = {0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand, 6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion,
-        -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro, -9 => :nano, -12 => :pico, -15 => :femto}.freeze
+      STORAGE_UNITS = %i[byte kb mb gb tb].freeze
+      DECIMAL_UNITS = { 0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand, 6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion,
+                        -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro, -9 => :nano, -12 => :pico, -15 => :femto }.freeze
 
       # Formats the bytes in +number+ into a more understandable representation
       # (e.g., giving it 1500 yields 1.5 KB). This method is useful for
@@ -185,11 +181,9 @@ module SitemapGenerator
         number = begin
           Float(number)
         rescue ArgumentError, TypeError
-          if options[:raise]
-            raise InvalidNumberError, number
-          else
-            return number
-          end
+          raise InvalidNumberError, number if options[:raise]
+
+          return number
         end
 
         defaults = {
@@ -208,13 +202,13 @@ module SitemapGenerator
         defaults = defaults.merge(human)
         options = SitemapGenerator::Utilities.reverse_merge(options, defaults)
         # for backwards compatibility with those that didn't add strip_insignificant_zeros to their locale files
-        options[:strip_insignificant_zeros] = true if not options.key?(:strip_insignificant_zeros)
+        options[:strip_insignificant_zeros] = true unless options.key?(:strip_insignificant_zeros)
 
         storage_units_format = '%n %u'
 
         if number.to_i < 1024
-          unit = number.to_i > 1 || number.to_i == 0 ? 'Bytes' : 'Byte'
-          storage_units_format.gsub(/%n/, number.to_i.to_s).gsub(/%u/, unit)
+          unit = number.to_i > 1 || number.to_i.zero? ? 'Bytes' : 'Byte'
+          storage_units_format.gsub('%n', number.to_i.to_s).gsub('%u', unit)
         else
           max_exp  = STORAGE_UNITS.size - 1
           exponent = (Math.log(number) / Math.log(1024)).to_i # Convert to base 1024
@@ -231,7 +225,7 @@ module SitemapGenerator
           }
           unit = units[unit_key]
           formatted_number = number_with_precision(number, options)
-          storage_units_format.gsub(/%n/, formatted_number).gsub(/%u/, unit)
+          storage_units_format.gsub('%n', formatted_number).gsub('%u', unit)
         end
       end
     end

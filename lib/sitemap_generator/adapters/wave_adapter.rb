@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-if !defined?(::CarrierWave::Uploader::Base)
+unless defined?(CarrierWave::Uploader::Base)
   raise LoadError, "Error: `CarrierWave::Uploader::Base` is not defined.\n\n" \
-        "Please `require 'carrierwave'` - or another library that defines this class."
+                   "Please `require 'carrierwave'` - or another library that defines this class."
 end
 
 module SitemapGenerator
@@ -14,9 +14,7 @@ module SitemapGenerator
     def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
       directory = File.dirname(location.path_in_public)
-      if directory != '.'
-        self.store_dir = directory
-      end
+      self.store_dir = directory if directory != '.'
       store!(open(location.path, 'rb'))
     end
   end

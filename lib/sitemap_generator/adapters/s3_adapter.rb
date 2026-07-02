@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-if !defined?(Fog::Storage)
+unless defined?(Fog::Storage)
   raise LoadError, "Error: `Fog::Storage` is not defined.\n\n" \
-        "Please `require 'fog-aws'` - or another library that defines this class."
+                   "Please `require 'fog-aws'` - or another library that defines this class."
 end
 
 module SitemapGenerator
@@ -23,16 +23,16 @@ module SitemapGenerator
     # Alternatively you can use an environment variable to configure each option (except `fog_storage_options`).
     # The environment variables have the same name but capitalized, e.g. `FOG_PATH_STYLE`.
     def initialize(opts = {})
-      @aws_access_key_id = opts[:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID']
-      @aws_secret_access_key = opts[:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
-      @aws_session_token = opts[:aws_session_token] || ENV['AWS_SESSION_TOKEN']
-      @fog_provider = opts[:fog_provider] || ENV['FOG_PROVIDER']
-      @fog_directory = opts[:fog_directory] || ENV['FOG_DIRECTORY']
-      @fog_region = opts[:fog_region] || ENV['FOG_REGION']
-      @fog_path_style = opts[:fog_path_style] || ENV['FOG_PATH_STYLE']
+      @aws_access_key_id = opts[:aws_access_key_id] || ENV.fetch('AWS_ACCESS_KEY_ID', nil)
+      @aws_secret_access_key = opts[:aws_secret_access_key] || ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
+      @aws_session_token = opts[:aws_session_token] || ENV.fetch('AWS_SESSION_TOKEN', nil)
+      @fog_provider = opts[:fog_provider] || ENV.fetch('FOG_PROVIDER', nil)
+      @fog_directory = opts[:fog_directory] || ENV.fetch('FOG_DIRECTORY', nil)
+      @fog_region = opts[:fog_region] || ENV.fetch('FOG_REGION', nil)
+      @fog_path_style = opts[:fog_path_style] || ENV.fetch('FOG_PATH_STYLE', nil)
       @fog_storage_options = opts[:fog_storage_options] || {}
-      fog_public = opts[:fog_public].nil? ? ENV['FOG_PUBLIC'] : opts[:fog_public]
-      @fog_public = SitemapGenerator::Utilities.falsy?(fog_public) ? false : true
+      fog_public = opts[:fog_public].nil? ? ENV.fetch('FOG_PUBLIC', nil) : opts[:fog_public]
+      @fog_public = !SitemapGenerator::Utilities.falsy?(fog_public)
     end
 
     # Call with a SitemapLocation and string data

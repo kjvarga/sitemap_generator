@@ -20,24 +20,29 @@ module SitemapGenerator
   autoload(:BigDecimal,               'sitemap_generator/core_ext/big_decimal')
   autoload(:Numeric,                  'sitemap_generator/core_ext/numeric')
 
-  SitemapError          = Class.new(StandardError)
-  SitemapFullError      = Class.new(SitemapError)
-  SitemapFinalizedError = Class.new(SitemapError)
+  class SitemapError < StandardError
+  end
+
+  class SitemapFullError < SitemapError
+  end
+
+  class SitemapFinalizedError < SitemapError
+  end
 
   Utilities.with_warnings(nil) do
-    VERSION = File.read(File.dirname(__FILE__) + '/../VERSION').strip
+    VERSION = File.read("#{File.dirname(__FILE__)}/../VERSION").strip
     MAX_SITEMAP_FILES    = 50_000        # max sitemap links per index file
     MAX_SITEMAP_LINKS    = 50_000        # max links per sitemap
     MAX_SITEMAP_IMAGES   = 1_000         # max images per url
     MAX_SITEMAP_NEWS     = 1_000         # max news sitemap per index_file
     MAX_SITEMAP_FILESIZE = 50_000_000    # bytes
     SCHEMAS = {
-      'image'   => 'http://www.google.com/schemas/sitemap-image/1.1',
-      'mobile'  => 'http://www.google.com/schemas/sitemap-mobile/1.0',
-      'news'    => 'http://www.google.com/schemas/sitemap-news/0.9',
+      'image' => 'http://www.google.com/schemas/sitemap-image/1.1',
+      'mobile' => 'http://www.google.com/schemas/sitemap-mobile/1.0',
+      'news' => 'http://www.google.com/schemas/sitemap-news/0.9',
       'pagemap' => 'http://www.google.com/schemas/sitemap-pagemap/1.0',
-      'video'   => 'http://www.google.com/schemas/sitemap-video/1.1'
-    }
+      'video' => 'http://www.google.com/schemas/sitemap-video/1.1'
+    }.freeze
 
     # Lazy-initialize the LinkSet instance
     Sitemap = (Config = Class.new do
@@ -73,8 +78,6 @@ module SitemapGenerator
           true
         elsif SitemapGenerator::Utilities.falsy?(ENV['VERBOSE'])
           false
-        else
-          nil
         end
     else
       @verbose
@@ -87,7 +90,7 @@ module SitemapGenerator
   end
 
   self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../')) # Root of the install dir, not the Rails app
-  self.templates = SitemapGenerator::Templates.new(self.root)
+  self.templates = SitemapGenerator::Templates.new(root)
   self.app       = SitemapGenerator::Application.new
 end
 

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-if !defined?(Google::Cloud::Storage)
+unless defined?(Google::Cloud::Storage)
   raise LoadError, "Error: `Google::Cloud::Storage` is not defined.\n\n" \
-        "Please `require 'google/cloud/storage'` - or another library that defines this class."
+                   "Please `require 'google/cloud/storage'` - or another library that defines this class."
 end
 
 module SitemapGenerator
@@ -25,7 +25,7 @@ module SitemapGenerator
     def initialize(opts = {})
       opts = opts.clone
       @bucket = opts.delete(:bucket)
-      @acl = opts.has_key?(:acl) ? opts.delete(:acl) : 'public'
+      @acl = opts.key?(:acl) ? opts.delete(:acl) : 'public'
       @storage_options = opts
     end
 
