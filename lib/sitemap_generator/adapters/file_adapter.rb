@@ -19,13 +19,16 @@ module SitemapGenerator
         raise SitemapError, "#{dir} should be a directory!"
       end
 
-      stream = File.open(location.path, 'wb') # rubocop:disable Style/FileOpen
-      if /\.gz$/.match?(location.path.to_s)
-        gzip(stream, raw_data)
-      else
-        plain(stream, raw_data)
+      File.open(location.path, 'wb') do |stream|
+        if /\.gz$/.match?(location.path.to_s)
+          gzip(stream, raw_data)
+        else
+          stream.write raw_data
+        end
       end
     end
+
+    private
 
     # Write `data` to a stream, passing the data through a GzipWriter
     # to compress it.
@@ -33,12 +36,6 @@ module SitemapGenerator
       gz = Zlib::GzipWriter.new(stream)
       gz.write data
       gz.close
-    end
-
-    # Write `data` to a stream as is.
-    def plain(stream, data)
-      stream.write data
-      stream.close
     end
   end
 end
