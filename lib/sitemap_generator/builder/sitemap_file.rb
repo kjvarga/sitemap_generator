@@ -157,7 +157,7 @@ module SitemapGenerator
       # Reserve a name from the namer unless one has already been reserved.
       # Safe to call more than once.
       def reserve_name
-        @reserved_name ||= @location.reserve_name  # rubocop:disable Naming/MemoizedInstanceVariableName
+        @reserved_name ||= @location.reserve_name # rubocop:disable Naming/MemoizedInstanceVariableName
       end
 
       # Return a boolean indicating whether a name has been reserved

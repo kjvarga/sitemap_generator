@@ -62,14 +62,14 @@ module SitemapGenerator
                                                       max_sitemap_links
                                                     ])
       opts[:adapter] ||= SitemapGenerator::FileAdapter.new
-      opts[:public_path] ||= SitemapGenerator.app.root + 'public/'  # rubocop:disable Style/StringConcatenation
+      opts[:public_path] ||= SitemapGenerator.app.root + 'public/' # rubocop:disable Style/StringConcatenation
       # This is a bit of a hack to make the SimpleNamer act like the old SitemapNamer.
       # It doesn't really make sense to create a default namer like this because the
       # namer instance should be shared by the location objects of the sitemaps and
       # sitemap index files.  However, this greatly eases testing, so I'm leaving it in
       # for now.
       opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap, start: 2, zero: 1) if !opts[:filename] && !opts[:namer]
-      opts[:verbose] = !!opts[:verbose]  # rubocop:disable Style/DoubleNegation
+      opts[:verbose] = !!opts[:verbose] # rubocop:disable Style/DoubleNegation
       merge!(opts)
     end
 

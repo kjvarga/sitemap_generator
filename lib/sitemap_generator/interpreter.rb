@@ -71,7 +71,7 @@ module SitemapGenerator
     def self.run(opts = {})
       opts = opts.dup
       config_file = opts.delete(:config_file)
-      config_file ||= SitemapGenerator.app.root + 'config/sitemap.rb'  # rubocop:disable Style/StringConcatenation
+      config_file ||= SitemapGenerator.app.root + 'config/sitemap.rb' # rubocop:disable Style/StringConcatenation
       interpreter = new(opts)
       interpreter.instance_eval(File.read(config_file), config_file.to_s)
       interpreter
