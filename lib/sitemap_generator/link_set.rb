@@ -9,8 +9,8 @@ module SitemapGenerator
   # Owns the adapter, host, paths, and namer; manages the lifecycle of sitemap files
   # from creation through finalization. See +SitemapGenerator::Sitemap+ for the public API.
   class LinkSet # rubocop:disable Metrics/ClassLength
-    @@requires_finalization_opts = %i[filename sitemaps_path sitemaps_host namer] # rubocop:disable Style/ClassVars
-    @@new_location_opts = %i[filename sitemaps_path namer] # rubocop:disable Style/ClassVars
+    REQUIRES_FINALIZATION_OPTS = %i[filename sitemaps_path sitemaps_host namer].freeze
+    NEW_LOCATION_OPTS = %i[filename sitemaps_path namer].freeze
 
     attr_reader :default_host, :sitemaps_path, :filename, :create_index
     attr_accessor :include_root, :include_index, :adapter, :yield_sitemap, :max_sitemap_links
@@ -123,7 +123,9 @@ module SitemapGenerator
     # Note: When adding a new option be sure to include it in `options_for_group()` if
     # the option should be inherited by groups.
     def initialize(options = {}) # rubocop:disable Metrics/MethodLength
-      @default_host, @sitemaps_host, @yield_sitemap, @sitemaps_path, @adapter, @verbose, @protect_index, @sitemap_index, @added_default_links, @created_group, @sitemap = nil # rubocop:disable Layout/LineLength
+      @default_host, @sitemaps_host, @yield_sitemap, @sitemaps_path,
+      @adapter, @verbose, @protect_index, @sitemap_index,
+      @added_default_links, @created_group, @sitemap = nil
 
       options = SitemapGenerator::Utilities.reverse_merge(options,
                                                           include_root: true,
@@ -200,11 +202,11 @@ module SitemapGenerator
       @created_group = true
       original_opts = opts.dup
 
-      if (@@requires_finalization_opts & original_opts.keys).empty?
+      if (REQUIRES_FINALIZATION_OPTS & original_opts.keys).empty?
         # If no new filename or path is specified reuse the default sitemap file.
         # A new location object will be set on it for the duration of the group.
         original_opts[:sitemap] = sitemap
-      elsif original_opts.key?(:sitemaps_host) && (@@new_location_opts & original_opts.keys).empty?
+      elsif original_opts.key?(:sitemaps_host) && (NEW_LOCATION_OPTS & original_opts.keys).empty?
         # If no location options are provided we are creating the next sitemap in the
         # current series, so finalize and inherit the namer.
         finalize_sitemap!
