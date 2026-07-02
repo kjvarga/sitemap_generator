@@ -18,7 +18,8 @@ module SitemapGenerator
       class InvalidNumberError < StandardError
         attr_accessor :number
 
-        def initialize(number) # rubocop:disable Lint/MissingSuper
+        def initialize(number)
+          super(number.to_s)
           @number = number
         end
       end
@@ -95,12 +96,12 @@ module SitemapGenerator
       def number_with_precision(number, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         SitemapGenerator::Utilities.symbolize_keys!(options)
 
-        number = begin
-          Float(number)
+        begin
+          number = Float(number)
         rescue ArgumentError, TypeError
           raise InvalidNumberError, number if options[:raise]
 
-          return number # rubocop:disable Lint/NoReturnInBeginEndBlocks
+          return number
         end
 
         defaults = {
@@ -115,7 +116,8 @@ module SitemapGenerator
         }
         defaults = defaults.merge(precision_defaults)
 
-        options = SitemapGenerator::Utilities.reverse_merge(options, defaults) # Allow the user to unset default values: Eg.: :significant => false # rubocop:disable Layout/LineLength
+        # Allow the user to unset default values: e.g. significant: false
+        options = SitemapGenerator::Utilities.reverse_merge(options, defaults)
         precision = options.delete :precision
         significant = options.delete :significant
         strip_insignificant_zeros = options.delete :strip_insignificant_zeros
@@ -126,7 +128,9 @@ module SitemapGenerator
             rounded_number = 0
           else
             digits = (Math.log10(number.abs) + 1).floor
-            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)).round.to_f * (10**(digits - precision)) # rubocop:disable Layout/LineLength
+            step = SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)
+            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / step)
+                             .round.to_f * (10**(digits - precision))
             digits = (Math.log10(rounded_number.abs) + 1).floor # After rounding, the number of digits may have changed
           end
           precision -= digits
@@ -145,8 +149,12 @@ module SitemapGenerator
       end
 
       STORAGE_UNITS = %i[byte kb mb gb tb].freeze
-      DECIMAL_UNITS = { 0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand, 6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion, # rubocop:disable Layout/LineLength
-                        -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro, -9 => :nano, -12 => :pico, -15 => :femto }.freeze # rubocop:disable Layout/LineLength
+      DECIMAL_UNITS = {
+        0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand,
+        6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion,
+        -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro,
+        -9 => :nano, -12 => :pico, -15 => :femto
+      }.freeze
 
       # Formats the bytes in +number+ into a more understandable representation
       # (e.g., giving it 1500 yields 1.5 KB). This method is useful for
@@ -182,12 +190,12 @@ module SitemapGenerator
       def number_to_human_size(number, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         SitemapGenerator::Utilities.symbolize_keys!(options)
 
-        number = begin
-          Float(number)
+        begin
+          number = Float(number)
         rescue ArgumentError, TypeError
           raise InvalidNumberError, number if options[:raise]
 
-          return number # rubocop:disable Lint/NoReturnInBeginEndBlocks
+          return number
         end
 
         defaults = {
