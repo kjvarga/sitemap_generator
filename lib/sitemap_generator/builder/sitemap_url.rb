@@ -43,7 +43,9 @@ module SitemapGenerator
 
         SitemapGenerator::Utilities.assert_valid_keys(
           options,
-          :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :news, :videos, :mobile, :alternate, :alternates, :pagemap # rubocop:disable Layout/LineLength
+          :priority, :changefreq, :lastmod, :expires, :host,
+          :images, :video, :news, :videos, :mobile,
+          :alternate, :alternates, :pagemap
         )
         SitemapGenerator::Utilities.reverse_merge!(
           options,
@@ -209,8 +211,11 @@ module SitemapGenerator
 
       def prepare_news(news)
         unless news.empty?
-          SitemapGenerator::Utilities.assert_valid_keys(news, :publication_name, :publication_language,
-                                                        :publication_date, :genres, :access, :title, :keywords, :stock_tickers) # rubocop:disable Layout/LineLength
+          SitemapGenerator::Utilities.assert_valid_keys(
+            news,
+            :publication_name, :publication_language, :publication_date,
+            :genres, :access, :title, :keywords, :stock_tickers
+          )
         end
         news
       end
