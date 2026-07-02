@@ -19,7 +19,7 @@ module SitemapGenerator
         raise SitemapError, "#{dir} should be a directory!"
       end
 
-      stream = File.open(location.path, 'wb')
+      stream = File.open(location.path, 'wb') # rubocop:disable Style/FileOpen
       if /\.gz$/.match?(location.path.to_s)
         gzip(stream, raw_data)
       else
