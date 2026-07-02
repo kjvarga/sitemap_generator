@@ -48,7 +48,8 @@ module SitemapGenerator
         HTML
         @xml_wrapper_start.gsub!(/\s+/, ' ').gsub!(/ *> */, '>').strip!
         @xml_wrapper_end = '</urlset>'
-        @filesize = SitemapGenerator::Utilities.bytesize(@xml_wrapper_start) + SitemapGenerator::Utilities.bytesize(@xml_wrapper_end)
+        @filesize = SitemapGenerator::Utilities.bytesize(@xml_wrapper_start) +
+                    SitemapGenerator::Utilities.bytesize(@xml_wrapper_end)
         @xml_content = @xml_wrapper_start
         @written = false
         @reserved_name = nil # holds the name reserved from the namer
@@ -74,7 +75,9 @@ module SitemapGenerator
       # bytesize will be calculated for you.
       def file_can_fit?(bytes)
         bytes = SitemapGenerator::Utilities.bytesize(bytes) if bytes.is_a?(String)
-        (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < max_sitemap_links && @news_count < SitemapGenerator::MAX_SITEMAP_NEWS # rubocop:disable Layout/LineLength
+        (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE &&
+          @link_count < max_sitemap_links &&
+          @news_count < SitemapGenerator::MAX_SITEMAP_NEWS
       end
 
       # Add a link to the sitemap file.
