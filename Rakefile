@@ -42,7 +42,7 @@ task build: [:prepare] do
   sh 'mkdir -p pkg'
   sh "gem build #{gemspec_file}"
   sh "mv #{gem_file} pkg"
-  sh 'bundle --local'
+  sh 'bundle install --local'
 end
 
 desc 'Chmod all files to be world readable'
