@@ -14,11 +14,12 @@
 ### Steps
 
 1. Ensure all CI checks pass on `master`.
-2. Update `VERSION` (e.g. `7.0.2`).
-3. Add a `### X.Y.Z` section to `CHANGES.md` describing changes since the last release.
-4. Commit both files: `git commit -m "Release X.Y.Z"`.
-5. Run `bundle exec rake release`.
-6. Push the gem to RubyGems: `gem push pkg/sitemap_generator-X.Y.Z.gem`
+2. **Audit commits since the last release.** Run `git log vX.Y.Z..HEAD --oneline` (substituting the previous release tag) and confirm every commit is intentional and accounted for. PRs can accumulate on `master` between releases without being noticed — this step prevents unintentional changes from shipping as patch releases.
+3. Update `VERSION` (e.g. `7.0.2`).
+4. Add a `### X.Y.Z` section to `CHANGES.md` describing every change identified in step 2.
+5. Commit both files: `git commit -m "Release X.Y.Z"`.
+6. Run `bundle exec rake release`.
+7. Push the gem to RubyGems: `gem push pkg/sitemap_generator-X.Y.Z.gem`
 
 `rake release` does the following:
 - Builds `pkg/sitemap_generator-X.Y.Z.gem`
