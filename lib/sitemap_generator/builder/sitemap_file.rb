@@ -11,7 +11,8 @@ module SitemapGenerator
     #
     #   sitemap = SitemapFile.new(:location => SitemapLocation.new(...))
     #   sitemap.add('/', { ... })    <- add a link to the sitemap
-    #   sitemap.finalize!            <- write the sitemap file and freeze the object to protect it from further modification
+    #   sitemap.finalize!            <- write the sitemap file and freeze the object
+    #                                    to protect it from further modification
     #
     class SitemapFile
       include SitemapGenerator::Helpers::NumberHelper
@@ -23,7 +24,7 @@ module SitemapGenerator
       # * <tt>location</tt> - a SitemapGenerator::SitemapLocation instance or a Hash of options
       #   from which a SitemapLocation will be created for you.  See `SitemapGenerator::SitemapLocation` for
       #   the supported list of options.
-      def initialize(opts = {})
+      def initialize(opts = {}) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapLocation.new(opts) : opts
         @link_count = 0
         @news_count = 0
@@ -73,7 +74,7 @@ module SitemapGenerator
       # bytesize will be calculated for you.
       def file_can_fit?(bytes)
         bytes = SitemapGenerator::Utilities.bytesize(bytes) if bytes.is_a?(String)
-        (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < max_sitemap_links && @news_count < SitemapGenerator::MAX_SITEMAP_NEWS
+        (@filesize + bytes) < SitemapGenerator::MAX_SITEMAP_FILESIZE && @link_count < max_sitemap_links && @news_count < SitemapGenerator::MAX_SITEMAP_NEWS # rubocop:disable Layout/LineLength
       end
 
       # Add a link to the sitemap file.
@@ -95,7 +96,7 @@ module SitemapGenerator
       #
       # The link added to the sitemap will use the host from its location object
       # if no host has been specified.
-      def add(link, options = {})
+      def add(link, options = {}) # rubocop:disable Metrics/MethodLength
         raise SitemapGenerator::SitemapFinalizedError if finalized?
 
         sitemap_url =

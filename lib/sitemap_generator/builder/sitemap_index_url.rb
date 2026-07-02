@@ -4,7 +4,7 @@ require 'builder'
 
 module SitemapGenerator
   module Builder
-    class SitemapIndexUrl < SitemapUrl
+    class SitemapIndexUrl < SitemapUrl # rubocop:disable Style/Documentation
       def initialize(path, options = {})
         if (index = path.is_a?(SitemapGenerator::Builder::SitemapIndexFile) && path)
           options = SitemapGenerator::Utilities.reverse_merge(options, host: index.location.host, lastmod: Time.now,

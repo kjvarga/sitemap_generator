@@ -8,7 +8,7 @@ require 'sitemap_generator/utilities'
 require 'sitemap_generator/application'
 require 'sitemap_generator/sitemap_location'
 
-module SitemapGenerator
+module SitemapGenerator # rubocop:disable Style/Documentation
   autoload(:Interpreter,              'sitemap_generator/interpreter')
   autoload(:FileAdapter,              'sitemap_generator/adapters/file_adapter')
   autoload(:ActiveStorageAdapter,     'sitemap_generator/adapters/active_storage_adapter') if defined?(::ActiveStorage)
@@ -29,7 +29,8 @@ module SitemapGenerator
   class SitemapFinalizedError < SitemapError
   end
 
-  Utilities.with_warnings(nil) do
+  Utilities.with_warnings(nil) do # rubocop:disable Metrics/BlockLength
+    # rubocop:disable Lint/ConstantDefinitionInBlock
     VERSION = File.read("#{File.dirname(__FILE__)}/../VERSION").strip
     MAX_SITEMAP_FILES    = 50_000        # max sitemap links per index file
     MAX_SITEMAP_LINKS    = 50_000        # max links per sitemap
@@ -62,6 +63,7 @@ module SitemapGenerator
         (@link_set ||= reset!).respond_to?(name, include_private) || super
       end
     end).new
+    # rubocop:enable Lint/ConstantDefinitionInBlock
   end
 
   class << self
@@ -89,7 +91,7 @@ module SitemapGenerator
     !!@yield_sitemap
   end
 
-  self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../')) # Root of the install dir, not the Rails app
+  self.root      = File.expand_path(File.join(File.dirname(__FILE__), '../')) # Root of the install dir, not the Rails app # rubocop:disable Layout/LineLength
   self.templates = SitemapGenerator::Templates.new(root)
   self.app       = SitemapGenerator::Application.new
 end

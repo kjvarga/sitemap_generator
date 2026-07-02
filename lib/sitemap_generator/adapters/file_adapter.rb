@@ -10,7 +10,7 @@ module SitemapGenerator
     #    compressed prior to being written out.  Otherwise the data will be written out
     #    unchanged.
     # @param raw_data - data to write to the file.
-    def write(location, raw_data)
+    def write(location, raw_data) # rubocop:disable Metrics/MethodLength
       # Ensure that the directory exists
       dir = location.directory
       if !File.exist?(dir)
@@ -19,7 +19,7 @@ module SitemapGenerator
         raise SitemapError, "#{dir} should be a directory!"
       end
 
-      stream = open(location.path, 'wb')
+      stream = File.open(location.path, 'wb') # rubocop:disable Style/FileOpen
       if /\.gz$/.match?(location.path.to_s)
         gzip(stream, raw_data)
       else

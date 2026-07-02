@@ -5,13 +5,14 @@ require 'bigdecimal'
 begin
   require 'psych'
 rescue LoadError
+  # psych is optional; fall back gracefully if unavailable
 end
 
 require 'yaml'
 
 # Define our own class rather than modify the global class
 module SitemapGenerator
-  class BigDecimal
+  class BigDecimal # rubocop:disable Style/Documentation
     YAML_TAG = 'tag:yaml.org,2002:float'
     YAML_MAPPING = { 'Infinity' => '.Inf', '-Infinity' => '-.Inf', 'NaN' => '.NaN' }.freeze
 

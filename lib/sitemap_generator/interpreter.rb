@@ -24,7 +24,7 @@ module SitemapGenerator
       opts = SitemapGenerator::Utilities.reverse_merge(opts, link_set: SitemapGenerator::Sitemap)
       @linkset = opts.delete :link_set
       @linkset.send(:set_options, opts)
-      eval(&block) if block_given?
+      eval(&block) if block_given? # rubocop:disable Security/Eval
     end
 
     def add(*args)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SitemapGenerator
-  class Numeric
+  class Numeric # rubocop:disable Style/Documentation
     KILOBYTE = 1024
     MEGABYTE = KILOBYTE * 1024
     GIGABYTE = MEGABYTE * 1024

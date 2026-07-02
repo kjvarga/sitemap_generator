@@ -10,7 +10,7 @@ module SitemapGenerator
       @filename = filename
     end
 
-    def write(location, raw_data)
+    def write(location, raw_data) # rubocop:disable Metrics/MethodLength
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
       ActiveStorage::Blob.transaction do
@@ -18,7 +18,7 @@ module SitemapGenerator
 
         ActiveStorage::Blob.create_and_upload!(
           key: key,
-          io: open(location.path, 'rb'),
+          io: File.open(location.path, 'rb'),
           filename: filename,
           content_type: 'application/gzip',
           identify: false
