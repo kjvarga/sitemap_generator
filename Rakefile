@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'shellwords'
 Bundler.require
 
 desc 'Default: run spec tests.'
@@ -8,7 +9,8 @@ task default: :spec
 
 desc 'Lint markdown files'
 task :mdl do
-  sh 'bundle exec mdl .'
+  files = FileList['**/*.md'].exclude('pkg/**/*')
+  sh "bundle exec mdl #{files.map { |f| Shellwords.escape(f) }.join(' ')}"
 end
 
 require 'rspec/core/rake_task'

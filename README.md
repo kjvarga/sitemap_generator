@@ -461,7 +461,7 @@ name but capitalized, e.g. `AWS_SESSION_TOKEN`, `FOG_PATH_STYLE`.
 
 1. Update your `robots.txt` file to point robots to the remote sitemap index file, e.g:
 
-    ```
+    ```text
     Sitemap: http://s3.amazonaws.com/sitemap-generator/sitemaps/sitemap.xml.gz
     ```
 
