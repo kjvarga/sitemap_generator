@@ -8,7 +8,7 @@ After cloning, activate the shared git hooks:
 git config core.hooksPath .githooks
 ```
 
-This enables a pre-commit hook that runs `mdl` on any staged markdown files.
+This enables a pre-commit hook that runs `rubocop` on staged Ruby files and `mdl` on staged markdown files.
 
 ## Branch naming
 
