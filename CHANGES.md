@@ -327,7 +327,7 @@
 
 * Rails 3 prerelease support (beta)
 
-[geo_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=94555
+[geo_tags]:https://developers.google.com/search/docs/specialty/international
 [sitemap_images]:http://www.google.com/support/webmasters/bin/answer.py?answer=178636
 [sitemap_video]:https://support.google.com/webmasters/answer/80471?hl=en&ref_topic=4581190
 [sitemap_news]:https://support.google.com/news/publisher/topic/2527688?hl=en&ref_topic=4359874

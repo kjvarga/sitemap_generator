@@ -1188,10 +1188,10 @@ Copyright (c) Karl Varga
 [sitemap_images]:http://www.google.com/support/webmasters/bin/answer.py?answer=178636
 [sitemap_video]:https://support.google.com/webmasters/answer/80471?hl=en&ref_topic=4581190
 [sitemap_news]:https://support.google.com/news/publisher/topic/2527688?hl=en&ref_topic=4359874
-[sitemap_mobile]:http://support.google.com/webmasters/bin/answer.py?hl=en&answer=34648
+[sitemap_mobile]:https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing
 [sitemap_pagemap]:https://developers.google.com/custom-search/docs/structured_data#addtositemap
 [sitemap_protocol]:http://www.sitemaps.org/protocol.html
-[video_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=80472#4
+[video_tags]:https://developers.google.com/search/docs/crawling-indexing/sitemaps/video-sitemaps
 [image_tags]:http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=178636
 [news_tags]:http://www.google.com/support/news_pub/bin/answer.py?answer=74288
 [remote_hosts]:https://github.com/kjvarga/sitemap_generator/wiki/Generate-Sitemaps-on-read-only-filesystems-like-Heroku
@@ -1199,7 +1199,7 @@ Copyright (c) Karl Varga
 [using_pagemaps]:https://developers.google.com/custom-search/docs/structured_data#pagemaps
 [iso_4217]:http://en.wikipedia.org/wiki/ISO_4217
 [media]:https://developers.google.com/webmasters/smartphone-sites/details
-[expires]:https://support.google.com/customsearch/answer/2631051?hl=en
+[expires]:https://developers.google.com/custom-search/docs/structured_data
 [google_cloud_storage_gem]:https://rubygems.org/gems/google-cloud-storage
 [google_cloud_storage_authentication]:https://googleapis.dev/ruby/google-cloud-storage/latest/file.AUTHENTICATION.html
 [google_cloud_storage_initializer]:https://github.com/googleapis/google-cloud-ruby/blob/master/google-cloud-storage/lib/google/cloud/storage.rb
