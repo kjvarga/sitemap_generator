@@ -22,7 +22,7 @@ module SitemapGenerator
     #
     # Alternatively you can use an environment variable to configure each option (except `fog_storage_options`).
     # The environment variables have the same name but capitalized, e.g. `FOG_PATH_STYLE`.
-    def initialize(opts = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    def initialize(opts = {})
       @aws_access_key_id = opts[:aws_access_key_id] || ENV.fetch('AWS_ACCESS_KEY_ID', nil)
       @aws_secret_access_key = opts[:aws_secret_access_key] || ENV.fetch('AWS_SECRET_ACCESS_KEY', nil)
       @aws_session_token = opts[:aws_session_token] || ENV.fetch('AWS_SESSION_TOKEN', nil)
@@ -36,7 +36,7 @@ module SitemapGenerator
     end
 
     # Call with a SitemapLocation and string data
-    def write(location, raw_data) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
       credentials = { provider: @fog_provider }
