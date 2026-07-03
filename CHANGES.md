@@ -2,10 +2,11 @@
 
 ## 7.1.0
 
-* **Breaking:** `SitemapGenerator::FileAdapter#plain` has been removed. It was an internal helper inlined into `#write` to fix a file descriptor leak; any code calling it directly should call `#write` instead.
-* **Breaking:** `SitemapGenerator::FileAdapter#gzip` is now private. It was always an implementation detail; external callers should not need to invoke it directly.
+* **Breaking:** `SitemapGenerator::FileAdapter#plain` has been removed. It was an internal helper inlined into `#write` to fix a file descriptor leak; any code calling it directly should call `#write` instead. [#492](https://github.com/kjvarga/sitemap_generator/pull/492)
+* **Breaking:** `SitemapGenerator::FileAdapter#gzip` is now private. It was always an implementation detail; external callers should not need to invoke it directly. [#492](https://github.com/kjvarga/sitemap_generator/pull/492)
 * Fix: `AwsSdkAdapter` and `S3Adapter` now derive the `Content-Type` header from the file extension (`.xml` → `application/xml`, `.xml.gz` → `application/x-gzip`) via the new `SitemapLocation#content_type` helper, rather than always sending `application/x-gzip`. [#495](https://github.com/kjvarga/sitemap_generator/pull/495)
 * Docs: Replace broken links in README and CHANGES.md; add deprecation notices for mobile sitemaps (deprecated by Google in August 2022) and geo sitemaps (retired by Google in February 2012). [#497](https://github.com/kjvarga/sitemap_generator/pull/497)
+* Internal: enforce RuboCop across all source files, resolve all pre-existing offenses, add RuboCop and mdl (Markdown) linting to GitHub Actions CI, and add pre-commit git hooks that lint staged Ruby and Markdown files locally. [#487](https://github.com/kjvarga/sitemap_generator/pull/487) [#492](https://github.com/kjvarga/sitemap_generator/pull/492) [#493](https://github.com/kjvarga/sitemap_generator/pull/493) [#494](https://github.com/kjvarga/sitemap_generator/pull/494) [#500](https://github.com/kjvarga/sitemap_generator/pull/500)
 
 ## 7.0.3
 
