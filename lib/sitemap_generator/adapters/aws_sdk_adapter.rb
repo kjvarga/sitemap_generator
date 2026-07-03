@@ -43,8 +43,9 @@ module SitemapGenerator
     end
 
     # Call with a SitemapLocation and string data
-    def write(location, raw_data)
+    def write(location, raw_data) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
+      content_type = /\.gz$/.match?(location.path.to_s) ? 'application/x-gzip' : 'application/xml'
 
       if defined?(Aws::S3::TransferManager)
         client = Aws::S3::Client.new(@options)
@@ -54,13 +55,13 @@ module SitemapGenerator
                                      key: location.path_in_public,
                                      acl: @acl,
                                      cache_control: @cache_control,
-                                     content_type: location[:compress] ? 'application/x-gzip' : 'application/xml')
+                                     content_type: content_type)
       else
         s3_object = s3_resource.bucket(@bucket).object(location.path_in_public)
         s3_object.upload_file(location.path, {
           acl: @acl,
           cache_control: @cache_control,
-          content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
+          content_type: content_type
         }.compact)
       end
     end
