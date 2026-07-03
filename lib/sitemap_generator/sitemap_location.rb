@@ -6,7 +6,7 @@ module SitemapGenerator
   # A class for determining the exact location at which to write sitemap data.
   # Handles reserving filenames from namers, constructing paths and sending
   # data to the adapter to be written out.
-  class SitemapLocation < Hash
+  class SitemapLocation < Hash # rubocop:disable Metrics/ClassLength
     include SitemapGenerator::Helpers::NumberHelper
 
     PATH_OUTPUT_WIDTH = 47 # Character width of the path in the summary lines
