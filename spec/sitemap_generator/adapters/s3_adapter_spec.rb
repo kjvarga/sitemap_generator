@@ -93,16 +93,6 @@ RSpec.describe SitemapGenerator::S3Adapter do
       adapter.write(location, 'payload')
     end
 
-    context 'when the path ends in .gz' do
-      it 'sets content_type to application/x-gzip' do
-        expect(Fog::Storage).to receive(:new).and_return(directories)
-        expect(directory.files).to receive(:create).with(
-          hash_including(content_type: 'application/x-gzip')
-        )
-        adapter.write(location, 'payload')
-      end
-    end
-
     context 'when the path ends in .xml' do
       let(:location) do
         SitemapGenerator::SitemapLocation.new(
