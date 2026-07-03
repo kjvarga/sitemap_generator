@@ -20,7 +20,7 @@ module SitemapGenerator
       end
 
       File.open(location.path, 'wb') do |stream|
-        if /\.gz$/.match?(location.path.to_s)
+        if location.gzip?
           gzip(stream, raw_data)
         else
           stream.write raw_data

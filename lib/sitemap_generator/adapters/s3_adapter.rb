@@ -57,7 +57,8 @@ module SitemapGenerator
       directory.files.create(
         key: location.path_in_public,
         body: File.open(location.path),
-        public: @fog_public
+        public: @fog_public,
+        content_type: location.content_type
       )
     end
   end

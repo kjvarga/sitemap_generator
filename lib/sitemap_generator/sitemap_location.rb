@@ -6,7 +6,7 @@ module SitemapGenerator
   # A class for determining the exact location at which to write sitemap data.
   # Handles reserving filenames from namers, constructing paths and sending
   # data to the adapter to be written out.
-  class SitemapLocation < Hash
+  class SitemapLocation < Hash # rubocop:disable Metrics/ClassLength
     include SitemapGenerator::Helpers::NumberHelper
 
     PATH_OUTPUT_WIDTH = 47 # Character width of the path in the summary lines
@@ -102,6 +102,14 @@ module SitemapGenerator
     # Return the size of the file at <tt>path</tt>
     def filesize # rubocop:disable Naming/PredicateMethod
       File.size?(path)
+    end
+
+    def gzip?
+      /\.gz$/.match?(filename.to_s)
+    end
+
+    def content_type
+      gzip? ? 'application/x-gzip' : 'application/xml'
     end
 
     # Return the filename.  Raises an exception if no filename or namer is set.

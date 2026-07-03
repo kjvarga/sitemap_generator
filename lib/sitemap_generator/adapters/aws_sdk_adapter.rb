@@ -55,13 +55,13 @@ module SitemapGenerator
                                      key: location.path_in_public,
                                      acl: @acl,
                                      cache_control: @cache_control,
-                                     content_type: location[:compress] ? 'application/x-gzip' : 'application/xml')
+                                     content_type: location.content_type)
       else
         s3_object = s3_resource.bucket(@bucket).object(location.path_in_public)
         s3_object.upload_file(location.path, {
           acl: @acl,
           cache_control: @cache_control,
-          content_type: location[:compress] ? 'application/x-gzip' : 'application/xml'
+          content_type: location.content_type
         }.compact)
       end
     end
