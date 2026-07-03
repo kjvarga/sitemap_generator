@@ -68,12 +68,14 @@ Example skeleton:
 require 'spec_helper'
 
 RSpec.describe SitemapGenerator::MyClass do
-  subject(:my_class) { described_class.new }
+  let(:my_class) { described_class.new }
 
   describe '#my_method' do
+    subject(:my_method) { my_class.my_method }
+
     context 'when condition is true' do
       it 'returns the expected value' do
-        expect(my_class.my_method).to eq('expected')
+        expect(my_method).to eq('expected')
       end
     end
   end
