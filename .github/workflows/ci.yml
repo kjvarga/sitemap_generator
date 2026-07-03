@@ -179,3 +179,19 @@ jobs:
 
       - name: RSpec
         run: 'echo "current_directory: ${PWD}" && bin/rspec --profile 10 --format RspecJunitFormatter --out ./test-results/rspec/results.xml --format progress'
+
+  mdl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: MDL
+        run: bundle exec rake mdl

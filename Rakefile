@@ -6,6 +6,11 @@ Bundler.require
 desc 'Default: run spec tests.'
 task default: :spec
 
+desc 'Lint markdown files'
+task :mdl do
+  sh 'bundle exec mdl --git-recurse .'
+end
+
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = Dir.glob(['spec/sitemap_generator/**/*'])

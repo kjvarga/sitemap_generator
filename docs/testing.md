@@ -1,4 +1,3 @@
-
 # Testing
 
 ## Philosophy
@@ -102,4 +101,3 @@ RSpec.describe SitemapGenerator::MyAdapter do
   end
 end
 ```
-
