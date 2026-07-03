@@ -1,4 +1,3 @@
-
 # Architecture
 
 ## System overview
@@ -24,12 +23,12 @@
 ## Data flow
 
 1. User calls `SitemapGenerator::Sitemap.create { add '/path', ... }` (or Rake runs `sitemap:refresh`).
-2. `Sitemap` delegates to `LinkSet#create` via `method_missing`.
-3. `LinkSet` resets state, applies options, then passes the block to `Interpreter#eval`.
-4. `Interpreter` includes Rails URL helpers (if on Rails) and calls `LinkSet#add` for each link.
-5. `LinkSet#add` appends the link to the current `SitemapFile`; when the file is full it is finalized and a new one started.
-6. When the block exits, `LinkSet#finalize!` closes the final `SitemapFile` and writes the `SitemapIndexFile`.
-7. Each file's raw XML is passed to the configured adapter's `write(location, raw_data)`, which persists it.
+1. `Sitemap` delegates to `LinkSet#create` via `method_missing`.
+1. `LinkSet` resets state, applies options, then passes the block to `Interpreter#eval`.
+1. `Interpreter` includes Rails URL helpers (if on Rails) and calls `LinkSet#add` for each link.
+1. `LinkSet#add` appends the link to the current `SitemapFile`; when the file is full it is finalized and a new one started.
+1. When the block exits, `LinkSet#finalize!` closes the final `SitemapFile` and writes the `SitemapIndexFile`.
+1. Each file's raw XML is passed to the configured adapter's `write(location, raw_data)`, which persists it.
 
 ## Key decisions
 

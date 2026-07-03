@@ -1,0 +1,2 @@
+rules "~MD002,~MD013,~MD024,~MD036"
+style "./.mdl_style.rb"
