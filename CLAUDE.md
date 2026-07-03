@@ -1,4 +1,4 @@
-# sitemap_generator
+# Sitemap Generator
 
 ## Project overview
 
