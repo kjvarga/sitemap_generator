@@ -298,14 +298,10 @@ module SitemapGenerator
         name = Utilities.titleize(engine.to_s)
         begin
           Timeout.timeout(10) do
-            if URI.respond_to?(:open) # Available since Ruby 2.5
-              URI.open(link) # rubocop:disable Security/Open
-            else
-              open(link) # rubocop:disable Security/Open -- Kernel#open deprecated since Ruby 2.7 (https://bugs.ruby-lang.org/issues/15893)
-            end
+            URI.open(link) # rubocop:disable Security/Open
           end
           output("  Successful ping of #{name}")
-        rescue Timeout::Error, StandardError => e # rubocop:disable Lint/ShadowedException
+        rescue StandardError => e
           output("Ping failed for #{name}: #{e.inspect} (URL #{link})")
         end
       end
