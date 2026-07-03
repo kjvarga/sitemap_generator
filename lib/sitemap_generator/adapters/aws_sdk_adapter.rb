@@ -43,9 +43,9 @@ module SitemapGenerator
     end
 
     # Call with a SitemapLocation and string data
-    def write(location, raw_data) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
-      content_type = /\.gz$/.match?(location.path.to_s) ? 'application/x-gzip' : 'application/xml'
+      content_type = content_type_for(location.path)
 
       if defined?(Aws::S3::TransferManager)
         client = Aws::S3::Client.new(@options)
@@ -67,6 +67,10 @@ module SitemapGenerator
     end
 
     private
+
+    def content_type_for(path)
+      path.end_with?('.gz') ? 'application/x-gzip' : 'application/xml'
+    end
 
     def set_option_unless_set(key, value)
       @options[key] = value if @options[key].nil? && !value.nil?
