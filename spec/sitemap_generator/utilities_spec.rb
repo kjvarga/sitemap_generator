@@ -100,4 +100,56 @@ RSpec.describe SitemapGenerator::Utilities do
       expect(SitemapGenerator::Utilities.ellipsis('aaa', 1)).to eq('...')
     end
   end
+
+  describe '.clean_files' do
+    let(:tmp_dir) { Dir.mktmpdir }
+
+    before do
+      SitemapGenerator::Sitemap.public_path = tmp_dir
+    end
+
+    after do
+      SitemapGenerator::Sitemap.reset!
+      FileUtils.rm_rf(tmp_dir)
+    end
+
+    context 'when sitemaps are compressed' do
+      it 'removes .xml.gz files from the configured directory' do
+        FileUtils.touch(File.join(tmp_dir, 'sitemap.xml.gz'))
+        FileUtils.touch(File.join(tmp_dir, 'sitemap1.xml.gz'))
+        SitemapGenerator::Utilities.clean_files
+        expect(Dir["#{tmp_dir}/sitemap*.xml.gz"]).to be_empty
+      end
+    end
+
+    context 'when sitemaps are uncompressed' do
+      it 'removes .xml files from the configured directory' do
+        FileUtils.touch(File.join(tmp_dir, 'sitemap.xml'))
+        FileUtils.touch(File.join(tmp_dir, 'sitemap1.xml'))
+        SitemapGenerator::Utilities.clean_files
+        expect(Dir["#{tmp_dir}/sitemap*.xml"]).to be_empty
+      end
+    end
+
+    context 'when a custom sitemaps_path is configured' do
+      let(:sub_dir) { File.join(tmp_dir, 'sitemaps', 'en') }
+
+      before do
+        FileUtils.mkdir_p(sub_dir)
+        SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/en'
+      end
+
+      it 'removes files from the configured subdirectory' do
+        FileUtils.touch(File.join(sub_dir, 'sitemap.xml.gz'))
+        SitemapGenerator::Utilities.clean_files
+        expect(Dir["#{sub_dir}/sitemap*.xml.gz"]).to be_empty
+      end
+
+      it 'does not remove files outside the configured subdirectory' do
+        FileUtils.touch(File.join(tmp_dir, 'sitemap.xml.gz'))
+        SitemapGenerator::Utilities.clean_files
+        expect(File.exist?(File.join(tmp_dir, 'sitemap.xml.gz'))).to be(true)
+      end
+    end
+  end
 end
