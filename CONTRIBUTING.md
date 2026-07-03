@@ -1,5 +1,15 @@
 # Contributing
 
+## Local setup
+
+After cloning, activate the shared git hooks:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+This enables a pre-commit hook that runs `mdl` on any staged markdown files.
+
 ## Branch naming
 
 `<username>/<verb-first-kebab-description>` — e.g. `kvarga/fix-aws-upload-deprecation`

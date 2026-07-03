@@ -1,0 +1,6 @@
+#!/bin/sh
+# Lint staged markdown files with mdl.
+md_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.md')
+[ -z "$md_files" ] && exit 0
+echo "mdl: linting changed markdown files..."
+echo "$md_files" | xargs bundle exec mdl
