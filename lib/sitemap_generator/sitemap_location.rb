@@ -48,7 +48,8 @@ module SitemapGenerator
     #   stripped from the filename.  If `:all_but_first`, only the `.gz` extension of the first
     #   filename is stripped off.  If `true` the extensions are left unchanged.
     # * <tt>max_sitemap_links</tt> - The maximum number of links to put in each sitemap.
-    def initialize(opts = {}) # rubocop:disable Lint/MissingSuper, Metrics/AbcSize, Metrics/MethodLength
+    def initialize(opts = {}) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      super()
       SitemapGenerator::Utilities.assert_valid_keys(opts, %i[
                                                       adapter
                                                       public_path

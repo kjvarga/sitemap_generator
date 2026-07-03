@@ -30,7 +30,8 @@ module SitemapGenerator
       # * +mobile+
       # * +alternate+/+alternates+
       # * +pagemap+
-      def initialize(path, options = {}) # rubocop:disable Lint/MissingSuper, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def initialize(path, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        super()
         options = SitemapGenerator::Utilities.symbolize_keys(options)
         if (sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path)
           SitemapGenerator::Utilities.reverse_merge!(
