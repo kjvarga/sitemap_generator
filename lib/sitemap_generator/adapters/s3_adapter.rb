@@ -58,7 +58,7 @@ module SitemapGenerator
         key: location.path_in_public,
         body: File.open(location.path),
         public: @fog_public,
-        content_type: /\.gz$/.match?(location.path_in_public.to_s) ? 'application/x-gzip' : 'application/xml'
+        content_type: location.content_type
       )
     end
   end

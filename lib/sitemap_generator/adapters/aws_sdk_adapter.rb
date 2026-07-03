@@ -45,7 +45,6 @@ module SitemapGenerator
     # Call with a SitemapLocation and string data
     def write(location, raw_data)
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
-      content_type = content_type_for(location.path)
 
       if defined?(Aws::S3::TransferManager)
         client = Aws::S3::Client.new(@options)
@@ -55,22 +54,18 @@ module SitemapGenerator
                                      key: location.path_in_public,
                                      acl: @acl,
                                      cache_control: @cache_control,
-                                     content_type: content_type)
+                                     content_type: location.content_type)
       else
         s3_object = s3_resource.bucket(@bucket).object(location.path_in_public)
         s3_object.upload_file(location.path, {
           acl: @acl,
           cache_control: @cache_control,
-          content_type: content_type
+          content_type: location.content_type
         }.compact)
       end
     end
 
     private
-
-    def content_type_for(path)
-      path.end_with?('.gz') ? 'application/x-gzip' : 'application/xml'
-    end
 
     def set_option_unless_set(key, value)
       @options[key] = value if @options[key].nil? && !value.nil?

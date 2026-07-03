@@ -115,7 +115,7 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
 
   describe '#write' do
     context 'with no compress option' do
-      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'public-read', 'private, max-age=0, no-cache', 'application/xml'
+      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'public-read', 'private, max-age=0, no-cache', 'application/x-gzip', 'sitemap.xml.gz'
     end
 
     context 'with compress true' do
@@ -135,7 +135,7 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
         { acl: 'private', cache_control: 'public, max-age=3600' }
       end
 
-      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'private', 'public, max-age=3600', 'application/xml'
+      it_behaves_like 'it writes the raw data to a file and then uploads that file to S3', 'private', 'public, max-age=3600', 'application/x-gzip', 'sitemap.xml.gz'
     end
   end
 

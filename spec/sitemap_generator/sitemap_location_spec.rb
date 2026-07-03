@@ -113,6 +113,45 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     end
   end
 
+  describe '#gzip?' do
+    context 'when the filename ends in .gz' do
+      it 'returns true' do
+        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml.gz')
+        expect(location.gzip?).to be(true)
+      end
+    end
+
+    context 'when the filename does not end in .gz' do
+      it 'returns false' do
+        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml')
+        expect(location.gzip?).to be(false)
+      end
+    end
+  end
+
+  describe '#content_type' do
+    context 'when the filename ends in .gz' do
+      it "returns 'application/x-gzip'" do
+        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml.gz')
+        expect(location.content_type).to eq('application/x-gzip')
+      end
+    end
+
+    context 'when the filename does not end in .gz' do
+      it "returns 'application/xml'" do
+        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml')
+        expect(location.content_type).to eq('application/xml')
+      end
+    end
+
+    context 'when compress is :all_but_first' do
+      it "returns 'application/xml' for the first file" do
+        location = SitemapGenerator::SitemapLocation.new(compress: :all_but_first)
+        expect(location.content_type).to eq('application/xml')
+      end
+    end
+  end
+
   describe 'public_path' do
     it 'should append a trailing slash' do
       location = SitemapGenerator::SitemapLocation.new(:public_path => 'public/google')

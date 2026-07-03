@@ -103,6 +103,14 @@ module SitemapGenerator
       File.size?(path)
     end
 
+    def gzip?
+      /\.gz$/.match?(filename.to_s)
+    end
+
+    def content_type
+      gzip? ? 'application/x-gzip' : 'application/xml'
+    end
+
     # Return the filename.  Raises an exception if no filename or namer is set.
     # If using a namer once the filename has been retrieved from the namer its
     # value is locked so that it is unaffected by further changes to the namer.
