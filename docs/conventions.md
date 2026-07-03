@@ -1,4 +1,3 @@
-
 # Conventions
 
 ## File and directory naming

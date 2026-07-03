@@ -1,4 +1,3 @@
-
 # Public API
 
 `sitemap_generator` is a Ruby gem; its "API" is the public Ruby interface exposed to gem consumers.

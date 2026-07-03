@@ -23,6 +23,7 @@ gem 'sqlite3', '~> 2.1.0'
 gem 'webmock', require: 'webmock/rspec'
 
 # Dev tools / linter
+gem 'mdl',                 require: false
 gem 'rubocop',             require: false
 gem 'rubocop-performance', require: false
 gem 'rubocop-rake',        require: false

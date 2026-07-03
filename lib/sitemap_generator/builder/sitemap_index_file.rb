@@ -2,12 +2,15 @@
 
 module SitemapGenerator
   module Builder
+    # Builds the sitemap index XML file, listing all sitemap files.
+    # Manages deferred naming (waits for a second sitemap before reserving the index name)
+    # and controls whether an index is written at all via +create_index+.
     class SitemapIndexFile < SitemapFile
       # === Options
       #
       # * <tt>location</tt> - a SitemapGenerator::SitemapIndexLocation instance or a Hash of options
       #   from which a SitemapLocation will be created for you.
-      def initialize(opts = {})
+      def initialize(opts = {}) # rubocop:disable Lint/MissingSuper, Metrics/MethodLength
         @location = opts.is_a?(Hash) ? SitemapGenerator::SitemapIndexLocation.new(opts) : opts
         @link_count = 0
         @sitemaps_link_count = 0
@@ -49,7 +52,7 @@ module SitemapGenerator
       # can assume that the index is required (unless create_index is false of course).
       # This seems like the logical thing to do.
       alias super_add add
-      def add(link, options = {})
+      def add(link, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         if (file = link.is_a?(SitemapFile) && link)
           @sitemaps_link_count += file.link_count
           file.finalize! unless file.finalized?
@@ -100,7 +103,7 @@ module SitemapGenerator
 
       def stats_summary(opts = {})
         str = "Sitemap stats: #{number_with_delimiter(@sitemaps_link_count)} links / #{@link_count} sitemaps"
-        str + (' / %dm%02ds' % opts[:time_taken].divmod(60)) if opts[:time_taken]
+        str + format(' / %dm%02ds', *opts[:time_taken].divmod(60)) if opts[:time_taken] # rubocop:disable Style/FormatStringToken
       end
 
       def finalize!

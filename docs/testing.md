@@ -1,4 +1,3 @@
-
 # Testing
 
 ## Philosophy
@@ -53,11 +52,11 @@ cd integration && bundle exec rspec
 ## Adding a new test
 
 1. Create `spec/sitemap_generator/<matching_lib_path>_spec.rb` mirroring the lib path.
-2. Add `require 'spec_helper'` at the top.
-3. Use `RSpec.describe SitemapGenerator::ClassName` at the top level.
-4. Use `describe '#method_name'` for instance methods, `describe '.method_name'` for class methods.
-5. Follow the `context`/`it` and `should` conventions in [docs/conventions.md](conventions.md#naming-conventions).
-6. For adapter tests that write files, use a temp path under `tmp/test/` and clean up in an `after` hook.
+1. Add `require 'spec_helper'` at the top.
+1. Use `RSpec.describe SitemapGenerator::ClassName` at the top level.
+1. Use `describe '#method_name'` for instance methods, `describe '.method_name'` for class methods.
+1. Follow the `context`/`it` and `should` conventions in [docs/conventions.md](conventions.md#naming-conventions).
+1. For adapter tests that write files, use a temp path under `tmp/test/` and clean up in an `after` hook.
 
 Example skeleton:
 
@@ -100,4 +99,3 @@ RSpec.describe SitemapGenerator::MyAdapter do
   end
 end
 ```
-

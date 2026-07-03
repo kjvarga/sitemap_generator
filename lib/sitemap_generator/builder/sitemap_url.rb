@@ -9,7 +9,7 @@ module SitemapGenerator
   module Builder
     # A Hash-like class for holding information about a sitemap URL and
     # generating an XML <url> element suitable for sitemaps.
-    class SitemapUrl < Hash
+    class SitemapUrl < Hash # rubocop:disable Metrics/ClassLength
       # Return a new instance with options configured on it.
       #
       # == Arguments
@@ -30,7 +30,8 @@ module SitemapGenerator
       # * +mobile+
       # * +alternate+/+alternates+
       # * +pagemap+
-      def initialize(path, options = {})
+      def initialize(path, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        super()
         options = SitemapGenerator::Utilities.symbolize_keys(options)
         if (sitemap = path.is_a?(SitemapGenerator::Builder::SitemapFile) && path)
           SitemapGenerator::Utilities.reverse_merge!(
@@ -43,7 +44,9 @@ module SitemapGenerator
 
         SitemapGenerator::Utilities.assert_valid_keys(
           options,
-          :priority, :changefreq, :lastmod, :expires, :host, :images, :video, :news, :videos, :mobile, :alternate, :alternates, :pagemap
+          :priority, :changefreq, :lastmod, :expires, :host,
+          :images, :video, :news, :videos, :mobile,
+          :alternate, :alternates, :pagemap
         )
         SitemapGenerator::Utilities.reverse_merge!(
           options,
@@ -85,9 +88,9 @@ module SitemapGenerator
       end
 
       # Return the URL as XML
-      def to_xml(builder = nil)
+      def to_xml(builder = nil) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         builder = ::Builder::XmlMarkup.new if builder.nil?
-        builder.url do
+        builder.url do # rubocop:disable Metrics/BlockLength
           builder.loc        self[:loc]
           builder.lastmod    w3c_date(self[:lastmod])      if self[:lastmod]
           builder.expires    w3c_date(self[:expires])      if self[:expires]
@@ -121,8 +124,8 @@ module SitemapGenerator
             end
           end
 
-          self[:videos].each do |video|
-            builder.video :video do
+          self[:videos].each do |video| # rubocop:disable Metrics/BlockLength
+            builder.video :video do # rubocop:disable Metrics/BlockLength
               builder.video :thumbnail_loc, video[:thumbnail_loc].to_s
               builder.video :title, video[:title].to_s
               builder.video :description, video[:description].to_s
@@ -209,8 +212,11 @@ module SitemapGenerator
 
       def prepare_news(news)
         unless news.empty?
-          SitemapGenerator::Utilities.assert_valid_keys(news, :publication_name, :publication_language,
-                                                        :publication_date, :genres, :access, :title, :keywords, :stock_tickers)
+          SitemapGenerator::Utilities.assert_valid_keys(
+            news,
+            :publication_name, :publication_language, :publication_date,
+            :genres, :access, :title, :keywords, :stock_tickers
+          )
         end
         news
       end
@@ -225,7 +231,7 @@ module SitemapGenerator
         images[0..(SitemapGenerator::MAX_SITEMAP_IMAGES - 1)]
       end
 
-      def w3c_date(date)
+      def w3c_date(date) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         if date.is_a?(String)
           date
         elsif date.respond_to?(:iso8601)
@@ -274,7 +280,7 @@ module SitemapGenerator
       # Format a float to to one decimal precision.
       # TODO: Use rounding with precision once merged with framework_agnostic.
       def format_float(value)
-        value.is_a?(String) ? value : ('%0.1f' % value)
+        value.is_a?(String) ? value : format('%0.1f', value)
       end
     end
   end

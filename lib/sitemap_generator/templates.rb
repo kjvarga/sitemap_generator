@@ -16,11 +16,10 @@ module SitemapGenerator
     attr_writer(*FILES.keys)
 
     FILES.each_key do |name|
-      eval(<<-ACCESSOR, binding, __FILE__, __LINE__ + 1)
-        define_method(:#{name}) do
-          @#{name} ||= read_template(:#{name})
-        end
-      ACCESSOR
+      define_method(name) do
+        ivar = :"@#{name}"
+        instance_variable_get(ivar) || instance_variable_set(ivar, read_template(name))
+      end
     end
 
     def initialize(root = SitemapGenerator.root)

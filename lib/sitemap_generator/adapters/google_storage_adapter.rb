@@ -12,7 +12,8 @@ module SitemapGenerator
     #
     # @param [Hash] opts Google::Cloud::Storage configuration options.
     # @option :bucket [String] Required. Name of Google Storage Bucket where the file is to be uploaded.
-    # @option :acl [String] Optional. Access control which is applied to the uploaded file(s).  Default value is 'public'.
+    # @option :acl [String] Optional. Access control which is applied to the uploaded file(s).
+    #                         Default value is 'public'.
     #
     # All options other than the `:bucket` and `:acl` options are passed to the `Google::Cloud::Storage.new`
     # initializer.  See https://googleapis.dev/ruby/google-cloud-storage/latest/file.AUTHENTICATION.html

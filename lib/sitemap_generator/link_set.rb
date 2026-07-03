@@ -5,9 +5,12 @@ require 'builder'
 # A LinkSet provisions a bunch of links to sitemap files.  It also writes the index file
 # which lists all the sitemap files written.
 module SitemapGenerator
-  class LinkSet
-    @@requires_finalization_opts = %i[filename sitemaps_path sitemaps_host namer]
-    @@new_location_opts = %i[filename sitemaps_path namer]
+  # Top-level configuration and orchestration object for a sitemap generation run.
+  # Owns the adapter, host, paths, and namer; manages the lifecycle of sitemap files
+  # from creation through finalization. See +SitemapGenerator::Sitemap+ for the public API.
+  class LinkSet # rubocop:disable Metrics/ClassLength
+    REQUIRES_FINALIZATION_OPTS = %i[filename sitemaps_path sitemaps_host namer].freeze
+    NEW_LOCATION_OPTS = %i[filename sitemaps_path namer].freeze
 
     attr_reader :default_host, :sitemaps_path, :filename, :create_index
     attr_accessor :include_root, :include_index, :adapter, :yield_sitemap, :max_sitemap_links
@@ -119,8 +122,10 @@ module SitemapGenerator
     #
     # Note: When adding a new option be sure to include it in `options_for_group()` if
     # the option should be inherited by groups.
-    def initialize(options = {})
-      @default_host, @sitemaps_host, @yield_sitemap, @sitemaps_path, @adapter, @verbose, @protect_index, @sitemap_index, @added_default_links, @created_group, @sitemap = nil
+    def initialize(options = {}) # rubocop:disable Metrics/MethodLength
+      @default_host, @sitemaps_host, @yield_sitemap, @sitemaps_path,
+      @adapter, @verbose, @protect_index, @sitemap_index,
+      @added_default_links, @created_group, @sitemap = nil
 
       options = SitemapGenerator::Utilities.reverse_merge(options,
                                                           include_root: true,
@@ -197,11 +202,11 @@ module SitemapGenerator
       @created_group = true
       original_opts = opts.dup
 
-      if (@@requires_finalization_opts & original_opts.keys).empty?
+      if (REQUIRES_FINALIZATION_OPTS & original_opts.keys).empty?
         # If no new filename or path is specified reuse the default sitemap file.
         # A new location object will be set on it for the duration of the group.
         original_opts[:sitemap] = sitemap
-      elsif original_opts.key?(:sitemaps_host) && (@@new_location_opts & original_opts.keys).empty?
+      elsif original_opts.key?(:sitemaps_host) && (NEW_LOCATION_OPTS & original_opts.keys).empty?
         # If no location options are provided we are creating the next sitemap in the
         # current series, so finalize and inherit the namer.
         finalize_sitemap!
@@ -293,14 +298,10 @@ module SitemapGenerator
         name = Utilities.titleize(engine.to_s)
         begin
           Timeout.timeout(10) do
-            if URI.respond_to?(:open) # Available since Ruby 2.5
-              URI.open(link)
-            else
-              open(link) # using Kernel#open became deprecated since Ruby 2.7. See https://bugs.ruby-lang.org/issues/15893
-            end
+            URI.open(link) # rubocop:disable Security/Open
           end
           output("  Successful ping of #{name}")
-        rescue Timeout::Error, StandardError => e
+        rescue StandardError => e
           output("Ping failed for #{name}: #{e.inspect} (URL #{link})")
         end
       end
@@ -492,6 +493,8 @@ module SitemapGenerator
       puts string
     end
 
+    # Setters that propagate location configuration (host, paths, adapter) to the
+    # active sitemap and index files whenever a value changes on the LinkSet.
     module LocationHelpers
       # Set the host name, including protocol, that will be used by default on each
       # of your sitemap links.  You can pass a different host in your options to `add`
@@ -512,7 +515,7 @@ module SitemapGenerator
         @public_path = Pathname.new(SitemapGenerator::Utilities.append_slash(value))
         @public_path = SitemapGenerator.app.root + @public_path if @public_path.relative?
         update_location_info(:public_path, @public_path)
-        @public_path
+        @public_path # rubocop:disable Lint/Void -- return value used by send(:public_path=) in the getter
       end
 
       # Return a Pathname with the full path to the public directory
@@ -601,7 +604,7 @@ module SitemapGenerator
       # are in your sitemap.  If `false` an index file is never created.
       # If `:auto` an index file is created only if your sitemap has more than
       # one sitemap file.
-      def create_index=(value, force = false)
+      def create_index=(value, force = false) # rubocop:disable Style/OptionalBooleanParameter
         @create_index = value
         # Allow overriding the protected status of the index when we are creating a group.
         # Because sometimes we need to force an index in that case.  But generally we don't

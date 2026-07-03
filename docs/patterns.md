@@ -1,4 +1,3 @@
-
 # Patterns
 
 ## Writing a new adapter

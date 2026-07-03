@@ -13,6 +13,7 @@ AllCops:
     - gemfiles/*
     - pkg/**/*
     - spec/**/*
+    - vendor/**/*
     - integration/bin/*
     - integration/spec/**/*
 
