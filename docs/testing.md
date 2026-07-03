@@ -55,7 +55,9 @@ cd integration && bundle exec rspec
 1. Add `require 'spec_helper'` at the top.
 1. Use `RSpec.describe SitemapGenerator::ClassName` at the top level.
 1. Use `describe '#method_name'` for instance methods, `describe '.method_name'` for class methods.
-1. Follow the `context`/`it` and `should` conventions in [docs/conventions.md](conventions.md#naming-conventions).
+1. Use `context 'when <condition>'` for branches; keep conditions out of `it` descriptions.
+1. Write `it` descriptions as declarative present-tense assertions — **never use "should"**. Say `it 'returns nil'`, not `it 'should return nil'`.
+1. See [docs/conventions.md](conventions.md#naming-conventions) for the full naming rules.
 1. For adapter tests that write files, use a temp path under `tmp/test/` and clean up in an `after` hook.
 
 Example skeleton:
@@ -66,12 +68,14 @@ Example skeleton:
 require 'spec_helper'
 
 RSpec.describe SitemapGenerator::MyClass do
-  let(:subject) { described_class.new }
+  let(:my_class) { described_class.new }
 
   describe '#my_method' do
+    subject(:my_method) { my_class.my_method }
+
     context 'when condition is true' do
       it 'returns the expected value' do
-        expect(subject.my_method).to eq('expected')
+        expect(my_method).to eq('expected')
       end
     end
   end

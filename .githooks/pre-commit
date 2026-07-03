@@ -1,0 +1,17 @@
+#!/bin/sh
+# Lint staged files with mdl (markdown) and RuboCop (Ruby).
+exit_code=0
+
+md_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.md')
+if [ -n "$md_files" ]; then
+  echo "mdl: linting changed markdown files..."
+  echo "$md_files" | xargs bundle exec mdl || exit_code=1
+fi
+
+rb_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.rb')
+if [ -n "$rb_files" ]; then
+  echo "rubocop: linting changed ruby files..."
+  echo "$rb_files" | xargs bundle exec rubocop || exit_code=1
+fi
+
+exit $exit_code
