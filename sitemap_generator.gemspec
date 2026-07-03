@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email = 'kjvarga@gmail.com'
   s.homepage = 'https://github.com/kjvarga/sitemap_generator'
   s.summary = 'Easily generate XML Sitemaps'
-  s.description = 'SitemapGenerator is a framework-agnostic XML Sitemap generator written in Ruby with automatic Rails integration.  It supports Video, News, Image, Mobile, PageMap and Alternate Links sitemap extensions and includes Rake tasks for managing your sitemaps, as well as many other great features.'
+  s.description = 'SitemapGenerator is a framework-agnostic XML Sitemap generator written in Ruby with automatic Rails integration.  It supports Video, News, Image, Mobile, PageMap and Alternate Links sitemap extensions and includes Rake tasks for managing your sitemaps, as well as many other great features.' # rubocop:disable Layout/LineLength
   s.license = 'MIT'
   s.metadata = { 'rubygems_mfa_required' => 'true' }
   s.add_dependency 'builder', '~> 3.0'

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 module SitemapGenerator
-  module Utilities
+  # Internal utility functions: hash merging, string manipulation, byte calculation,
+  # and warning suppression. Not part of the public API.
+  module Utilities # rubocop:disable Metrics/ModuleLength
     module_function
 
     # Copy templates/sitemap.rb to config if not there yet.
-    def install_sitemap_rb(verbose = false)
+    def install_sitemap_rb(verbose = false) # rubocop:disable Style/OptionalBooleanParameter
       if File.exist?(SitemapGenerator.app.root + 'config/sitemap.rb') # rubocop:disable Style/StringConcatenation
         puts 'already exists: config/sitemap.rb, file not copied' if verbose
       else
@@ -102,8 +104,8 @@ module SitemapGenerator
       other_hash.merge(hash)
     end
 
-    # Performs the opposite of <tt>merge</tt>, with the keys and values from the first hash taking precedence over the second.
-    # Modifies the receiver in place.
+    # Performs the opposite of <tt>merge</tt>, with the keys and values from the first hash taking
+    # precedence over the second. Modifies the receiver in place.
     def reverse_merge!(hash, other_hash)
       hash.merge!(other_hash) { |_k, o, _n| o }
     end
@@ -140,7 +142,8 @@ module SitemapGenerator
 
     # Sets $VERBOSE for the duration of the block and back to its original value afterwards.
     def with_warnings(flag)
-      old_verbose, $VERBOSE = $VERBOSE, flag # rubocop:disable Style/ParallelAssignment
+      old_verbose = $VERBOSE
+      $VERBOSE = flag
       yield
     ensure
       $VERBOSE = old_verbose

@@ -4,6 +4,7 @@ require 'builder'
 
 module SitemapGenerator
   module Builder
+    # Wraps a sitemap file reference as a +<sitemap>+ XML entry for use in a sitemap index.
     class SitemapIndexUrl < SitemapUrl
       def initialize(path, options = {})
         if (index = path.is_a?(SitemapGenerator::Builder::SitemapIndexFile) && path)

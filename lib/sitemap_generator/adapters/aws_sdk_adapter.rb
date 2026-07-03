@@ -24,12 +24,13 @@ module SitemapGenerator
     #   **Deprecated, use :secret_access_key instead** :aws_secret_access_key [String] Your AWS secret access key
     #   **Deprecated, use :region instead** :aws_region [String] Your AWS region
     #   :acl [String] The ACL to apply to the uploaded files.  Defaults to 'public-read'.
-    #   :cache_control [String] The cache control headder to apply to the uploaded files.  Defaults to 'private, max-age=0, no-cache'.
+    #   :cache_control [String] The cache control headder to apply to the uploaded files.
+    #                          Defaults to 'private, max-age=0, no-cache'.
     #
     #   All other options you provide are passed directly to the AWS client.
     #   See https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/S3/Client.html#initialize-instance_method
     #   for a full list of supported options.
-    def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_session_token: nil, aws_region: nil,
+    def initialize(bucket, aws_access_key_id: nil, aws_secret_access_key: nil, aws_session_token: nil, aws_region: nil, # rubocop:disable Metrics/ParameterLists
                    aws_endpoint: nil, acl: 'public-read', cache_control: 'private, max-age=0, no-cache', **options)
       @bucket = bucket
       @acl = acl
@@ -43,7 +44,7 @@ module SitemapGenerator
     end
 
     # Call with a SitemapLocation and string data
-    def write(location, raw_data)
+    def write(location, raw_data) # rubocop:disable Metrics/MethodLength
       SitemapGenerator::FileAdapter.new.write(location, raw_data)
 
       if defined?(Aws::S3::TransferManager)

@@ -12,13 +12,14 @@ module SitemapGenerator
     #
     # Most methods expect a +number+ argument, and will return it
     # unchanged if can't be converted into a valid number.
-    module NumberHelper
+    module NumberHelper # rubocop:disable Metrics/ModuleLength
       # Raised when argument +number+ param given to the helpers is invalid and
       # the option :raise is set to  +true+.
       class InvalidNumberError < StandardError
         attr_accessor :number
 
         def initialize(number)
+          super(number.to_s)
           @number = number
         end
       end
@@ -39,7 +40,7 @@ module SitemapGenerator
       #  number_with_delimiter(12345678.05, :locale => :fr)     # => 12 345 678,05
       #  number_with_delimiter(98765432.98, :delimiter => " ", :separator => ",")
       #  # => 98 765 432,98
-      def number_with_delimiter(number, options = {})
+      def number_with_delimiter(number, options = {}) # rubocop:disable Metrics/MethodLength
         SitemapGenerator::Utilities.symbolize_keys!(options)
 
         begin
@@ -71,10 +72,12 @@ module SitemapGenerator
       # ==== Options
       # * <tt>:locale</tt>     - Sets the locale to be used for formatting (defaults to current locale).
       # * <tt>:precision</tt>  - Sets the precision of the number (defaults to 3).
-      # * <tt>:significant</tt>  - If +true+, precision will be the # of significant_digits. If +false+, the # of fractional digits (defaults to +false+)
+      # * <tt>:significant</tt>  - If +true+, precision will be the # of significant_digits.
+      #                               If +false+, the # of fractional digits (defaults to +false+)
       # * <tt>:separator</tt>  - Sets the separator between the fractional and integer digits (defaults to ".").
       # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
-      # * <tt>:strip_insignificant_zeros</tt>  - If +true+ removes insignificant zeros after the decimal separator (defaults to +false+)
+      # * <tt>:strip_insignificant_zeros</tt>  - If +true+ removes insignificant zeros after the decimal separator
+      #                                             (defaults to +false+)
       #
       # ==== Examples
       #  number_with_precision(111.2345)                                            # => 111.235
@@ -90,11 +93,11 @@ module SitemapGenerator
       #  number_with_precision(389.32314, :precision => 4, :significant => true)    # => 389.3
       #  number_with_precision(1111.2345, :precision => 2, :separator => ',', :delimiter => '.')
       #  # => 1.111,23
-      def number_with_precision(number, options = {})
+      def number_with_precision(number, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         SitemapGenerator::Utilities.symbolize_keys!(options)
 
-        number = begin
-          Float(number)
+        begin
+          number = Float(number)
         rescue ArgumentError, TypeError
           raise InvalidNumberError, number if options[:raise]
 
@@ -113,7 +116,8 @@ module SitemapGenerator
         }
         defaults = defaults.merge(precision_defaults)
 
-        options = SitemapGenerator::Utilities.reverse_merge(options, defaults) # Allow the user to unset default values: Eg.: :significant => false
+        # Allow the user to unset default values: e.g. significant: false
+        options = SitemapGenerator::Utilities.reverse_merge(options, defaults)
         precision = options.delete :precision
         significant = options.delete :significant
         strip_insignificant_zeros = options.delete :strip_insignificant_zeros
@@ -124,7 +128,9 @@ module SitemapGenerator
             rounded_number = 0
           else
             digits = (Math.log10(number.abs) + 1).floor
-            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)).round.to_f * (10**(digits - precision))
+            step = SitemapGenerator::BigDecimal.new((10**(digits - precision)).to_f.to_s)
+            rounded_number = (SitemapGenerator::BigDecimal.new(number.to_s) / step)
+                             .round.to_f * (10**(digits - precision))
             digits = (Math.log10(rounded_number.abs) + 1).floor # After rounding, the number of digits may have changed
           end
           precision -= digits
@@ -133,7 +139,7 @@ module SitemapGenerator
           rounded_number = SitemapGenerator::Utilities.round(SitemapGenerator::BigDecimal.new(number.to_s),
                                                              precision).to_f
         end
-        formatted_number = number_with_delimiter("%01.#{precision}f" % rounded_number, options)
+        formatted_number = number_with_delimiter(format("%01.#{precision}f", rounded_number), options)
         if strip_insignificant_zeros
           escaped_separator = Regexp.escape(options[:separator])
           formatted_number.sub(/(#{escaped_separator})(\d*[1-9])?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '')
@@ -143,8 +149,12 @@ module SitemapGenerator
       end
 
       STORAGE_UNITS = %i[byte kb mb gb tb].freeze
-      DECIMAL_UNITS = { 0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand, 6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion,
-                        -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro, -9 => :nano, -12 => :pico, -15 => :femto }.freeze
+      DECIMAL_UNITS = {
+        0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand,
+        6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion,
+        -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro,
+        -9 => :nano, -12 => :pico, -15 => :femto
+      }.freeze
 
       # Formats the bytes in +number+ into a more understandable representation
       # (e.g., giving it 1500 yields 1.5 KB). This method is useful for
@@ -156,10 +166,12 @@ module SitemapGenerator
       # ==== Options
       # * <tt>:locale</tt>     - Sets the locale to be used for formatting (defaults to current locale).
       # * <tt>:precision</tt>  - Sets the precision of the number (defaults to 3).
-      # * <tt>:significant</tt>  - If +true+, precision will be the # of significant_digits. If +false+, the # of fractional digits (defaults to +true+)
+      # * <tt>:significant</tt>  - If +true+, precision will be the # of significant_digits.
+      #                               If +false+, the # of fractional digits (defaults to +true+)
       # * <tt>:separator</tt>  - Sets the separator between the fractional and integer digits (defaults to ".").
       # * <tt>:delimiter</tt>  - Sets the thousands delimiter (defaults to "").
-      # * <tt>:strip_insignificant_zeros</tt>  - If +true+ removes insignificant zeros after the decimal separator (defaults to +true+)
+      # * <tt>:strip_insignificant_zeros</tt>  - If +true+ removes insignificant zeros after the decimal separator
+      #                                             (defaults to +true+)
       # ==== Examples
       #  number_to_human_size(123)                                          # => 123 Bytes
       #  number_to_human_size(1234)                                         # => 1.21 KB
@@ -175,11 +187,11 @@ module SitemapGenerator
       # <tt>:strip_insignificant_zeros</tt> to +false+ to change that):
       #  number_to_human_size(1234567890123, :precision => 5)        # => "1.1229 TB"
       #  number_to_human_size(524288000, :precision=>5)              # => "500 MB"
-      def number_to_human_size(number, options = {})
+      def number_to_human_size(number, options = {}) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         SitemapGenerator::Utilities.symbolize_keys!(options)
 
-        number = begin
-          Float(number)
+        begin
+          number = Float(number)
         rescue ArgumentError, TypeError
           raise InvalidNumberError, number if options[:raise]
 

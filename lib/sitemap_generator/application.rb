@@ -3,15 +3,17 @@
 require 'pathname'
 
 module SitemapGenerator
+  # Thin abstraction over the host application environment.
+  # Provides the app +root+ path and Rails version detection.
   class Application
-    def is_rails?
+    def is_rails? # rubocop:disable Naming/PredicatePrefix
       !!defined?(Rails::VERSION)
     end
 
     # Returns a boolean indicating whether this environment is Rails 3
     #
     # @return [Boolean]
-    def is_at_least_rails3?
+    def is_at_least_rails3? # rubocop:disable Naming/PredicatePrefix
       is_rails? && Rails.version.to_f >= 3
     rescue StandardError
       false # Rails.version defined in 2.1.0

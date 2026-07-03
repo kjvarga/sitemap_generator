@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module SitemapGenerator
+  # Scoped Numeric wrapper providing byte-unit helpers (+kilobytes+, +megabytes+, etc.).
+  # Defined here rather than reopening the global Numeric class.
   class Numeric
     KILOBYTE = 1024
     MEGABYTE = KILOBYTE * 1024

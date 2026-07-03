@@ -48,7 +48,8 @@ module SitemapGenerator
     #   stripped from the filename.  If `:all_but_first`, only the `.gz` extension of the first
     #   filename is stripped off.  If `true` the extensions are left unchanged.
     # * <tt>max_sitemap_links</tt> - The maximum number of links to put in each sitemap.
-    def initialize(opts = {})
+    def initialize(opts = {}) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      super()
       SitemapGenerator::Utilities.assert_valid_keys(opts, %i[
                                                       adapter
                                                       public_path
@@ -99,14 +100,14 @@ module SitemapGenerator
     end
 
     # Return the size of the file at <tt>path</tt>
-    def filesize
+    def filesize # rubocop:disable Naming/PredicateMethod
       File.size?(path)
     end
 
     # Return the filename.  Raises an exception if no filename or namer is set.
     # If using a namer once the filename has been retrieved from the namer its
     # value is locked so that it is unaffected by further changes to the namer.
-    def filename
+    def filename # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
       raise SitemapGenerator::SitemapError, 'No filename or namer set' unless self[:filename] || self[:namer]
 
       unless self[:filename]
@@ -174,10 +175,13 @@ module SitemapGenerator
       filesize = number_to_human_size(self.filesize)
       width = self.class::PATH_OUTPUT_WIDTH
       path = SitemapGenerator::Utilities.ellipsis(path_in_public, width)
-      "+ #{"%-#{width}s" % path} #{'%10s' % link_count} links / #{'%10s' % filesize}"
+      "+ #{format("%-#{width}s", path)} #{format('%10s', link_count)} links / #{format('%10s', filesize)}"
     end
   end
 
+  # SitemapLocation subclass for the sitemap index file.
+  # Defaults the namer to +:sitemap+ (no numeric suffix on the first name) and
+  # exposes the +create_index+ option.
   class SitemapIndexLocation < SitemapLocation
     def initialize(opts = {})
       opts[:namer] = SitemapGenerator::SimpleNamer.new(:sitemap) if !opts[:filename] && !opts[:namer]
@@ -198,7 +202,7 @@ module SitemapGenerator
       filesize = number_to_human_size(self.filesize)
       width = self.class::PATH_OUTPUT_WIDTH - 3
       path = SitemapGenerator::Utilities.ellipsis(path_in_public, width)
-      "+ #{"%-#{width}s" % path} #{'%10s' % link_count} sitemaps / #{'%10s' % filesize}"
+      "+ #{format("%-#{width}s", path)} #{format('%10s', link_count)} sitemaps / #{format('%10s', filesize)}"
     end
   end
 end
