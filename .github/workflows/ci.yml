@@ -13,6 +13,22 @@ on:
     - cron: '0 4 1 * *'
 
 jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: RuboCop
+        run: bundle exec rubocop
+
   rspec:
     runs-on: ubuntu-latest
 
