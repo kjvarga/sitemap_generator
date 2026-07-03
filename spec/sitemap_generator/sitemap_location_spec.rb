@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe SitemapGenerator::SitemapLocation do
+  subject(:location) { described_class.new(**options) }
+
+  let(:options)      { {} }
   let(:default_host) { 'http://example.com' }
-  let(:location)     { SitemapGenerator::SitemapLocation.new }
 
   it 'public_path should default to the public directory in the application root' do
     expect(location.public_path).to eq(SitemapGenerator.app.root + 'public/')
@@ -28,34 +32,36 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     }.to raise_error(SitemapGenerator::SitemapError, 'No filename or namer set')
   end
 
-  it 'should require a host' do
-    location = SitemapGenerator::SitemapLocation.new(:filename => nil, :namer => nil)
-    expect {
-      expect(location.host).to be_nil
-    }.to raise_error(SitemapGenerator::SitemapError, 'No value set for host')
+  context 'when filename and namer are nil' do
+    let(:options) { { filename: nil, namer: nil } }
+
+    it 'should require a host' do
+      expect {
+        expect(location.host).to be_nil
+      }.to raise_error(SitemapGenerator::SitemapError, 'No value set for host')
+    end
   end
 
-  it 'should accept a Namer option' do
-    @namer = SitemapGenerator::SimpleNamer.new(:xxx)
-    location = SitemapGenerator::SitemapLocation.new(:namer => @namer)
-    expect(location.filename).to eq(@namer.to_s)
-  end
+  context 'when a custom namer is provided' do
+    let(:namer)   { SitemapGenerator::SimpleNamer.new(:xxx) }
+    let(:options) { { namer: namer } }
 
-  it 'should protect the filename from further changes in the Namer' do
-    @namer = SitemapGenerator::SimpleNamer.new(:xxx)
-    location = SitemapGenerator::SitemapLocation.new(:namer => @namer)
-    expect(location.filename).to eq(@namer.to_s)
-    @namer.next
-    expect(location.filename).to eq(@namer.previous.to_s)
-  end
+    it 'should accept a Namer option' do
+      expect(location.filename).to eq(namer.to_s)
+    end
 
-  it 'should allow changing the namer' do
-    @namer1 = SitemapGenerator::SimpleNamer.new(:xxx)
-    location = SitemapGenerator::SitemapLocation.new(:namer => @namer1)
-    expect(location.filename).to eq(@namer1.to_s)
-    @namer2 = SitemapGenerator::SimpleNamer.new(:yyy)
-    location[:namer] = @namer2
-    expect(location.filename).to eq(@namer2.to_s)
+    it 'should protect the filename from further changes in the Namer' do
+      expect(location.filename).to eq(namer.to_s)
+      namer.next
+      expect(location.filename).to eq(namer.previous.to_s)
+    end
+
+    it 'should allow changing the namer' do
+      expect(location.filename).to eq(namer.to_s)
+      namer2 = SitemapGenerator::SimpleNamer.new(:yyy)
+      location[:namer] = namer2
+      expect(location.filename).to eq(namer2.to_s)
+    end
   end
 
   describe 'testing options and #with' do
@@ -93,9 +99,10 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   end
 
   describe 'when duplicated' do
+    let(:options) { { filename: 'xxx', host: default_host, public_path: 'public/' } }
+
     it 'should not inherit some objects' do
-      location = SitemapGenerator::SitemapLocation.new(:filename => 'xxx', :host => default_host, :public_path => 'public/')
-      expect(location.url).to eq(default_host+'/xxx')
+      expect(location.url).to eq(default_host + '/xxx')
       expect(location.public_path.to_s).to eq('public/')
       dup = location.dup
       expect(dup.url).to eq(location.url)
@@ -115,15 +122,17 @@ RSpec.describe SitemapGenerator::SitemapLocation do
 
   describe '#gzip?' do
     context 'when the filename ends in .gz' do
+      let(:options) { { filename: 'sitemap.xml.gz' } }
+
       it 'returns true' do
-        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml.gz')
         expect(location.gzip?).to be(true)
       end
     end
 
     context 'when the filename does not end in .gz' do
+      let(:options) { { filename: 'sitemap.xml' } }
+
       it 'returns false' do
-        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml')
         expect(location.gzip?).to be(false)
       end
     end
@@ -131,30 +140,34 @@ RSpec.describe SitemapGenerator::SitemapLocation do
 
   describe '#content_type' do
     context 'when the filename ends in .gz' do
+      let(:options) { { filename: 'sitemap.xml.gz' } }
+
       it "returns 'application/x-gzip'" do
-        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml.gz')
         expect(location.content_type).to eq('application/x-gzip')
       end
     end
 
     context 'when the filename does not end in .gz' do
+      let(:options) { { filename: 'sitemap.xml' } }
+
       it "returns 'application/xml'" do
-        location = SitemapGenerator::SitemapLocation.new(filename: 'sitemap.xml')
         expect(location.content_type).to eq('application/xml')
       end
     end
 
     context 'when compress is :all_but_first' do
+      let(:options) { { compress: :all_but_first } }
+
       it "returns 'application/xml' for the first file" do
-        location = SitemapGenerator::SitemapLocation.new(compress: :all_but_first)
         expect(location.content_type).to eq('application/xml')
       end
     end
   end
 
   describe 'public_path' do
+    let(:options) { { public_path: 'public/google' } }
+
     it 'should append a trailing slash' do
-      location = SitemapGenerator::SitemapLocation.new(:public_path => 'public/google')
       expect(location.public_path.to_s).to eq('public/google/')
       location[:public_path] = 'new/path'
       expect(location.public_path.to_s).to eq('new/path/')
@@ -164,8 +177,9 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   end
 
   describe 'sitemaps_path' do
+    let(:options) { { sitemaps_path: 'public/google' } }
+
     it 'should append a trailing slash' do
-      location = SitemapGenerator::SitemapLocation.new(:sitemaps_path => 'public/google')
       expect(location.sitemaps_path.to_s).to eq('public/google/')
       location[:sitemaps_path] = 'new/path'
       expect(location.sitemaps_path.to_s).to eq('new/path/')
@@ -175,18 +189,15 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   end
 
   describe 'url' do
+    let(:options) { { public_path: 'public/google', filename: 'xxx', host: default_host, sitemaps_path: 'sub/dir' } }
+
     it 'should handle paths not ending in slash' do
-      location = SitemapGenerator::SitemapLocation.new(
-          :public_path => 'public/google', :filename => 'xxx',
-          :host => default_host, :sitemaps_path => 'sub/dir')
       expect(location.url).to eq(default_host + '/sub/dir/xxx')
     end
   end
 
   describe 'write' do
-    let(:location) do
-      SitemapGenerator::SitemapLocation.new(:public_path => 'public/', :verbose => verbose)
-    end
+    let(:options) { { public_path: 'public/', verbose: verbose } }
 
     before do
       expect(location.adapter).to receive(:write)
@@ -212,55 +223,66 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   end
 
   describe 'filename' do
-    it 'should strip gz extension if not compressing' do
-      location = SitemapGenerator::SitemapLocation.new(:namer => SitemapGenerator::SimpleNamer.new(:sitemap), :compress => false)
-      expect(location.filename).to eq('sitemap.xml')
+    context 'when compress is false' do
+      let(:options) { { namer: SitemapGenerator::SimpleNamer.new(:sitemap), compress: false } }
+
+      it 'should strip gz extension if not compressing' do
+        expect(location.filename).to eq('sitemap.xml')
+      end
     end
 
-    it 'should not strip gz extension if compressing' do
-      location = SitemapGenerator::SitemapLocation.new(:namer => SitemapGenerator::SimpleNamer.new(:sitemap), :compress => true)
-      expect(location.filename).to eq('sitemap.xml.gz')
+    context 'when compress is true' do
+      let(:options) { { namer: SitemapGenerator::SimpleNamer.new(:sitemap), compress: true } }
+
+      it 'should not strip gz extension if compressing' do
+        expect(location.filename).to eq('sitemap.xml.gz')
+      end
     end
 
-    it 'should strip gz extension if :all_but_first and first file' do
-      namer = SitemapGenerator::SimpleNamer.new(:sitemap)
-      expect(namer).to receive(:start?).and_return(true)
-      location = SitemapGenerator::SitemapLocation.new(:namer => namer, :compress => :all_but_first)
-      expect(location.filename).to eq('sitemap.xml')
+    context 'when compress is :all_but_first and it is the first file' do
+      let(:namer)   { SitemapGenerator::SimpleNamer.new(:sitemap) }
+      let(:options) { { namer: namer, compress: :all_but_first } }
+
+      before { expect(namer).to receive(:start?).and_return(true) }
+
+      it 'should strip gz extension' do
+        expect(location.filename).to eq('sitemap.xml')
+      end
     end
 
-    it 'should strip gz extension if :all_but_first and first file' do
-      namer = SitemapGenerator::SimpleNamer.new(:sitemap)
-      expect(namer).to receive(:start?).and_return(false)
-      location = SitemapGenerator::SitemapLocation.new(:namer => namer, :compress => :all_but_first)
-      expect(location.filename).to eq('sitemap.xml.gz')
+    context 'when compress is :all_but_first and it is not the first file' do
+      let(:namer)   { SitemapGenerator::SimpleNamer.new(:sitemap) }
+      let(:options) { { namer: namer, compress: :all_but_first } }
+
+      before { expect(namer).to receive(:start?).and_return(false) }
+
+      it 'should not strip gz extension' do
+        expect(location.filename).to eq('sitemap.xml.gz')
+      end
     end
   end
 
   describe 'max_sitemap_links' do
+    let(:options) { { max_sitemap_links: 10 } }
+
     it 'returns the value set on the object' do
-      location = SitemapGenerator::SitemapLocation.new(:max_sitemap_links => 10)
       location[:max_sitemap_links] = 10
     end
   end
 
   describe 'when not compressing' do
+    let(:options) { { namer: SitemapGenerator::SimpleNamer.new(:sitemap), host: 'http://example.com', compress: false } }
+
     it 'the URL should point to the uncompressed file' do
-      location = SitemapGenerator::SitemapLocation.new(
-        :namer => SitemapGenerator::SimpleNamer.new(:sitemap),
-        :host => 'http://example.com',
-        :compress => false
-      )
       expect(location.url).to eq('http://example.com/sitemap.xml')
     end
   end
 end
 
 RSpec.describe SitemapGenerator::SitemapIndexLocation do
-  let(:location)     { SitemapGenerator::SitemapIndexLocation.new }
+  subject(:location) { described_class.new }
 
   it 'should have a default namer' do
-    location = SitemapGenerator::SitemapIndexLocation.new
     expect(location[:namer]).not_to be_nil
     expect(location[:filename]).to be_nil
     expect(location.filename).to eq('sitemap.xml.gz')
