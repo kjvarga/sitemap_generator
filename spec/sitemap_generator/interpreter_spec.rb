@@ -71,7 +71,7 @@ RSpec.describe SitemapGenerator::Interpreter do
     end
   end
 
-  describe 'default_url_options' do
+  describe '#default_url_options' do
     context 'when ActionController::Base is not defined' do
       before { hide_const('ActionController::Base') }
 
