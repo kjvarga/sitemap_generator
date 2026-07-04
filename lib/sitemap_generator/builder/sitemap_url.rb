@@ -69,9 +69,8 @@ module SitemapGenerator
             alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
         end
 
-        path = path.to_s.sub(%r{^/}, '')
+        path = encode_non_ascii(path.to_s.sub(%r{^/}, ''))
         loc  = path.empty? ? options[:host] : "#{options[:host].to_s.sub(%r{/$}, '')}/#{path}"
-        loc  = encode_non_ascii(loc)
         merge!(
           priority: options[:priority],
           changefreq: options[:changefreq],
@@ -286,7 +285,8 @@ module SitemapGenerator
 
       private
 
-      # Percent-encode non-ASCII bytes, leaving already-encoded %XX sequences untouched.
+      # Percent-encode non-ASCII bytes in a path segment, leaving already-encoded %XX sequences untouched.
+      # Applied to paths only — not the host — IDN hostnames require punycode, not percent-encoding.
       def encode_non_ascii(str)
         str.gsub(/[^\x00-\x7F]/) { |c| c.bytes.map { |b| format('%%%02X', b) }.join }
       end
