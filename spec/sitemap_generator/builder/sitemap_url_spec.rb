@@ -195,6 +195,13 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   end
 
   describe 'alternates' do
+    let(:xml_doc) do
+      Nokogiri::XML(
+        "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' "         "xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{url.to_xml}</root>"
+      )
+    end
+    let(:alternate_link) { xml_doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first }
+
     context 'when alternate href is a relative path' do
       let(:url) do
         described_class.new(
@@ -205,12 +212,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
 
       it 'prepends the host to the href' do
-        xml = url.to_xml
-        doc = Nokogiri::XML(
-          "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml}</root>"
-        )
-        link = doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first
-        expect(link['href']).to eq('http://example.com/es/page')
+        expect(alternate_link['href']).to eq('http://example.com/es/page')
       end
     end
 
@@ -224,12 +226,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
 
       it 'resolves the href relative to the host root' do
-        xml = url.to_xml
-        doc = Nokogiri::XML(
-          "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml}</root>"
-        )
-        link = doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first
-        expect(link['href']).to eq('http://example.com/es/page')
+        expect(alternate_link['href']).to eq('http://example.com/es/page')
       end
     end
 
@@ -243,12 +240,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
 
       it 'leaves the href unchanged' do
-        xml = url.to_xml
-        doc = Nokogiri::XML(
-          "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml}</root>"
-        )
-        link = doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first
-        expect(link['href']).to eq('https://es.example.com/page')
+        expect(alternate_link['href']).to eq('https://es.example.com/page')
       end
     end
   end
