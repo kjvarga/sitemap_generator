@@ -31,7 +31,9 @@ module SitemapGenerator
       location = SitemapGenerator::Sitemap.sitemap_location
       dir = location.directory
       base = SitemapGenerator::Sitemap.filename.to_s
-      FileUtils.rm(Dir["#{dir}/#{base}*.xml.gz", "#{dir}/#{base}*.xml"])
+      return if base.empty?
+
+      FileUtils.rm(Dir[File.join(dir, "#{base}*.xml.gz"), File.join(dir, "#{base}*.xml")])
     end
 
     # Validate all keys in a hash match *valid keys, raising ArgumentError on a

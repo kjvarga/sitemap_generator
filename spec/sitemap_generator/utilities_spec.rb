@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'tmpdir'
 
 RSpec.describe SitemapGenerator::Utilities do
   describe 'assert_valid_keys' do
