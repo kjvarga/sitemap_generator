@@ -82,7 +82,7 @@ module SitemapGenerator
           news: prepare_news(options[:news]),
           videos: options[:videos],
           mobile: options[:mobile],
-          alternates: options[:alternates],
+          alternates: prepare_alternates(options[:alternates], options[:host]),
           pagemap: options[:pagemap]
         )
       end
@@ -219,6 +219,20 @@ module SitemapGenerator
           )
         end
         news
+      end
+
+      # Return an Array of alternate option Hashes with relative hrefs expanded to absolute URLs.
+      def prepare_alternates(alternates, host)
+        alternates.map do |alt|
+          next alt unless alt.is_a?(Hash)
+
+          href = alt[:href].to_s
+          if href.start_with?('/')
+            alt.merge(href: "#{host.to_s.sub(%r{/$}, '')}#{href}")
+          else
+            alt
+          end
+        end
       end
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
