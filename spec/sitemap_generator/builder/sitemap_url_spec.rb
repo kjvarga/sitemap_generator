@@ -177,8 +177,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
     end
   end
 
-
-  describe '.new' do
+  describe '#initialize' do
     context 'when path contains non-ASCII characters' do
       it 'percent-encodes non-ASCII characters in the loc' do
         url = SitemapGenerator::Builder::SitemapUrl.new('/RFC3986ü中文', :host => 'http://example.com', :lastmod => nil)
