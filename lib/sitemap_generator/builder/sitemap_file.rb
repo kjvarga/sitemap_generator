@@ -61,9 +61,7 @@ module SitemapGenerator
       # for this sitemap if one has not yet been reserved, because we may
       # mess up the name-assignment sequence.
       def lastmod
-        File.mtime(location.path) if location.reserved_name?
-      rescue StandardError
-        nil
+        @lastmod if location.reserved_name?
       end
 
       def empty?
@@ -148,6 +146,7 @@ module SitemapGenerator
         finalize! unless finalized?
         reserve_name
         @xml_content << @xml_wrapper_end
+        @lastmod = current_time
         @location.write(@xml_content, link_count)
         @xml_content = @xml_wrapper_end = ''
         @written = true
@@ -179,6 +178,12 @@ module SitemapGenerator
 
       def max_sitemap_links
         @location[:max_sitemap_links] || SitemapGenerator::MAX_SITEMAP_LINKS
+      end
+
+      private
+
+      def current_time
+        defined?(Time.zone) && Time.zone ? Time.zone.now : Time.now
       end
     end
   end
