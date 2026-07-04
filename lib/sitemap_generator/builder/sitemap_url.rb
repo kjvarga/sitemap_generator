@@ -228,7 +228,7 @@ module SitemapGenerator
 
           href = alt[:href].to_s
           if href.start_with?('/')
-            alt.merge(href: "#{host.to_s.sub(%r{/$}, '')}#{href}")
+            alt.merge(href: URI.join(host, href).to_s)
           else
             alt
           end

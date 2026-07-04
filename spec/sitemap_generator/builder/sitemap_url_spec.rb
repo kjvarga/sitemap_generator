@@ -214,6 +214,25 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
     end
 
+    context 'when host has a subpath prefix' do
+      let(:url) do
+        described_class.new(
+          '/page',
+          host: 'http://example.com/app/',
+          alternate: { href: '/es/page', lang: :es }
+        )
+      end
+
+      it 'resolves the href relative to the host root' do
+        xml = url.to_xml
+        doc = Nokogiri::XML(
+          "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml}</root>"
+        )
+        link = doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first
+        expect(link['href']).to eq('http://example.com/es/page')
+      end
+    end
+
     context 'when alternate href is already absolute' do
       let(:url) do
         described_class.new(
