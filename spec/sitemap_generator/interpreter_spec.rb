@@ -73,6 +73,8 @@ RSpec.describe SitemapGenerator::Interpreter do
 
   describe 'default_url_options' do
     context 'when ActionController::Base is not defined' do
+      before { hide_const('ActionController::Base') }
+
       it 'returns an empty hash' do
         expect(interpreter.default_url_options).to eq({})
       end
