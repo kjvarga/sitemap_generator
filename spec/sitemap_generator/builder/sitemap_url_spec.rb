@@ -244,31 +244,56 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
     end
   end
 
-  describe '.new' do
-    context 'when Time.zone is available' do
-      let(:zone_now) { Time.at(1_000_000).utc }
-      let(:mock_zone) { Struct.new(:now).new(zone_now) }
+  describe '#initialize' do
+    context 'lastmod' do
+      context 'when Time.zone is available' do
+        let(:zone_now) { Time.at(1_000_000).utc }
+        let(:mock_zone) { Struct.new(:now).new(zone_now) }
 
-      before do
-        allow(Time).to receive(:zone).and_return(mock_zone)
+        before do
+          allow(Time).to receive(:zone).and_return(mock_zone)
+        end
+
+        it 'uses Time.zone.now as the default lastmod' do
+          url = described_class.new('/home', host: 'http://example.com')
+          expect(url[:lastmod]).to eq(zone_now)
+        end
       end
 
-      it 'uses Time.zone.now as the default lastmod' do
-        url = described_class.new('/home', host: 'http://example.com')
-        expect(url[:lastmod]).to eq(zone_now)
-      end
-    end
+      context 'when Time.zone is nil' do
+        before do
+          allow(Time).to receive(:zone).and_return(nil)
+        end
 
-    context 'when Time.zone is nil' do
-      before do
-        allow(Time).to receive(:zone).and_return(nil)
+        it 'falls back to Time.now as the default lastmod' do
+          frozen = Time.at(999_999).utc
+          allow(Time).to receive(:now).and_return(frozen)
+          url = described_class.new('/home', host: 'http://example.com')
+          expect(url[:lastmod]).to eq(frozen)
+        end
       end
 
-      it 'falls back to Time.now as the default lastmod' do
-        frozen = Time.at(999_999).utc
-        allow(Time).to receive(:now).and_return(frozen)
-        url = described_class.new('/home', host: 'http://example.com')
-        expect(url[:lastmod]).to eq(frozen)
+      context 'when Time.zone is not defined (outside Rails)' do
+        before do
+          Time.singleton_class.class_eval do
+            alias_method :__zone_bak__, :zone
+            undef_method :zone
+          end
+        end
+
+        after do
+          Time.singleton_class.class_eval do
+            alias_method :zone, :__zone_bak__
+            remove_method :__zone_bak__
+          end
+        end
+
+        it 'falls back to Time.now' do
+          frozen = Time.at(888_888).utc
+          allow(Time).to receive(:now).and_return(frozen)
+          url = described_class.new('/home', host: 'http://example.com')
+          expect(url[:lastmod]).to eq(frozen)
+        end
       end
     end
   end
