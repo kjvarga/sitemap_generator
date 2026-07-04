@@ -52,7 +52,7 @@ module SitemapGenerator
           options,
           priority: 0.5,
           changefreq: 'weekly',
-          lastmod: Time.now,
+          lastmod: current_time,
           images: [],
           news: {},
           videos: [],
@@ -281,6 +281,11 @@ module SitemapGenerator
       # TODO: Use rounding with precision once merged with framework_agnostic.
       def format_float(value)
         value.is_a?(String) ? value : format('%0.1f', value)
+      end
+
+      # Return the current time, using Time.zone if available (Rails), otherwise Time.now.
+      def current_time
+        defined?(Time.zone) && Time.zone ? Time.zone.now : Time.now
       end
     end
   end
