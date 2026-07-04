@@ -28,7 +28,12 @@ module SitemapGenerator
 
     # Clean sitemap files in output directory.
     def clean_files
-      FileUtils.rm(Dir[SitemapGenerator.app.root + 'public/sitemap*.xml.gz']) # rubocop:disable Style/StringConcatenation
+      location = SitemapGenerator::Sitemap.sitemap_location
+      dir = location.directory
+      base = SitemapGenerator::Sitemap.filename.to_s
+      return if base.empty?
+
+      FileUtils.rm(Dir[File.join(dir, "#{base}*.xml.gz"), File.join(dir, "#{base}*.xml")])
     end
 
     # Validate all keys in a hash match *valid keys, raising ArgumentError on a

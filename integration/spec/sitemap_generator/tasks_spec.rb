@@ -32,6 +32,7 @@ RSpec.describe 'SitemapGenerator' do
 
   describe 'clean task' do
     before do
+      SitemapGenerator::Sitemap.reset!
       FileUtils.mkdir_p(rails_path('public/'))
       FileUtils.touch(rails_path('public/sitemap.xml.gz'))
     end
@@ -229,6 +230,7 @@ RSpec.describe 'SitemapGenerator' do
       end
     end
   end
+
 
   describe 'external dependencies' do
     describe 'rails' do
