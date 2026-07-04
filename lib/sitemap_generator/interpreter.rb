@@ -30,9 +30,7 @@ module SitemapGenerator
     def default_url_options
       return {} unless defined?(ActionController::Base)
 
-      ActionController::Base.default_url_options
-    rescue StandardError
-      {}
+      ActionController::Base.default_url_options || {}
     end
 
     def add(*args)
