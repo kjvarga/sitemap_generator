@@ -71,6 +71,7 @@ module SitemapGenerator
 
         path = path.to_s.sub(%r{^/}, '')
         loc  = path.empty? ? options[:host] : "#{options[:host].to_s.sub(%r{/$}, '')}/#{path}"
+        loc  = encode_non_ascii(loc)
         merge!(
           priority: options[:priority],
           changefreq: options[:changefreq],
@@ -281,6 +282,13 @@ module SitemapGenerator
       # TODO: Use rounding with precision once merged with framework_agnostic.
       def format_float(value)
         value.is_a?(String) ? value : format('%0.1f', value)
+      end
+
+      private
+
+      # Percent-encode non-ASCII bytes, leaving already-encoded %XX sequences untouched.
+      def encode_non_ascii(str)
+        str.gsub(/[^\x00-\x7F]/) { |c| c.bytes.map { |b| format('%%%02X', b) }.join }
       end
     end
   end
