@@ -18,6 +18,8 @@ namespace :sitemap do
 
   desc 'Install a default config/sitemap.rb file'
   task install: :require do
+    # Uses Rake's verbose flag intentionally — this is a file installation utility
+    # where Rake's -v/--verbose flag is the appropriate control mechanism.
     SitemapGenerator::Utilities.install_sitemap_rb(verbose)
   end
 
