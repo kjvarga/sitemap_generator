@@ -11,7 +11,7 @@ fi
 rb_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.rb')
 if [ -n "$rb_files" ]; then
   echo "rubocop: linting changed ruby files..."
-  echo "$rb_files" | xargs bundle exec rubocop || exit_code=1
+  echo "$rb_files" | xargs bundle exec rubocop --force-exclusion || exit_code=1
 fi
 
 exit $exit_code

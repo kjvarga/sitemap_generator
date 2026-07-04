@@ -27,6 +27,14 @@ module SitemapGenerator
       eval(&block) if block_given? # rubocop:disable Security/Eval
     end
 
+    def default_url_options
+      return {} unless defined?(ActionController::Base)
+
+      ActionController::Base.default_url_options
+    rescue StandardError
+      {}
+    end
+
     def add(*args)
       @linkset.add(*args)
     end
