@@ -433,7 +433,7 @@ module SitemapGenerator
     # in an instance variable.
     def add_default_links
       @added_default_links = true
-      link_options = { lastmod: Time.now, priority: 1.0 }
+      link_options = { priority: 1.0 }
       add('/', link_options) if include_root?
       return unless include_index?
 
