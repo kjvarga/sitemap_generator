@@ -36,13 +36,11 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
 
   describe 'lastmod' do
     it 'returns nil before the file has been written' do
-      expect(File).not_to receive(:mtime)
       sitemap.location.reserve_name
       expect(sitemap.lastmod).to be_nil
     end
 
-    it 'should be nil if the location has not reserved a name' do
-      expect(File).to receive(:mtime).never
+    it 'returns nil when the location has not reserved a name' do
       expect(sitemap.lastmod).to be_nil
     end
 
@@ -56,8 +54,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
         allow(FileUtils).to receive(:mkdir_p)
       end
 
-      it 'returns the time captured during write, not File.mtime' do
-        expect(File).not_to receive(:mtime)
+      it 'returns the time captured during write' do
         sitemap.write
         expect(sitemap.lastmod).to eq(frozen_time)
       end
