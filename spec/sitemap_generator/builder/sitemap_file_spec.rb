@@ -48,13 +48,13 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       let(:frozen_time) { Time.at(1_000_000).utc }
 
       before do
-        allow(Time).to receive(:zone).and_return(nil)
-        allow(Time).to receive(:now).and_return(frozen_time)
+        allow(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
         allow(sitemap.location).to receive(:write)
         allow(FileUtils).to receive(:mkdir_p)
       end
 
-      it 'returns the time captured during write' do
+      it 'calls Utilities.current_time during write and uses the result as lastmod' do
+        expect(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
         sitemap.write
         expect(sitemap.lastmod).to eq(frozen_time)
       end

@@ -161,4 +161,51 @@ RSpec.describe SitemapGenerator::Utilities do
       end
     end
   end
+  describe '.current_time' do
+    context 'when Time.zone is available' do
+      let(:zone_now) { Time.at(1_000_000).utc }
+      let(:mock_zone) { Struct.new(:now).new(zone_now) }
+
+      before { allow(Time).to receive(:zone).and_return(mock_zone) }
+
+      it 'returns Time.zone.now' do
+        expect(described_class.current_time).to eq(zone_now)
+      end
+    end
+
+    context 'when Time.zone is nil' do
+      let(:frozen) { Time.at(999_999).utc }
+
+      before do
+        allow(Time).to receive(:zone).and_return(nil)
+        allow(Time).to receive(:now).and_return(frozen)
+      end
+
+      it 'returns Time.now' do
+        expect(described_class.current_time).to eq(frozen)
+      end
+    end
+
+    context 'when Time.zone is not defined (outside Rails)' do
+      before do
+        Time.singleton_class.class_eval do
+          alias_method :__zone_bak__, :zone
+          undef_method :zone
+        end
+      end
+
+      after do
+        Time.singleton_class.class_eval do
+          alias_method :zone, :__zone_bak__
+          remove_method :__zone_bak__
+        end
+      end
+
+      it 'returns Time.now' do
+        frozen = Time.at(888_888).utc
+        allow(Time).to receive(:now).and_return(frozen)
+        expect(described_class.current_time).to eq(frozen)
+      end
+    end
+  end
 end
