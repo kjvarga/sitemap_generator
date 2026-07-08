@@ -28,7 +28,12 @@ module SitemapGenerator
 
     # Clean sitemap files in output directory.
     def clean_files
-      FileUtils.rm(Dir[SitemapGenerator.app.root + 'public/sitemap*.xml.gz']) # rubocop:disable Style/StringConcatenation
+      location = SitemapGenerator::Sitemap.sitemap_location
+      dir = location.directory
+      base = SitemapGenerator::Sitemap.filename.to_s
+      return if base.empty?
+
+      FileUtils.rm(Dir[File.join(dir, "#{base}*.xml.gz"), File.join(dir, "#{base}*.xml")])
     end
 
     # Validate all keys in a hash match *valid keys, raising ArgumentError on a
@@ -184,13 +189,13 @@ module SitemapGenerator
       end
     end
 
-    # Return the bytesize length of the string.  Ruby 1.8.6 compatible.
-
     # Return the current time, using Time.zone if available (Rails), otherwise Time.now.
     def current_time
-      defined?(Time.zone) && Time.zone ? Time.zone.now : Time.now
+      zone = defined?(Time.zone) && Time.zone
+      zone ? zone.now : Time.now
     end
 
+    # Return the bytesize length of the string.  Ruby 1.8.6 compatible.
     def bytesize(string)
       string.respond_to?(:bytesize) ? string.bytesize : string.length
     end

@@ -71,6 +71,38 @@ RSpec.describe SitemapGenerator::Interpreter do
     end
   end
 
+  describe '#default_url_options' do
+    context 'when ActionController::Base is not defined' do
+      before { hide_const('ActionController::Base') }
+
+      it 'returns an empty hash' do
+        expect(interpreter.default_url_options).to eq({})
+      end
+    end
+
+    context 'when ActionController::Base is defined' do
+      let(:base_class) { double('ActionController::Base') }
+
+      before { stub_const('ActionController::Base', base_class) }
+
+      context 'when default_url_options has values' do
+        before { allow(base_class).to receive(:default_url_options).and_return({ trailing_slash: true }) }
+
+        it 'returns the configured options' do
+          expect(interpreter.default_url_options).to eq({ trailing_slash: true })
+        end
+      end
+
+      context 'when default_url_options returns nil' do
+        before { allow(base_class).to receive(:default_url_options).and_return(nil) }
+
+        it 'returns an empty hash' do
+          expect(interpreter.default_url_options).to eq({})
+        end
+      end
+    end
+  end
+
   describe 'eval' do
     it 'should yield the LinkSet to the block' do
       interpreter.eval(:yield_sitemap => true) do |sitemap|

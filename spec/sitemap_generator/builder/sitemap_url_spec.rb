@@ -132,18 +132,19 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:w3c_date, DateTime.new(0))).to eq('0000-01-01T00:00:00+00:00')
     end
 
+
     it 'returns strings unmodified' do
       expect(new_url.send(:w3c_date, '2010-01-01')).to eq('2010-01-01')
     end
 
-    it 'tries to convert to utc' do # rubocop:disable RSpec/MultipleExpectations
+    it 'tries to convert to utc' do
       time = Time.at(0)
       expect(time).to receive(:respond_to?).and_return(false) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
       expect(time).to receive(:respond_to?).and_return(true) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+00:00')
     end
 
-    it 'includes timezone for objects which do not respond to iso8601 or utc' do # rubocop:disable RSpec/MultipleExpectations
+    it 'includes timezone for objects which do not respond to iso8601 or utc' do
       time = Time.at(0)
       expect(time).to receive(:respond_to?).and_return(false) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
       expect(time).to receive(:respond_to?).and_return(false) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
@@ -157,7 +158,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   end
 
   describe 'yes_or_no' do
-    it 'recognizes 1 as yes' do
+    it 'recognizes truthy values' do
       expect(new_url.send(:yes_or_no, 1)).to eq('yes')
     end
 
@@ -205,11 +206,8 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:yes_or_no, false)).to eq('no')
     end
 
-    it 'raises on "dunno"' do
+    it 'raises on unrecognized strings' do
       expect { new_url.send(:yes_or_no, 'dunno') }.to raise_error(ArgumentError)
-    end
-
-    it 'raises on "yessir"' do
       expect { new_url.send(:yes_or_no, 'yessir') }.to raise_error(ArgumentError)
     end
   end
@@ -233,7 +231,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:format_float, '0.4')).to eq('0.4')
     end
 
-    it 'rounds 0.499999 up to 0.5' do
+    it 'rounds to one decimal place' do
       url = new_url
       expect(url.send(:format_float, 0.499999)).to eq('0.5')
     end
@@ -296,6 +294,13 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
         end
       end
     end
+
+    context 'when path contains non-ASCII characters' do
+      it 'percent-encodes non-ASCII characters in the loc' do
+        url = SitemapGenerator::Builder::SitemapUrl.new('/RFC3986ü中文', host: 'http://example.com', lastmod: nil)
+        expect(url[:loc]).to eq('http://example.com/RFC3986%C3%BC%E4%B8%AD%E6%96%87')
+      end
+    end
   end
 
   describe 'expires' do
@@ -310,6 +315,57 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       xml = url.to_xml
       doc = Nokogiri::XML("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml}</root>")
       expect(doc.css('url expires').text).to eq(url.send(:w3c_date, time))
+    end
+  end
+
+  describe 'alternates' do
+    let(:xml_doc) do
+      Nokogiri::XML(
+        "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' "         "xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{url.to_xml}</root>"
+      )
+    end
+    let(:alternate_link) { xml_doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first }
+
+    context 'when alternate href is a relative path' do
+      let(:url) do
+        described_class.new(
+          '/page',
+          host: 'http://example.com',
+          alternate: { href: '/es/page', lang: :es }
+        )
+      end
+
+      it 'prepends the host to the href' do
+        expect(alternate_link['href']).to eq('http://example.com/es/page')
+      end
+    end
+
+    context 'when host has a subpath prefix' do
+      let(:url) do
+        described_class.new(
+          '/page',
+          host: 'http://example.com/app/',
+          alternate: { href: '/es/page', lang: :es }
+        )
+      end
+
+      it 'resolves the href relative to the host root' do
+        expect(alternate_link['href']).to eq('http://example.com/es/page')
+      end
+    end
+
+    context 'when alternate href is already absolute' do
+      let(:url) do
+        described_class.new(
+          '/page',
+          host: 'http://example.com',
+          alternate: { href: 'https://es.example.com/page', lang: :es }
+        )
+      end
+
+      it 'leaves the href unchanged' do
+        expect(alternate_link['href']).to eq('https://es.example.com/page')
+      end
     end
   end
 end

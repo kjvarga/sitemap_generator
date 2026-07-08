@@ -69,7 +69,7 @@ module SitemapGenerator
             alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
         end
 
-        path = path.to_s.sub(%r{^/}, '')
+        path = encode_non_ascii(path.to_s.sub(%r{^/}, ''))
         loc  = path.empty? ? options[:host] : "#{options[:host].to_s.sub(%r{/$}, '')}/#{path}"
         merge!(
           priority: options[:priority],
@@ -82,7 +82,7 @@ module SitemapGenerator
           news: prepare_news(options[:news]),
           videos: options[:videos],
           mobile: options[:mobile],
-          alternates: options[:alternates],
+          alternates: prepare_alternates(options[:alternates], options[:host]),
           pagemap: options[:pagemap]
         )
       end
@@ -221,6 +221,20 @@ module SitemapGenerator
         news
       end
 
+      # Return an Array of alternate option Hashes with relative hrefs expanded to absolute URLs.
+      def prepare_alternates(alternates, host)
+        alternates.map do |alt|
+          next alt unless alt.is_a?(Hash)
+
+          href = alt[:href].to_s
+          if href.start_with?('/')
+            alt.merge(href: URI.join(host, href).to_s)
+          else
+            alt
+          end
+        end
+      end
+
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
       def prepare_images(images, host)
         images.delete_if { |key, _value| key[:loc].nil? }
@@ -283,7 +297,13 @@ module SitemapGenerator
         value.is_a?(String) ? value : format('%0.1f', value)
       end
 
-      # Return the current time, using Time.zone if available (Rails), otherwise Time.now.
+      private
+
+      # Percent-encode non-ASCII bytes in a path segment, leaving already-encoded %XX sequences untouched.
+      # Applied to paths only — not the host — IDN hostnames require punycode, not percent-encoding.
+      def encode_non_ascii(str)
+        str.gsub(/[^\x00-\x7F]/) { |c| c.bytes.map { |b| format('%%%02X', b) }.join }
+      end
     end
   end
 end
