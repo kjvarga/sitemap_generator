@@ -56,14 +56,11 @@ module SitemapGenerator
         @frozen = false      # rather than actually freeze, use this boolean
       end
 
-      # If a name has been reserved, use the last modified time from the file.
-      # Otherwise return nil.  We don't want to prematurely assign a name
-      # for this sitemap if one has not yet been reserved, because we may
-      # mess up the name-assignment sequence.
+      # Return the time the sitemap was written, or nil if it has not been written yet.
+      # Returning nil before write prevents prematurely reserving a name in the
+      # namer sequence.
       def lastmod
-        File.mtime(location.path) if location.reserved_name?
-      rescue StandardError
-        nil
+        @lastmod if location.reserved_name?
       end
 
       def empty?
@@ -149,6 +146,7 @@ module SitemapGenerator
         reserve_name
         @xml_content << @xml_wrapper_end
         @location.write(@xml_content, link_count)
+        @lastmod = SitemapGenerator::Utilities.current_time
         @xml_content = @xml_wrapper_end = ''
         @written = true
       end

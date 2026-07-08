@@ -35,22 +35,29 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   end
 
   describe 'lastmod' do
-    it 'should be the file last modified time' do
-      lastmod = (Time.now - 1209600)
+    it 'returns nil before the file has been written' do
       sitemap.location.reserve_name
-      expect(File).to receive(:mtime).with(sitemap.location.path).and_return(lastmod)
-      expect(sitemap.lastmod).to eq(lastmod)
-    end
-
-    it 'should be nil if the location has not reserved a name' do
-      expect(File).to receive(:mtime).never
       expect(sitemap.lastmod).to be_nil
     end
 
-    it 'should be nil if location has reserved a name and the file DNE' do
-      sitemap.location.reserve_name
-      expect(File).to receive(:mtime).and_raise(Errno::ENOENT)
+    it 'returns nil when the location has not reserved a name' do
       expect(sitemap.lastmod).to be_nil
+    end
+
+    context 'when the file has been written' do
+      let(:frozen_time) { Time.at(1_000_000).utc }
+
+      before do
+        allow(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
+        allow(sitemap.location).to receive(:write)
+        allow(FileUtils).to receive(:mkdir_p)
+      end
+
+      it 'calls Utilities.current_time during write and uses the result as lastmod' do
+        expect(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
+        sitemap.write
+        expect(sitemap.lastmod).to eq(frozen_time)
+      end
     end
   end
 

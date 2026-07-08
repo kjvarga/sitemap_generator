@@ -189,6 +189,12 @@ module SitemapGenerator
       end
     end
 
+    # Return the current time, using Time.zone if available (Rails), otherwise Time.now.
+    def current_time
+      zone = defined?(Time.zone) && Time.zone
+      zone ? zone.now : Time.now
+    end
+
     # Return the bytesize length of the string.  Ruby 1.8.6 compatible.
     def bytesize(string)
       string.respond_to?(:bytesize) ? string.bytesize : string.length
