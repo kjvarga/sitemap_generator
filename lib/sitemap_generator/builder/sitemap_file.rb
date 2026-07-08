@@ -145,8 +145,8 @@ module SitemapGenerator
         finalize! unless finalized?
         reserve_name
         @xml_content << @xml_wrapper_end
-        @lastmod = SitemapGenerator::Utilities.current_time
         @location.write(@xml_content, link_count)
+        @lastmod = SitemapGenerator::Utilities.current_time
         @xml_content = @xml_wrapper_end = ''
         @written = true
       end

@@ -188,6 +188,8 @@ RSpec.describe SitemapGenerator::Utilities do
 
     context 'when Time.zone is not defined (outside Rails)' do
       before do
+        next unless Time.respond_to?(:zone)
+
         Time.singleton_class.class_eval do
           alias_method :__zone_bak__, :zone
           undef_method :zone
@@ -195,6 +197,8 @@ RSpec.describe SitemapGenerator::Utilities do
       end
 
       after do
+        next unless Time.respond_to?(:__zone_bak__)
+
         Time.singleton_class.class_eval do
           alias_method :zone, :__zone_bak__
           remove_method :__zone_bak__
