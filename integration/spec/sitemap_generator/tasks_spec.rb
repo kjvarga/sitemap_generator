@@ -207,6 +207,31 @@ RSpec.describe 'SitemapGenerator' do
     end
   end
 
+  describe 'default_url_options' do
+    before do
+      clean_sitemap_files_from_rails_app
+      SitemapGenerator::Sitemap.reset!
+      @original_default_url_options = ActionController::Base.default_url_options.dup
+      ActionController::Base.default_url_options = { trailing_slash: true }
+    end
+
+    after do
+      ActionController::Base.default_url_options = @original_default_url_options
+    end
+
+    it 'URL helpers respect ActionController::Base.default_url_options' do
+      SitemapGenerator::Sitemap.create(default_host: 'http://test.local') do
+        add contents_path
+      end
+
+      Zlib::GzipReader.open(rails_path('public/sitemap.xml.gz')) do |gz|
+        xml = gz.read
+        expect(xml).to include('/contents/')
+      end
+    end
+  end
+
+
   describe 'external dependencies' do
     describe 'rails' do
       before do
