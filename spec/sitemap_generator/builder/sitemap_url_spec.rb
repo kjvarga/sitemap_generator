@@ -177,6 +177,15 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
     end
   end
 
+  describe '#initialize' do
+    context 'when path contains non-ASCII characters' do
+      it 'percent-encodes non-ASCII characters in the loc' do
+        url = SitemapGenerator::Builder::SitemapUrl.new('/RFC3986ü中文', :host => 'http://example.com', :lastmod => nil)
+        expect(url[:loc]).to eq('http://example.com/RFC3986%C3%BC%E4%B8%AD%E6%96%87')
+      end
+    end
+  end
+
   describe 'expires' do
     let(:url)  { SitemapGenerator::Builder::SitemapUrl.new('/path', :host => 'http://example.com', :expires => time) }
     let(:time) { Time.at(0).utc }
