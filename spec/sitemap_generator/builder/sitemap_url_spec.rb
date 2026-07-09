@@ -244,54 +244,15 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
 
   describe '#initialize' do
     context 'lastmod' do
-      context 'when Time.zone is available' do
-        let(:zone_now) { Time.at(1_000_000).utc }
-        let(:mock_zone) { Struct.new(:now).new(zone_now) }
+      let(:frozen_time) { Time.at(1_000_000).utc }
 
-        before do
-          allow(Time).to receive(:zone).and_return(mock_zone)
-        end
-
-        it 'uses Time.zone.now as the default lastmod' do
-          url = described_class.new('/home', host: 'http://example.com')
-          expect(url[:lastmod]).to eq(zone_now)
-        end
+      before do
+        allow(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
       end
 
-      context 'when Time.zone is nil' do
-        before do
-          allow(Time).to receive(:zone).and_return(nil)
-        end
-
-        it 'falls back to Time.now as the default lastmod' do
-          frozen = Time.at(999_999).utc
-          allow(Time).to receive(:now).and_return(frozen)
-          url = described_class.new('/home', host: 'http://example.com')
-          expect(url[:lastmod]).to eq(frozen)
-        end
-      end
-
-      context 'when Time.zone is not defined (outside Rails)' do
-        before do
-          Time.singleton_class.class_eval do
-            alias_method :__zone_bak__, :zone
-            undef_method :zone
-          end
-        end
-
-        after do
-          Time.singleton_class.class_eval do
-            alias_method :zone, :__zone_bak__
-            remove_method :__zone_bak__
-          end
-        end
-
-        it 'falls back to Time.now' do
-          frozen = Time.at(888_888).utc
-          allow(Time).to receive(:now).and_return(frozen)
-          url = described_class.new('/home', host: 'http://example.com')
-          expect(url[:lastmod]).to eq(frozen)
-        end
+      it 'defaults to Utilities.current_time' do
+        url = described_class.new('/home', host: 'http://example.com')
+        expect(url[:lastmod]).to eq(frozen_time)
       end
     end
 
