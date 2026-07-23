@@ -52,7 +52,7 @@ module SitemapGenerator
           options,
           priority: 0.5,
           changefreq: 'weekly',
-          lastmod: Time.now,
+          lastmod: SitemapGenerator::Utilities.current_time,
           images: [],
           news: {},
           videos: [],

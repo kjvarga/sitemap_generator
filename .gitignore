@@ -12,7 +12,7 @@ tmp/**/*
 *.swp
 
 Gemfile.lock
-gemfiles/*.lock
+gemfiles/
 
 integration/Gemfile.lock
 integration/gemfiles/*.lock
@@ -21,3 +21,5 @@ integration/gemfiles/*.lock
 !/config/.keep
 
 .claude
+.cursor
+.vscode

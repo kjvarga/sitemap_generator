@@ -927,4 +927,28 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls.sitemap_location
     end
   end
+
+  describe '#add_default_links' do
+    let(:frozen_time) { Time.at(1_000_000).utc }
+
+    before do
+      allow(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
+    end
+
+    context 'when include_root is true' do
+      it 'adds the root URL with lastmod and priority set' do
+        expect(ls).to receive(:add).with('/', hash_including(lastmod: frozen_time, priority: 1.0))
+        ls.send(:add_default_links)
+      end
+    end
+
+    context 'when include_index is true' do
+      let(:ls) { SitemapGenerator::LinkSet.new(default_host: default_host, include_index: true, include_root: false) }
+
+      it 'adds the sitemap index with lastmod and priority set' do
+        expect(ls).to receive(:add).with(ls.sitemap_index, hash_including(lastmod: frozen_time, priority: 1.0))
+        ls.send(:add_default_links)
+      end
+    end
+  end
 end
