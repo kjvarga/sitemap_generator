@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Fix uninitialized constant ActiveSupport::LoggerThreadSafeLevel::Logger
 require 'logger'
 
@@ -45,7 +47,7 @@ RSpec.configure do |config|
 end
 
 module Helpers
-  extend self
+  module_function
 
   # Invoke and then re-enable the task so it can be called multiple times.
   # KJV: Tasks are only being run once despite being re-enabled.
@@ -57,8 +59,6 @@ module Helpers
     Rake::Task[task.to_s].reenable
   end
 end
-
-puts "Running RSpec with Rails version: #{Rails.version}"
 
 # Load our own gem
 require 'sitemap_generator/tasks' # Combusition fails to load these tasks

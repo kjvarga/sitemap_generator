@@ -231,7 +231,6 @@ RSpec.describe 'SitemapGenerator' do
     end
   end
 
-
   describe 'external dependencies' do
     describe 'rails' do
       before do

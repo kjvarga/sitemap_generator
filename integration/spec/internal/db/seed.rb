@@ -1,3 +1,7 @@
-(1..10).each do |i|
-  Content.create!(:title => "content #{i}")
-end if Content.count == 0
+# frozen_string_literal: true
+
+if Content.none?
+  (1..10).each do |i|
+    Content.create!(title: "content #{i}")
+  end
+end

@@ -1,16 +1,17 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'SitemapGenerator' do
-  it 'should not include media element unless provided' do
+  it 'does not include media element unless provided' do
     xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-      :host => 'http://www.example.com',
-      :alternates => [
-        {
-          :lang => 'de',
-          :href => 'http://www.example.de/link_with_alternate.html'
-        }
-      ]
-    ).to_xml
+                                                             host: 'http://www.example.com',
+                                                             alternates: [
+                                                               {
+                                                                 lang: 'de',
+                                                                 href: 'http://www.example.de/link_with_alternate.html'
+                                                               }
+                                                             ]).to_xml
 
     doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
     url = doc.css('url')
@@ -24,15 +25,14 @@ RSpec.describe 'SitemapGenerator' do
     expect(alternate.attribute('media')).to be_nil
   end
 
-  it 'should not include hreflang element unless provided' do
+  it 'does not include hreflang element unless provided' do
     xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-                                                             :host => 'http://www.example.com',
-                                                             :alternates => [
-                                                                 {
-                                                                     :href => 'http://www.example.de/link_with_alternate.html'
-                                                                 }
-                                                             ]
-    ).to_xml
+                                                             host: 'http://www.example.com',
+                                                             alternates: [
+                                                               {
+                                                                 href: 'http://www.example.de/link_with_alternate.html'
+                                                               }
+                                                             ]).to_xml
 
     doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
     url = doc.css('url')
@@ -45,17 +45,16 @@ RSpec.describe 'SitemapGenerator' do
     expect(alternate.attribute('hreflang')).to be_nil
   end
 
-  it 'should add alternate links to sitemap' do
+  it 'adds alternate links to sitemap' do
     xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-      :host => 'http://www.example.com',
-      :alternates => [
-        {
-          :lang => 'de',
-          :href => 'http://www.example.de/link_with_alternate.html',
-          :media => 'only screen and (max-width: 640px)'
-        }
-      ]
-    ).to_xml
+                                                             host: 'http://www.example.com',
+                                                             alternates: [
+                                                               {
+                                                                 lang: 'de',
+                                                                 href: 'http://www.example.de/link_with_alternate.html',
+                                                                 media: 'only screen and (max-width: 640px)'
+                                                               }
+                                                             ]).to_xml
 
     doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
     url = doc.css('url')
@@ -70,18 +69,17 @@ RSpec.describe 'SitemapGenerator' do
     expect(alternate.attribute('media').value).to eq('only screen and (max-width: 640px)')
   end
 
-  it 'should add alternate links to sitemap with rel nofollow' do
+  it 'adds alternate links to sitemap with rel nofollow' do
     xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-      :host => 'http://www.example.com',
-      :alternates => [
-        {
-          :lang => 'de',
-          :href => 'http://www.example.de/link_with_alternate.html',
-          :nofollow => true,
-          :media => 'only screen and (max-width: 640px)'
-        }
-      ]
-    ).to_xml
+                                                             host: 'http://www.example.com',
+                                                             alternates: [
+                                                               {
+                                                                 lang: 'de',
+                                                                 href: 'http://www.example.de/link_with_alternate.html',
+                                                                 nofollow: true,
+                                                                 media: 'only screen and (max-width: 640px)'
+                                                               }
+                                                             ]).to_xml
 
     doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
     url = doc.css('url')
@@ -95,6 +93,4 @@ RSpec.describe 'SitemapGenerator' do
     expect(alternate.attribute('href').value).to eq('http://www.example.de/link_with_alternate.html')
     expect(alternate.attribute('media').value).to eq('only screen and (max-width: 640px)')
   end
-
 end
-

@@ -1,36 +1,41 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
-  let(:location) { SitemapGenerator::SitemapLocation.new(:namer => SitemapGenerator::SimpleNamer.new(:sitemap, :start => 2, :zero => 1), :public_path => 'tmp/', :sitemaps_path => 'test/', :host => 'http://example.com/') }
-  let(:sitemap)  { SitemapGenerator::Builder::SitemapFile.new(location) }
+  let(:location) do
+    SitemapGenerator::SitemapLocation.new(namer: SitemapGenerator::SimpleNamer.new(:sitemap, start: 2, zero: 1),
+                                          public_path: 'tmp/', sitemaps_path: 'test/', host: 'http://example.com/')
+  end
+  let(:sitemap) { SitemapGenerator::Builder::SitemapFile.new(location) }
 
-  it 'should have a default namer' do
+  it 'has a default namer' do
     sitemap = SitemapGenerator::Builder::SitemapFile.new
     expect(sitemap.location.filename).to eq('sitemap1.xml.gz')
   end
 
-  it 'should return the name of the sitemap file' do
+  it 'returns the name of the sitemap file' do
     expect(sitemap.location.filename).to eq('sitemap1.xml.gz')
   end
 
-  it 'should return the URL' do
+  it 'returns the URL' do
     expect(sitemap.location.url).to eq('http://example.com/test/sitemap1.xml.gz')
   end
 
-  it 'should return the path' do
+  it 'returns the path' do
     expect(sitemap.location.path).to eq(File.expand_path('tmp/test/sitemap1.xml.gz'))
   end
 
-  it 'should be empty' do
+  it 'is empty' do
     expect(sitemap.empty?).to be(true)
     expect(sitemap.link_count).to eq(0)
   end
 
-  it 'should not be finalized' do
+  it 'is not finalized' do
     expect(sitemap.finalized?).to be(false)
   end
 
-  it 'should raise if no default host is set' do
+  it 'raises if no default host is set' do
     expect { SitemapGenerator::Builder::SitemapFile.new.location.url }.to raise_error(SitemapGenerator::SitemapError)
   end
 
@@ -70,23 +75,23 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       new_sitemap
     end
 
-    it 'should inherit the same options' do
+    it 'inherits the same options' do
       # The name is the same because the original sitemap was not finalized
       expect(new_sitemap.location.url).to eq('http://example.com/test/sitemap1.xml.gz')
       expect(new_sitemap.location.path).to eq(File.expand_path('tmp/test/sitemap1.xml.gz'))
     end
 
-    it 'should not share the same location instance' do
+    it 'does not share the same location instance' do
       expect(new_sitemap.location).not_to be(original_sitemap.location)
     end
 
-    it 'should inherit the same namer instance' do
+    it 'inherits the same namer instance' do
       expect(new_sitemap.location.namer).to eq(original_sitemap.location.namer)
     end
   end
 
   describe 'reserve_name' do
-    it 'should reserve the name from the location' do
+    it 'reserves the name from the location' do
       expect(sitemap.reserved_name?).to be(false)
       expect(sitemap.location).to receive(:reserve_name).and_return('name')
       sitemap.reserve_name
@@ -94,7 +99,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       expect(sitemap.instance_variable_get(:@reserved_name)).to eq('name')
     end
 
-    it 'should be safe to call multiple times' do
+    it 'is safe to call multiple times' do
       expect(sitemap.location).to receive(:reserve_name).and_return('name').once
       sitemap.reserve_name
       sitemap.reserve_name
@@ -102,15 +107,17 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   end
 
   describe 'add' do
-    it 'should use the host provided' do
-      url = SitemapGenerator::Builder::SitemapUrl.new('/one', :host => 'http://newhost.com/')
-      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new).with('/one', { :host => 'http://newhost.com' }).and_return(url)
-      sitemap.add '/one', :host => 'http://newhost.com'
+    it 'uses the host provided' do
+      url = SitemapGenerator::Builder::SitemapUrl.new('/one', host: 'http://newhost.com/')
+      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
+        .with('/one', { host: 'http://newhost.com' }).and_return(url)
+      sitemap.add '/one', host: 'http://newhost.com'
     end
 
-    it 'should use the host from the location' do
-      url = SitemapGenerator::Builder::SitemapUrl.new('/one', :host => 'http://example.com/')
-      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new).with('/one', { :host => 'http://example.com/' }).and_return(url)
+    it 'uses the host from the location' do
+      url = SitemapGenerator::Builder::SitemapUrl.new('/one', host: 'http://example.com/')
+      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
+        .with('/one', { host: 'http://example.com/' }).and_return(url)
       sitemap.add '/one'
     end
   end

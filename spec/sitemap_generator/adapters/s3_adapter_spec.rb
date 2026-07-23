@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'fog-aws'
 
@@ -6,23 +8,20 @@ RSpec.describe SitemapGenerator::S3Adapter do
 
   let(:location) do
     SitemapGenerator::SitemapLocation.new(
-      :namer => SitemapGenerator::SimpleNamer.new(:sitemap),
-      :public_path => 'tmp/',
-      :sitemaps_path => 'test/',
-      :host => 'http://example.com/')
+      namer: SitemapGenerator::SimpleNamer.new(:sitemap),
+      public_path: 'tmp/',
+      sitemaps_path: 'test/',
+      host: 'http://example.com/'
+    )
   end
   let(:directory) do
     double('directory',
-      :files => double('files', :create => nil)
-    )
+           files: double('files', create: nil))
   end
   let(:directories) do
     double('directories',
-      :directories =>
-        double('directory class',
-          :new => directory
-        )
-    )
+           directories: double('directory class',
+                               new: directory))
   end
   let(:options) do
     {
@@ -34,7 +33,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
       fog_region: 'fog_region',
       fog_path_style: 'fog_path_style',
       fog_storage_options: {},
-      fog_public: false,
+      fog_public: false
     }
   end
 
@@ -57,16 +56,16 @@ RSpec.describe SitemapGenerator::S3Adapter do
       expect(adapter.instance_variable_get(:@fog_region)).to eq('fog_region')
       expect(adapter.instance_variable_get(:@fog_path_style)).to eq('fog_path_style')
       expect(adapter.instance_variable_get(:@fog_storage_options)).to eq(options[:fog_storage_options])
-      expect(adapter.instance_variable_get(:@fog_public)).to eq(false)
+      expect(adapter.instance_variable_get(:@fog_public)).to be(false)
     end
 
-    context 'fog_public' do
+    context 'when fog_public is nil' do
       let(:options) do
         { fog_public: nil }
       end
 
       it 'defaults to true' do
-        expect(adapter.instance_variable_get(:@fog_public)).to eq(true)
+        expect(adapter.instance_variable_get(:@fog_public)).to be(true)
       end
 
       context 'when a string value' do
@@ -75,7 +74,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
         end
 
         it 'converts to a boolean' do
-          expect(adapter.instance_variable_get(:@fog_public)).to eq(false)
+          expect(adapter.instance_variable_get(:@fog_public)).to be(false)
         end
       end
     end
@@ -88,7 +87,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
         body: instance_of(File),
         key: 'test/sitemap.xml.gz',
         public: false,
-        content_type: 'application/x-gzip',
+        content_type: 'application/x-gzip'
       )
       adapter.write(location, 'payload')
     end

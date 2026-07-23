@@ -178,8 +178,7 @@ RSpec.describe SitemapGenerator::Utilities do
       let(:frozen) { Time.at(999_999).utc }
 
       before do
-        allow(Time).to receive(:zone).and_return(nil)
-        allow(Time).to receive(:now).and_return(frozen)
+        allow(Time).to receive_messages(zone: nil, now: frozen)
       end
 
       it 'returns Time.now' do

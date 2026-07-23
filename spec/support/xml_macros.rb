@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module XmlMacros
   def gzipped_xml_file_should_validate_against_schema(xml_gz_filename, schema_name)
     Zlib::GzipReader.open(xml_gz_filename) do |xml_file|
@@ -10,7 +12,7 @@ module XmlMacros
   # `schema_name` gives the name of the schema file to validate against.  The schema
   # file is looked for in `spec/support/schemas/<schema_name>.xsd`.
   def xml_data_should_validate_against_schema(xml, schema_name)
-    xml = xml.is_a?(String) ? xml : xml.to_s
+    xml = xml.to_s unless xml.is_a?(String)
     doc = Nokogiri::XML(xml)
     schema_file = File.join(File.dirname(__FILE__), 'schemas', "#{schema_name}.xsd")
     schema = Nokogiri::XML::Schema File.read(schema_file)
@@ -40,8 +42,8 @@ module XmlMacros
   #   This validates the given XML using the spec/support/schemas/sitemap-video.xsd`
   #   schema.  The XML namespace `xmlns:video='http://www.google.com/schemas/sitemap-video/1.1'` is automatically
   #   added to the root element for you.
-  def xml_fragment_should_validate_against_schema(xml, schema_name, xmlns={})
-    xml = xml.is_a?(String) ? xml : xml.to_s
+  def xml_fragment_should_validate_against_schema(xml, schema_name, xmlns = {})
+    xml = xml.to_s unless xml.is_a?(String)
     doc = Nokogiri::XML(xml)
     doc.root.send(:[]=, *xmlns.first)
     xml_data_should_validate_against_schema(doc, schema_name)

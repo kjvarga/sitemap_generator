@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Load simplecov
 require 'simplecov'
 SimpleCov.start do
