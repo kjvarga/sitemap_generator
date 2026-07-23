@@ -161,6 +161,7 @@ RSpec.describe SitemapGenerator::Utilities do
       end
     end
   end
+
   describe '.current_time' do
     context 'when Time.zone is available' do
       let(:zone_now) { Time.at(1_000_000).utc }
