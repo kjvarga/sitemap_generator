@@ -927,36 +927,28 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls.sitemap_location
     end
   end
+
   describe '#add_default_links' do
     let(:frozen_time) { Time.at(1_000_000).utc }
 
     before do
       allow(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
-      allow(ls.sitemap.location).to receive(:write)
-      allow(ls.sitemap_index.location).to receive(:write)
-      allow(FileUtils).to receive(:mkdir_p)
     end
 
     context 'when include_root is true' do
-      it 'sets lastmod on the root URL using Utilities.current_time' do
-        added = []
-        allow(ls.sitemap).to receive(:add) { |link, opts| added << opts; nil }
+      it 'adds the root URL with lastmod and priority set' do
+        expect(ls).to receive(:add).with('/', hash_including(lastmod: frozen_time, priority: 1.0))
         ls.send(:add_default_links)
-        expect(added.first[:lastmod]).to eq(frozen_time)
       end
     end
 
-    context 'when include_index is true and SitemapIndexFile is not yet written' do
+    context 'when include_index is true' do
       let(:ls) { SitemapGenerator::LinkSet.new(default_host: default_host, include_index: true, include_root: false) }
 
-      it 'sets lastmod on the index URL using Utilities.current_time even when sitemap_index.lastmod is nil' do
-        expect(ls.sitemap_index.lastmod).to be_nil
-        added = []
-        allow(ls.sitemap).to receive(:add) { |link, opts| added << opts; nil }
+      it 'adds the sitemap index with lastmod and priority set' do
+        expect(ls).to receive(:add).with(ls.sitemap_index, hash_including(lastmod: frozen_time, priority: 1.0))
         ls.send(:add_default_links)
-        expect(added.first[:lastmod]).to eq(frozen_time)
       end
     end
   end
-
 end
