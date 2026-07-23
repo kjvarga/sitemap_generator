@@ -257,7 +257,7 @@ RSpec.describe SitemapGenerator::LinkSet do
 
     it 'does not modify the index when the filename changes' do
       @ls.filename = :newname
-      expect(@ls.sitemap.location.filename).to match(/newname/)
+      expect(@ls.sitemap.location.filename).to include('newname')
       @ls.sitemap_index.location.filename.include?('sitemap')
     end
 
@@ -320,7 +320,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       it 'sets the value' do
         group = ls.group(filename: :xxx)
         expect(group.filename).to eq(:xxx)
-        expect(group.sitemap.location.filename).to match(/xxx/)
+        expect(group.sitemap.location.filename).to include('xxx')
       end
     end
 
@@ -392,7 +392,7 @@ RSpec.describe SitemapGenerator::LinkSet do
         group = ls.group(namer: namer)
         expect(group.namer).to eq(namer)
         expect(group.sitemap.location.namer).to eq(namer)
-        expect(group.sitemap.location.filename).to match(/xxx/)
+        expect(group.sitemap.location.filename).to include('xxx')
       end
     end
 
@@ -499,7 +499,7 @@ RSpec.describe SitemapGenerator::LinkSet do
     it 'sets the filename' do
       ls.create(filename: :xxx)
       expect(ls.filename).to eq(:xxx)
-      expect(ls.sitemap.location.filename).to match(/xxx/)
+      expect(ls.sitemap.location.filename).to include('xxx')
     end
 
     it 'sets verbose' do
@@ -533,7 +533,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls.create(namer: namer)
       expect(ls.namer).to eq(namer)
       expect(ls.sitemap.location.namer).to eq(namer)
-      expect(ls.sitemap.location.filename).to match(/xxx/)
+      expect(ls.sitemap.location.filename).to include('xxx')
     end
 
     it 'supports both namer and filename options' do
