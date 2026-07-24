@@ -287,7 +287,7 @@ RSpec.describe SitemapGenerator::LinkSet do
         expect(ls.group.instance_variable_get(:@protect_index)).to be(true)
       end
 
-      it 'does not allow chaning the public_path' do
+      it 'does not allow changing the public_path' do
         expect(ls.group(public_path: 'new/path/').public_path.to_s).to eq(ls.public_path.to_s)
       end
     end
@@ -409,22 +409,24 @@ RSpec.describe SitemapGenerator::LinkSet do
       end
     end
 
-    describe 'should share the current sitemap' do
-      it 'if only default_host is passed' do
+    context 'when only default_host is passed' do
+      it 'shares the current sitemap and uses the new host' do
         group = ls.group(default_host: 'http://newhost.com')
         expect(group.sitemap).to eq(ls.sitemap)
         expect(group.sitemap.location.host).to eq('http://newhost.com')
       end
     end
 
-    describe 'should not share the current sitemap' do
+    describe 'when a new-location option is present' do
       {
         filename: :xxx,
         sitemaps_path: 'en/',
         namer: SitemapGenerator::SimpleNamer.new(:sitemap)
       }.each do |key, value|
-        it "if #{key} is present" do
-          expect(ls.group(key => value).sitemap).not_to eq(ls.sitemap)
+        context "when #{key} is present" do
+          it 'does not share the current sitemap' do
+            expect(ls.group(key => value).sitemap).not_to eq(ls.sitemap)
+          end
         end
       end
     end
@@ -613,7 +615,7 @@ RSpec.describe SitemapGenerator::LinkSet do
   describe 'include_index?' do
     let(:sitemaps_host) { 'http://amazon.com' }
 
-    it 'is true if no sitemaps_host set, or it is the same' do
+    it 'is true when sitemaps_host is unset or matches default_host' do
       ls.include_index = true
       ls.sitemaps_host = default_host
       expect(ls.include_index?).to be(true)
@@ -727,7 +729,7 @@ RSpec.describe SitemapGenerator::LinkSet do
         ls.add_to_index('/home')
       end
 
-      it 'is the default_host if no sitemaps_host set' do
+      it 'is the default_host when sitemaps_host is not set' do
         expect(ls.sitemap_index).to receive(:add).with('/home', { host: ls.default_host })
         ls.add_to_index('/home')
       end

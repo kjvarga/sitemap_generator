@@ -493,7 +493,7 @@ RSpec.describe 'SitemapGenerator' do
       end
     end
 
-    describe 'when :all_but_first' do
+    context 'when compress is :all_but_first' do
       let(:compress) { :all_but_first }
 
       it 'does not compress first file' do
