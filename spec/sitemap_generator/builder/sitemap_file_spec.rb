@@ -126,7 +126,6 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
     let(:link_count) { 10 }
 
     before do
-      expect(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
       sitemap.instance_variable_set(:@link_count, link_count)
     end
 
@@ -134,6 +133,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       let(:max_sitemap_links) { link_count + 1 }
 
       it 'returns true' do
+        expect(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
         expect(sitemap.file_can_fit?(1)).to be(true)
       end
     end
@@ -142,6 +142,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       let(:max_sitemap_links) { link_count }
 
       it 'returns true' do
+        expect(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
         expect(sitemap.file_can_fit?(1)).to be(false)
       end
     end
@@ -155,11 +156,8 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
     end
 
     context 'when present in the location' do
-      before do
-        expect(sitemap.location).to receive(:[]).with(:max_sitemap_links).and_return(10)
-      end
-
       it 'returns the value from the location' do
+        expect(sitemap.location).to receive(:[]).with(:max_sitemap_links).and_return(10)
         expect(sitemap.max_sitemap_links).to eq(10)
       end
     end

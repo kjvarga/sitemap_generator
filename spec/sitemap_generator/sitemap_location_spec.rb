@@ -198,14 +198,11 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   describe 'write' do
     let(:options) { { public_path: 'public/', verbose: verbose } }
 
-    before do
-      expect(location.adapter).to receive(:write)
-    end
-
     context 'when verbose is true' do
       let(:verbose) { true }
 
       it 'outputs summary line' do
+        expect(location.adapter).to receive(:write)
         expect(location).to receive(:summary)
         location.write('data', 1)
       end
@@ -215,6 +212,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
       let(:verbose) { false }
 
       it 'does not output summary line' do
+        expect(location.adapter).to receive(:write)
         expect(location).not_to receive(:summary)
         location.write('data', 1)
       end
@@ -242,9 +240,8 @@ RSpec.describe SitemapGenerator::SitemapLocation do
       let(:namer)   { SitemapGenerator::SimpleNamer.new(:sitemap) }
       let(:options) { { namer: namer, compress: :all_but_first } }
 
-      before { expect(namer).to receive(:start?).and_return(true) }
-
       it 'strips gz extension' do
+        expect(namer).to receive(:start?).and_return(true)
         expect(location.filename).to eq('sitemap.xml')
       end
     end
@@ -253,9 +250,8 @@ RSpec.describe SitemapGenerator::SitemapLocation do
       let(:namer)   { SitemapGenerator::SimpleNamer.new(:sitemap) }
       let(:options) { { namer: namer, compress: :all_but_first } }
 
-      before { expect(namer).to receive(:start?).and_return(false) }
-
       it 'does not strip gz extension' do
+        expect(namer).to receive(:start?).and_return(false)
         expect(location.filename).to eq('sitemap.xml.gz')
       end
     end

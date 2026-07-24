@@ -29,10 +29,10 @@ RSpec.describe SitemapGenerator::Application do
   describe 'with Rails' do
     before do
       @root = '/test'
-      expect(Rails).to receive(:root).and_return(@root).at_least(:once)
     end
 
     it 'uses the Rails.root' do
+      expect(Rails).to receive(:root).and_return(@root).at_least(:once)
       expect(@app.root).to be_a(Pathname)
       expect(@app.root.to_s).to eq(@root)
       expect(@app.root.join('public/').to_s).to eq(File.join(@root, 'public/'))

@@ -55,9 +55,6 @@ RSpec/SpecFilePathFormat:
 RSpec/VerifiedDoubles:
   Enabled: false # TODO: follow-up -- migrate plain doubles to instance_double/class_double (13 instances, 4 files)
 
-RSpec/ExpectInHook:
-  Enabled: false # TODO: follow-up -- move expectations out of before/after hooks into the example (9 instances, 5 files)
-
 RSpec/BeforeAfterAll:
   Enabled: false # TODO: follow-up -- review before(:all)/after(:all) for state-leak risk (8 instances, 3 files)
 
@@ -88,13 +85,3 @@ Style/Documentation:
     - integration/spec/**/*
   # Permanent, not follow-up debt: doc comments on test scaffolding/dummy-app fixtures
   # add no value. Scoped here (not Enabled: false) so lib/ keeps full enforcement.
-
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - spec/sitemap_generator/adapters/active_storage_adapter_spec.rb
-  # TODO: follow-up -- inline stub-class constant used for the ActiveStorage adapter double.
-
-RSpec/LeakyConstantDeclaration:
-  Exclude:
-    - spec/sitemap_generator/adapters/active_storage_adapter_spec.rb
-  # TODO: follow-up -- same stub double as Lint/ConstantDefinitionInBlock above.
