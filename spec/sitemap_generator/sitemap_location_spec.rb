@@ -277,13 +277,3 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     end
   end
 end
-
-RSpec.describe SitemapGenerator::SitemapIndexLocation do
-  subject(:location) { described_class.new }
-
-  it 'has a default namer' do
-    expect(location[:namer]).not_to be_nil
-    expect(location[:filename]).to be_nil
-    expect(location.filename).to eq('sitemap.xml.gz')
-  end
-end

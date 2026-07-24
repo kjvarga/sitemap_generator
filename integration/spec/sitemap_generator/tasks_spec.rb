@@ -233,14 +233,7 @@ RSpec.describe 'SitemapGenerator' do
 
   describe 'external dependencies' do
     describe 'rails' do
-      before do
-        @rails = Rails
-        Object.send(:remove_const, :Rails)
-      end
-
-      after do
-        Object::Rails = @rails
-      end
+      before { hide_const('Rails') }
 
       it 'works outside of Rails' do
         expect(defined?(Rails)).to be_nil

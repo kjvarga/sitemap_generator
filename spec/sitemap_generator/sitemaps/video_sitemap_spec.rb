@@ -53,30 +53,98 @@ RSpec.describe 'SitemapGenerator' do
 
   # Validate the contents of the video element
   def validate_video_element(video_doc, video_options)
+    validate_video_basic_fields(video_doc, video_options)
+    validate_video_stats_and_dates(video_doc, video_options)
+    validate_video_player(video_doc, video_options)
+    validate_video_uploader(video_doc, video_options)
+    validate_video_price(video_doc, video_options)
+    xml_fragment_should_validate_against_schema(video_doc, 'sitemap-video', 'xmlns:video' => SitemapGenerator::SCHEMAS['video'])
+  end
+
+  def validate_video_basic_fields(video_doc, video_options)
+    validate_video_thumbnail(video_doc, video_options)
+    validate_video_title_and_content(video_doc, video_options)
+    validate_video_gallery(video_doc, video_options)
+    validate_video_category_and_tags(video_doc, video_options)
+  end
+
+  def validate_video_stats_and_dates(video_doc, video_options)
+    validate_video_stats(video_doc, video_options)
+    validate_video_rating(video_doc, video_options)
+    validate_video_dates(video_doc, video_options)
+  end
+
+  def validate_video_player(video_doc, video_options)
+    validate_video_player_loc(video_doc, video_options)
+    validate_video_player_embed(video_doc, video_options)
+    validate_video_player_autoplay(video_doc, video_options)
+  end
+
+  def validate_video_thumbnail(video_doc, video_options)
     expect(video_doc.at_xpath('video:thumbnail_loc').text).to eq(video_options[:thumbnail_loc])
     expect(video_doc.at_xpath('video:thumbnail_loc').text).to eq(video_options[:thumbnail_loc])
-    expect(video_doc.at_xpath('video:gallery_loc').text).to   eq(video_options[:gallery_loc])
+  end
+
+  def validate_video_title_and_content(video_doc, video_options)
+    expect(video_doc.at_xpath('video:title').text).to       eq(video_options[:title])
+    expect(video_doc.at_xpath('video:content_loc').text).to eq(video_options[:content_loc])
+  end
+
+  def validate_video_gallery(video_doc, video_options)
+    expect(video_doc.at_xpath('video:gallery_loc').text).to eq(video_options[:gallery_loc])
     expect(video_doc.at_xpath('video:gallery_loc').attribute('title').text).to eq(video_options[:gallery_title])
-    expect(video_doc.at_xpath('video:title').text).to         eq(video_options[:title])
-    expect(video_doc.at_xpath('video:view_count').text).to    eq(video_options[:view_count].to_s)
-    expect(video_doc.at_xpath('video:duration').text).to      eq(video_options[:duration].to_s)
+  end
+
+  def validate_video_category_and_tags(video_doc, video_options)
+    expect(video_doc.at_xpath('video:category').text).to    eq(video_options[:category])
+    expect(video_doc.xpath('video:tag').collect(&:text)).to eq(video_options[:tags])
+  end
+
+  def validate_video_stats(video_doc, video_options)
+    expect(video_doc.at_xpath('video:view_count').text).to eq(video_options[:view_count].to_s)
+    expect(video_doc.at_xpath('video:duration').text).to   eq(video_options[:duration].to_s)
+  end
+
+  def validate_video_rating(video_doc, video_options)
     expect(video_doc.at_xpath('video:rating').text).to eq(format('%0.1f', video_options[:rating]))
-    expect(video_doc.at_xpath('video:content_loc').text).to   eq(video_options[:content_loc])
-    expect(video_doc.at_xpath('video:category').text).to      eq(video_options[:category])
-    expect(video_doc.xpath('video:tag').collect(&:text)).to   eq(video_options[:tags])
+  end
+
+  def validate_video_dates(video_doc, video_options)
     expect(video_doc.at_xpath('video:expiration_date').text).to  eq(video_options[:expiration_date].iso8601)
     expect(video_doc.at_xpath('video:publication_date').text).to eq(video_options[:publication_date].iso8601)
+  end
+
+  def validate_video_player_loc(video_doc, video_options)
     expect(video_doc.at_xpath('video:player_loc').text).to eq(video_options[:player_loc])
+  end
+
+  def validate_video_player_embed(video_doc, video_options)
     expected_allow_embed = video_options[:allow_embed] ? 'yes' : 'no'
     expect(video_doc.at_xpath('video:player_loc').attribute('allow_embed').text).to eq(expected_allow_embed)
-    expect(video_doc.at_xpath('video:player_loc').attribute('autoplay').text).to    eq(video_options[:autoplay])
+  end
+
+  def validate_video_player_autoplay(video_doc, video_options)
+    expect(video_doc.at_xpath('video:player_loc').attribute('autoplay').text).to eq(video_options[:autoplay])
+  end
+
+  def validate_video_uploader(video_doc, video_options)
     expect(video_doc.at_xpath('video:uploader').text).to eq(video_options[:uploader])
     expect(video_doc.at_xpath('video:uploader').attribute('info').text).to eq(video_options[:uploader_info])
+  end
+
+  def validate_video_price(video_doc, video_options)
+    validate_video_price_amount(video_doc, video_options)
+    validate_video_price_type_and_currency(video_doc, video_options)
+  end
+
+  def validate_video_price_amount(video_doc, video_options)
     expect(video_doc.at_xpath('video:price').text).to eq(video_options[:price].to_s)
     expect(video_doc.at_xpath('video:price').attribute('resolution').text).to eq(video_options[:price_resolution].to_s)
+  end
+
+  def validate_video_price_type_and_currency(video_doc, video_options)
     expect(video_doc.at_xpath('video:price').attribute('type').text).to eq(video_options[:price_type].to_s)
     expect(video_doc.at_xpath('video:price').attribute('currency').text).to eq(video_options[:price_currency].to_s)
-    xml_fragment_should_validate_against_schema(video_doc, 'sitemap-video', 'xmlns:video' => SitemapGenerator::SCHEMAS['video'])
   end
 
   it 'adds a valid video sitemap element' do
