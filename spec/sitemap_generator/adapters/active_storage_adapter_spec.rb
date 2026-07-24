@@ -21,9 +21,11 @@ RSpec.describe 'SitemapGenerator::ActiveStorageAdapter' do
       end
 
       class FakeScope
+        # rubocop:disable Naming/PredicateMethod -- mimics ActiveRecord::Relation's real method name
         def destroy_all
           true
         end
+        # rubocop:enable Naming/PredicateMethod
       end
     end
   end
