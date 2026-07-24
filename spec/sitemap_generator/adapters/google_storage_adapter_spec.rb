@@ -12,13 +12,15 @@ RSpec.describe SitemapGenerator::GoogleStorageAdapter do
     it 'writes the raw data to a file and then uploads that file to Google Storage' do
       storage = double(:storage)
       bucket_resource = double(:bucket_resource)
+      file_adapter = instance_double(SitemapGenerator::FileAdapter)
+      allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
       expect(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc',
                                                            project_id: 'project_id').and_return(storage)
       expect(storage).to receive(:bucket).with('bucket').and_return(bucket_resource)
       expect(location).to receive(:path_in_public).and_return('path_in_public')
       expect(location).to receive(:path).and_return('path')
       expect(bucket_resource).to receive(:create_file).with('path', 'path_in_public', acl: acl).and_return(nil)
-      expect_any_instance_of(SitemapGenerator::FileAdapter).to receive(:write).with(location, 'raw_data')
+      expect(file_adapter).to receive(:write).with(location, 'raw_data')
       adapter.write(location, 'raw_data')
     end
   end

@@ -29,7 +29,9 @@ RSpec.describe SitemapGenerator::Interpreter do
   end
 
   it 'sets the verbose option' do
-    expect_any_instance_of(described_class).to receive(:instance_eval)
+    allow(described_class).to receive(:new).and_wrap_original do |original_new, *args|
+      original_new.call(*args).tap { |instance| expect(instance).to receive(:instance_eval) }
+    end
     interpreter = described_class.run(verbose: true)
     expect(interpreter.instance_variable_get(:@linkset).verbose).to be(true)
   end

@@ -18,7 +18,9 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
 
     if defined?(Aws::S3::TransferManager)
       it 'writes the raw data to a file and uploads using TransferManager' do
-        expect_any_instance_of(SitemapGenerator::FileAdapter).to receive(:write).with(location, 'raw_data')
+        file_adapter = instance_double(SitemapGenerator::FileAdapter)
+        allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
+        expect(file_adapter).to receive(:write).with(location, 'raw_data')
         expect(location).to receive(:path_in_public).and_return('path_in_public')
         s3_client = double(:s3_client)
         transfer_manager = double(:transfer_manager)
@@ -35,7 +37,9 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
       end
     else
       it 'writes the raw data to a file and uploads using S3 Resource' do
-        expect_any_instance_of(SitemapGenerator::FileAdapter).to receive(:write).with(location, 'raw_data')
+        file_adapter = instance_double(SitemapGenerator::FileAdapter)
+        allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
+        expect(file_adapter).to receive(:write).with(location, 'raw_data')
         expect(location).to receive(:path_in_public).and_return('path_in_public')
         s3_resource = double(:s3_resource)
         s3_bucket = double(:s3_bucket)

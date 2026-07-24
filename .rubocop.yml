@@ -58,9 +58,6 @@ RSpec/VerifiedDoubles:
 RSpec/BeforeAfterAll:
   Enabled: false # TODO: follow-up -- review before(:all)/after(:all) for state-leak risk (8 instances, 3 files)
 
-RSpec/AnyInstance:
-  Enabled: false # TODO: follow-up -- expect_any_instance_of in adapter specs; consider injectable SDK clients (3 instances)
-
 RSpec/SubjectStub:
   Enabled: false # TODO: follow-up -- stubbing methods on the subject under test, sitemap_location_spec.rb (3 instances)
 
