@@ -82,7 +82,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
 
   describe 'write' do
     it 'creates the file in S3 with a single operation' do
-      expect(Fog::Storage).to receive(:new).and_return(directories)
+      allow(Fog::Storage).to receive(:new).and_return(directories)
       expect(directory.files).to receive(:create).with(
         body: instance_of(File),
         key: 'test/sitemap.xml.gz',
@@ -104,7 +104,7 @@ RSpec.describe SitemapGenerator::S3Adapter do
       end
 
       it 'sets content_type to application/xml' do
-        expect(Fog::Storage).to receive(:new).and_return(directories)
+        allow(Fog::Storage).to receive(:new).and_return(directories)
         expect(directory.files).to receive(:create).with(
           hash_including(content_type: 'application/xml')
         )

@@ -59,7 +59,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       end
 
       it 'calls Utilities.current_time during write and uses the result as lastmod' do
-        expect(SitemapGenerator::Utilities).to receive(:current_time).and_return(frozen_time)
+        expect(SitemapGenerator::Utilities).to receive(:current_time)
         sitemap.write
         expect(sitemap.lastmod).to eq(frozen_time)
       end
@@ -93,7 +93,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   describe 'reserve_name' do
     it 'reserves the name from the location' do
       expect(sitemap.reserved_name?).to be(false)
-      expect(sitemap.location).to receive(:reserve_name).and_return('name')
+      allow(sitemap.location).to receive(:reserve_name).and_return('name')
       sitemap.reserve_name
       expect(sitemap.reserved_name?).to be(true)
       expect(sitemap.instance_variable_get(:@reserved_name)).to eq('name')
@@ -109,15 +109,19 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   describe 'add' do
     it 'uses the host provided' do
       url = SitemapGenerator::Builder::SitemapUrl.new('/one', host: 'http://newhost.com/')
-      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
+      allow(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
         .with('/one', { host: 'http://newhost.com' }).and_return(url)
+      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
+        .with('/one', { host: 'http://newhost.com' })
       sitemap.add '/one', host: 'http://newhost.com'
     end
 
     it 'uses the host from the location' do
       url = SitemapGenerator::Builder::SitemapUrl.new('/one', host: 'http://example.com/')
-      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
+      allow(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
         .with('/one', { host: 'http://example.com/' }).and_return(url)
+      expect(SitemapGenerator::Builder::SitemapUrl).to receive(:new)
+        .with('/one', { host: 'http://example.com/' })
       sitemap.add '/one'
     end
   end
@@ -133,7 +137,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       let(:max_sitemap_links) { link_count + 1 }
 
       it 'returns true' do
-        expect(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
+        allow(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
         expect(sitemap.file_can_fit?(1)).to be(true)
       end
     end
@@ -142,7 +146,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
       let(:max_sitemap_links) { link_count }
 
       it 'returns false' do
-        expect(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
+        allow(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
         expect(sitemap.file_can_fit?(1)).to be(false)
       end
     end
@@ -157,7 +161,8 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
 
     context 'when present in the location' do
       it 'returns the value from the location' do
-        expect(sitemap.location).to receive(:[]).with(:max_sitemap_links).and_return(10)
+        allow(sitemap.location).to receive(:[]).with(:max_sitemap_links).and_return(10)
+        expect(sitemap.location).to receive(:[]).with(:max_sitemap_links)
         expect(sitemap.max_sitemap_links).to eq(10)
       end
     end

@@ -250,26 +250,24 @@ RSpec.describe SitemapGenerator::LinkSet do
   end
 
   describe 'with a sitemap index specified' do
-    before do
-      @index = SitemapGenerator::Builder::SitemapIndexFile.new(host: default_host)
-      @ls = described_class.new(sitemap_index: @index, sitemaps_host: 'http://newhost.com')
-    end
+    let(:index) { SitemapGenerator::Builder::SitemapIndexFile.new(host: default_host) }
+    let(:ls) { described_class.new(sitemap_index: index, sitemaps_host: 'http://newhost.com') }
 
     it 'does not modify the index when the filename changes' do
-      @ls.filename = :newname
-      expect(@ls.sitemap.location.filename).to include('newname')
-      @ls.sitemap_index.location.filename.include?('sitemap')
+      ls.filename = :newname
+      expect(ls.sitemap.location.filename).to include('newname')
+      ls.sitemap_index.location.filename.include?('sitemap')
     end
 
     it 'does not modify the index when sitemaps_host changes' do
-      @ls.sitemaps_host = 'http://newhost.com'
-      expect(@ls.sitemap.location.host).to eq('http://newhost.com')
-      expect(@ls.sitemap_index.location.host).to eq(default_host)
+      ls.sitemaps_host = 'http://newhost.com'
+      expect(ls.sitemap.location.host).to eq('http://newhost.com')
+      expect(ls.sitemap_index.location.host).to eq(default_host)
     end
 
     it 'does not finalize the index' do
-      @ls.send(:finalize_sitemap_index!)
-      expect(@ls.sitemap_index.finalized?).to be(false)
+      ls.send(:finalize_sitemap_index!)
+      expect(ls.sitemap_index.finalized?).to be(false)
     end
   end
 
@@ -364,10 +362,10 @@ RSpec.describe SitemapGenerator::LinkSet do
 
     describe 'sitemaps_host' do
       it 'sets the sitemaps host' do
-        @host = 'http://sitemaphost.com'
-        @group = ls.group(sitemaps_host: @host)
-        expect(@group.sitemaps_host).to eq(@host)
-        expect(@group.sitemap.location.host).to eq(@host)
+        host = 'http://sitemaphost.com'
+        group = ls.group(sitemaps_host: host)
+        expect(group.sitemaps_host).to eq(host)
+        expect(group.sitemap.location.host).to eq(host)
       end
 
       it 'finalizes the sitemap if it is the only option' do
@@ -376,8 +374,8 @@ RSpec.describe SitemapGenerator::LinkSet do
       end
 
       it 'uses the same namer' do
-        @group = ls.group(sitemaps_host: 'http://test.com') { nil }
-        expect(@group.sitemap.location.namer).to eq(ls.sitemap.location.namer)
+        group = ls.group(sitemaps_host: 'http://test.com') { nil }
+        expect(group.sitemap.location.namer).to eq(ls.sitemap.location.namer)
       end
     end
 
@@ -433,8 +431,8 @@ RSpec.describe SitemapGenerator::LinkSet do
 
     describe 'finalizing' do
       it 'only finalizes the sitemaps if a block is passed' do
-        @group = ls.group
-        expect(@group.sitemap.finalized?).to be(false)
+        group = ls.group
+        expect(group.sitemap.finalized?).to be(false)
       end
 
       it 'does not finalize the sitemap if a group is created' do
@@ -656,9 +654,8 @@ RSpec.describe SitemapGenerator::LinkSet do
 
   describe 'yield_sitemap' do
     it 'defaults to the value of SitemapGenerator.yield_sitemap?' do
-      expect(SitemapGenerator).to receive(:yield_sitemap?).and_return(true)
+      allow(SitemapGenerator).to receive(:yield_sitemap?).and_return(true, false)
       expect(ls.yield_sitemap?).to be(true)
-      expect(SitemapGenerator).to receive(:yield_sitemap?).and_return(false)
       expect(ls.yield_sitemap?).to be(false)
     end
 
@@ -917,11 +914,8 @@ RSpec.describe SitemapGenerator::LinkSet do
 
   describe 'sitemap_location' do
     it 'returns an instance initialized with values from the link set' do
-      expect(ls).to receive(:sitemaps_host).and_return(:host)
-      expect(ls).to receive(:namer).and_return(:namer)
-      expect(ls).to receive(:public_path).and_return(:public_path)
-      expect(ls).to receive(:verbose).and_return(:verbose)
-      expect(ls).to receive(:max_sitemap_links).and_return(:max_sitemap_links)
+      allow(ls).to receive_messages(sitemaps_host: :host, namer: :namer, public_path: :public_path,
+                                    verbose: :verbose, max_sitemap_links: :max_sitemap_links)
 
       ls.instance_variable_set(:@sitemaps_path, :sitemaps_path)
       ls.instance_variable_set(:@adapter, :adapter)

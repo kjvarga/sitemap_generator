@@ -32,11 +32,15 @@ RSpec/MultipleExpectations:
 RSpec/MessageSpies:
   EnforcedStyle: receive # matches this suite's established expect().to receive convention
 
-RSpec/StubbedMock:
-  Enabled: false # TODO: follow-up -- same migration as RSpec/MessageSpies (36 instances, 9 files)
-
 RSpec/InstanceVariable:
-  Enabled: false # TODO: follow-up -- convert @ivar usage to let (57 instances, 5 files)
+  Exclude:
+    - spec/sitemap_generator/sitemap_generator_spec.rb
+    - integration/spec/sitemap_generator/tasks_spec.rb
+  # TODO: follow-up -- remaining instances are ivars set in a before(:all) block (tied to the
+  # RSpec/BeforeAfterAll exclusion above -- before(:all) is a deliberate perf optimization for
+  # expensive fixture setup, so these can't convert to `let` without addressing that first),
+  # plus one legitimate stash/restore-external-state pattern in tasks_spec.rb that doesn't map
+  # cleanly onto `let`'s lazy memoization.
 
 RSpec/SpecFilePathFormat:
   Exclude:
@@ -57,9 +61,6 @@ RSpec/VerifiedDoubles:
 
 RSpec/BeforeAfterAll:
   Enabled: false # TODO: follow-up -- review before(:all)/after(:all) for state-leak risk (8 instances, 3 files)
-
-RSpec/SubjectStub:
-  Enabled: false # TODO: follow-up -- stubbing methods on the subject under test, sitemap_location_spec.rb (3 instances)
 
 RSpec/ExampleLength:
   Enabled: false # TODO: follow-up -- several examples run 15-40 lines (XML fixture building,

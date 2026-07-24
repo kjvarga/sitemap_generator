@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe SitemapGenerator::Application do
+  let(:app) { described_class.new }
+
   before do
     stub_const('Rails::VERSION', '1')
-    @app = described_class.new
   end
 
   describe 'is_at_least_rails3?' do
@@ -20,22 +21,20 @@ RSpec.describe SitemapGenerator::Application do
 
     it 'identifies the rails version correctly' do
       tests.each do |version, result|
-        expect(Rails).to receive(:version).and_return(version)
-        expect(@app.is_at_least_rails3?).to eq(result)
+        allow(Rails).to receive(:version).and_return(version)
+        expect(app.is_at_least_rails3?).to eq(result)
       end
     end
   end
 
   describe 'with Rails' do
-    before do
-      @root = '/test'
-    end
+    let(:root) { '/test' }
 
     it 'uses the Rails.root' do
-      expect(Rails).to receive(:root).and_return(@root).at_least(:once)
-      expect(@app.root).to be_a(Pathname)
-      expect(@app.root.to_s).to eq(@root)
-      expect(@app.root.join('public/').to_s).to eq(File.join(@root, 'public/'))
+      expect(Rails).to receive(:root).and_return(root).at_least(:once)
+      expect(app.root).to be_a(Pathname)
+      expect(app.root.to_s).to eq(root)
+      expect(app.root.join('public/').to_s).to eq(File.join(root, 'public/'))
     end
   end
 
@@ -45,13 +44,13 @@ RSpec.describe SitemapGenerator::Application do
     end
 
     it 'is not Rails' do
-      expect(@app.is_rails?).to be(false)
+      expect(app.is_rails?).to be(false)
     end
 
     it 'uses the current working directory' do
-      expect(@app.root).to be_a(Pathname)
-      expect(@app.root.to_s).to eq(Dir.getwd)
-      expect(@app.root.join('public/').to_s).to eq(File.join(Dir.getwd, 'public/'))
+      expect(app.root).to be_a(Pathname)
+      expect(app.root.to_s).to eq(Dir.getwd)
+      expect(app.root.join('public/').to_s).to eq(File.join(Dir.getwd, 'public/'))
     end
   end
 end

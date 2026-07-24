@@ -113,8 +113,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
 
   describe 'filesize' do
     it 'reads the size of the file at path' do
-      expect(location).to receive(:path).and_return('/somepath')
-      expect(File).to receive(:size?).with('/somepath')
+      expect(File).to receive(:size?).with(location.path)
       location.filesize
     end
   end
@@ -203,8 +202,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
 
       it 'outputs summary line' do
         expect(location.adapter).to receive(:write)
-        expect(location).to receive(:summary)
-        location.write('data', 1)
+        expect { location.write('data', 1) }.to output(/links/).to_stdout
       end
     end
 
@@ -213,8 +211,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
 
       it 'does not output summary line' do
         expect(location.adapter).to receive(:write)
-        expect(location).not_to receive(:summary)
-        location.write('data', 1)
+        expect { location.write('data', 1) }.not_to output.to_stdout
       end
     end
   end
@@ -241,7 +238,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
       let(:options) { { namer: namer, compress: :all_but_first } }
 
       it 'strips gz extension' do
-        expect(namer).to receive(:start?).and_return(true)
+        allow(namer).to receive(:start?).and_return(true)
         expect(location.filename).to eq('sitemap.xml')
       end
     end
@@ -251,7 +248,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
       let(:options) { { namer: namer, compress: :all_but_first } }
 
       it 'does not strip gz extension' do
-        expect(namer).to receive(:start?).and_return(false)
+        allow(namer).to receive(:start?).and_return(false)
         expect(location.filename).to eq('sitemap.xml.gz')
       end
     end

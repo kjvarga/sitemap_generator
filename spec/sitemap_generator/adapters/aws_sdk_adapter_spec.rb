@@ -21,18 +21,26 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
         file_adapter = instance_double(SitemapGenerator::FileAdapter)
         allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
         expect(file_adapter).to receive(:write).with(location, 'raw_data')
-        expect(location).to receive(:path_in_public).and_return('path_in_public')
+        allow(location).to receive(:path_in_public).and_return('path_in_public')
         s3_client = double(:s3_client)
         transfer_manager = double(:transfer_manager)
-        expect(Aws::S3::Client).to receive(:new).and_return(s3_client)
-        expect(Aws::S3::TransferManager).to receive(:new).with(client: s3_client).and_return(transfer_manager)
+        allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
+        allow(Aws::S3::TransferManager).to receive(:new).with(client: s3_client).and_return(transfer_manager)
+        expect(Aws::S3::TransferManager).to receive(:new).with(client: s3_client)
+        allow(transfer_manager).to receive(:upload_file).with(path, hash_including(
+                                                                      bucket: 'bucket',
+                                                                      key: 'path_in_public',
+                                                                      acl: acl,
+                                                                      cache_control: cache_control,
+                                                                      content_type: content_type
+                                                                    )).and_return(nil)
         expect(transfer_manager).to receive(:upload_file).with(path, hash_including(
                                                                        bucket: 'bucket',
                                                                        key: 'path_in_public',
                                                                        acl: acl,
                                                                        cache_control: cache_control,
                                                                        content_type: content_type
-                                                                     )).and_return(nil)
+                                                                     ))
         adapter.write(location, 'raw_data')
       end
     else
@@ -40,18 +48,25 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
         file_adapter = instance_double(SitemapGenerator::FileAdapter)
         allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
         expect(file_adapter).to receive(:write).with(location, 'raw_data')
-        expect(location).to receive(:path_in_public).and_return('path_in_public')
+        allow(location).to receive(:path_in_public).and_return('path_in_public')
         s3_resource = double(:s3_resource)
         s3_bucket = double(:s3_bucket)
         s3_object = double(:s3_object)
-        expect(Aws::S3::Resource).to receive(:new).and_return(s3_resource)
-        expect(s3_resource).to receive(:bucket).with('bucket').and_return(s3_bucket)
-        expect(s3_bucket).to receive(:object).with('path_in_public').and_return(s3_object)
+        allow(Aws::S3::Resource).to receive(:new).and_return(s3_resource)
+        allow(s3_resource).to receive(:bucket).with('bucket').and_return(s3_bucket)
+        expect(s3_resource).to receive(:bucket).with('bucket')
+        allow(s3_bucket).to receive(:object).with('path_in_public').and_return(s3_object)
+        expect(s3_bucket).to receive(:object).with('path_in_public')
+        allow(s3_object).to receive(:upload_file).with(path, hash_including(
+                                                               acl: acl,
+                                                               cache_control: cache_control,
+                                                               content_type: content_type
+                                                             )).and_return(nil)
         expect(s3_object).to receive(:upload_file).with(path, hash_including(
                                                                 acl: acl,
                                                                 cache_control: cache_control,
                                                                 content_type: content_type
-                                                              )).and_return(nil)
+                                                              ))
         adapter.write(location, 'raw_data')
       end
     end

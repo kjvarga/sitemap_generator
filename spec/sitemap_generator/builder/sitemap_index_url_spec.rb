@@ -18,13 +18,13 @@ RSpec.describe SitemapGenerator::Builder::SitemapIndexUrl do
 
   it 'uses the host from the index' do
     host = 'http://myexample.com'
-    expect(index.location).to receive(:host).and_return(host)
+    allow(index.location).to receive(:host).and_return(host)
     expect(url[:host]).to eq(host)
   end
 
   it 'uses the public path for the link' do
     path = '/path'
-    expect(index.location).to receive(:path_in_public).and_return(path)
+    allow(index.location).to receive(:path_in_public).and_return(path)
     expect(url[:loc]).to eq('http://test.com/path')
   end
 
