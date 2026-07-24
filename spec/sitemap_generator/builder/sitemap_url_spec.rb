@@ -242,7 +242,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   end
 
   describe '#initialize' do
-    describe 'lastmod' do
+    context 'when lastmod is not given' do
       let(:frozen_time) { Time.at(1_000_000).utc }
 
       before do

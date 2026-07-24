@@ -9,7 +9,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   let(:default_host) { 'http://example.com' }
 
   it 'public_path should default to the public directory in the application root' do
-    expect(location.public_path).to eq(Pathname.new("#{SitemapGenerator.app.root}/public/"))
+    expect(location.public_path).to eq(SitemapGenerator.app.root.join('public/'))
   end
 
   it 'has a default namer' do

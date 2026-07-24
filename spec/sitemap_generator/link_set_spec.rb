@@ -9,7 +9,7 @@ RSpec.describe SitemapGenerator::LinkSet do
 
   describe 'initializer options' do
     options = %i[public_path sitemaps_path default_host filename search_engines max_sitemap_links]
-    values = [File.expand_path("#{SitemapGenerator.app.root}/tmp/"), 'mobile/', 'http://myhost.com', :xxx,
+    values = [File.expand_path(SitemapGenerator.app.root.join('tmp/')), 'mobile/', 'http://myhost.com', :xxx,
               { abc: '123' }, 10]
 
     options.zip(values).each do |option, value|
@@ -26,7 +26,7 @@ RSpec.describe SitemapGenerator::LinkSet do
     default_options = {
       filename: :sitemap,
       sitemaps_path: nil,
-      public_path: Pathname.new("#{SitemapGenerator.app.root}/public/"),
+      public_path: SitemapGenerator.app.root.join('public/'),
       default_host: nil,
       include_index: false,
       include_root: true,
@@ -46,7 +46,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls = described_class.new(default_host: default_host, include_root: true, include_index: true)
       expect(ls.include_root).to be(true)
       expect(ls.include_index).to be(true)
-      ls.create { |sitemap| }
+      ls.create { |sitemap| sitemap }
       expect(ls.sitemap.link_count).to eq(2)
     end
 
@@ -54,7 +54,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls = described_class.new(default_host: default_host, include_root: false)
       expect(ls.include_root).to be(false)
       expect(ls.include_index).to be(false)
-      ls.create { |sitemap| }
+      ls.create { |sitemap| sitemap }
       expect(ls.sitemap.link_count).to eq(0)
     end
 
@@ -62,7 +62,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls = described_class.new(default_host: default_host, include_index: false)
       expect(ls.include_root).to be(true)
       expect(ls.include_index).to be(false)
-      ls.create { |sitemap| }
+      ls.create { |sitemap| sitemap }
       expect(ls.sitemap.link_count).to eq(1)
     end
 
@@ -70,21 +70,21 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls = described_class.new(default_host: default_host, include_root: false, include_index: false)
       expect(ls.include_root).to be(false)
       expect(ls.include_index).to be(false)
-      ls.create { |sitemap| }
+      ls.create { |sitemap| sitemap }
       expect(ls.sitemap.link_count).to eq(0)
     end
   end
 
   describe 'sitemaps public_path' do
     it 'defaults to public/' do
-      path = Pathname.new("#{SitemapGenerator.app.root}/public/")
+      path = SitemapGenerator.app.root.join('public/')
       expect(ls.public_path).to eq(path)
       expect(ls.sitemap.location.public_path).to eq(path)
       expect(ls.sitemap_index.location.public_path).to eq(path)
     end
 
     it 'changes when the public_path is changed' do
-      path = Pathname.new("#{SitemapGenerator.app.root}/tmp/")
+      path = SitemapGenerator.app.root.join('tmp/')
       ls.public_path = 'tmp/'
       expect(ls.public_path).to eq(path)
       expect(ls.sitemap.location.public_path).to eq(path)
@@ -92,7 +92,7 @@ RSpec.describe SitemapGenerator::LinkSet do
     end
 
     it 'appends a slash to the path' do
-      path = Pathname.new("#{SitemapGenerator.app.root}/tmp/")
+      path = SitemapGenerator.app.root.join('tmp/')
       ls.public_path = 'tmp'
       expect(ls.public_path).to eq(path)
       expect(ls.sitemap.location.public_path).to eq(path)
@@ -372,11 +372,11 @@ RSpec.describe SitemapGenerator::LinkSet do
 
       it 'finalizes the sitemap if it is the only option' do
         expect(ls).to receive(:finalize_sitemap!)
-        ls.group(sitemaps_host: 'http://test.com') {}
+        ls.group(sitemaps_host: 'http://test.com') { nil }
       end
 
       it 'uses the same namer' do
-        @group = ls.group(sitemaps_host: 'http://test.com') {}
+        @group = ls.group(sitemaps_host: 'http://test.com') { nil }
         expect(@group.sitemap.location.namer).to eq(ls.sitemap.location.namer)
       end
     end
@@ -436,7 +436,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       end
 
       it 'does not finalize the sitemap if a group is created' do
-        ls.create { group {} }
+        ls.create { group { nil } }
         expect(ls.sitemap.empty?).to be(true)
         expect(ls.sitemap.finalized?).to be(false)
       end
@@ -446,7 +446,7 @@ RSpec.describe SitemapGenerator::LinkSet do
         namer: SitemapGenerator::SimpleNamer.new(:sitemap) }.each do |k, v|
         it "does not finalize the sitemap if #{k} is present" do
           expect(ls).not_to receive(:finalize_sitemap!)
-          ls.group(k => v) {}
+          ls.group(k => v) { nil }
         end
       end
     end
@@ -469,12 +469,12 @@ RSpec.describe SitemapGenerator::LinkSet do
 
   describe 'after create' do
     it 'finalizes the sitemap index' do
-      ls.create {}
+      ls.create { nil }
       expect(ls.sitemap_index.finalized?).to be(true)
     end
 
     it 'finalizes the sitemap' do
-      ls.create {}
+      ls.create { nil }
       expect(ls.sitemap.finalized?).to be(true)
     end
 

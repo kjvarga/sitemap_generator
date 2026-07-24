@@ -553,7 +553,7 @@ RSpec.describe 'SitemapGenerator' do
   end
 
   describe 'respond_to?' do
-    it 'correctlies identify the methods that it responds to' do
+    it 'correctly identifies the methods that it responds to' do
       expect(SitemapGenerator::Sitemap.respond_to?(:create)).to be(true)
       expect(SitemapGenerator::Sitemap.respond_to?(:adapter)).to be(true)
       expect(SitemapGenerator::Sitemap.respond_to?(:default_host)).to be(true)

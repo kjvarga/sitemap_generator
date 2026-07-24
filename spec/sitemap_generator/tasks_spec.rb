@@ -16,7 +16,6 @@ RSpec.describe 'Rake Tasks' do
       before do
         SitemapGenerator::Sitemap.verbose = false
         allow(Rake).to receive(:verbose).and_return(true)
-        allow(SitemapGenerator::Interpreter).to receive(:run)
       end
 
       after do
@@ -24,8 +23,8 @@ RSpec.describe 'Rake Tasks' do
       end
 
       it 'does not pass verbose: to Interpreter.run' do
+        expect(SitemapGenerator::Interpreter).to receive(:run).with(hash_excluding(:verbose))
         Rake::Task['sitemap:create'].execute
-        expect(SitemapGenerator::Interpreter).to have_received(:run).with(hash_excluding(:verbose))
       end
     end
   end

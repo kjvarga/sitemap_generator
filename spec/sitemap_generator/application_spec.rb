@@ -35,7 +35,7 @@ RSpec.describe SitemapGenerator::Application do
     it 'uses the Rails.root' do
       expect(@app.root).to be_a(Pathname)
       expect(@app.root.to_s).to eq(@root)
-      expect("#{@app.root}/public/").to eq(File.join(@root, 'public/'))
+      expect(@app.root.join('public/').to_s).to eq(File.join(@root, 'public/'))
     end
   end
 
@@ -51,7 +51,7 @@ RSpec.describe SitemapGenerator::Application do
     it 'uses the current working directory' do
       expect(@app.root).to be_a(Pathname)
       expect(@app.root.to_s).to eq(Dir.getwd)
-      expect("#{@app.root}/public/").to eq(File.join(Dir.getwd, 'public/'))
+      expect(@app.root.join('public/').to_s).to eq(File.join(Dir.getwd, 'public/'))
     end
   end
 end

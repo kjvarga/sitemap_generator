@@ -6,7 +6,7 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
   let(:linkset) { SitemapGenerator::LinkSet.new(default_host: 'http://test.com') }
 
   before do
-    FileUtils.rm_rf("#{SitemapGenerator.app.root}/public/")
+    FileUtils.rm_rf(SitemapGenerator.app.root.join('public/'))
   end
 
   it 'does not finalize the default sitemap if using groups' do
@@ -15,24 +15,23 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
         add '/en'
       end
     end
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap_en.xml.gz")
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap_en.xml.gz'))
+    file_should_not_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
   end
 
   it 'does not write out empty groups' do
     linkset.create do
-      group(filename: :sitemap_en) {}
+      group(filename: :sitemap_en) { nil }
     end
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/sitemap_en.xml.gz")
+    file_should_not_exist(SitemapGenerator.app.root.join('public/sitemap_en.xml.gz'))
   end
 
   it 'adds default links if no groups are created' do
-    linkset.create do
-    end
+    linkset.create { nil }
     expect(linkset.link_count).to eq(1)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_not_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
   end
 
   it 'adds links to the default sitemap' do
@@ -44,12 +43,12 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       add '/after'
     end
     expect(linkset.link_count).to eq(4)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap_en.xml.gz")
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap_en.xml.gz'))
   end
 
-  it 'rollovers when sitemaps are full' do
+  it 'rolls over when sitemaps are full' do
     linkset.max_sitemap_links = 1
     linkset.include_index = false
     linkset.include_root = false
@@ -62,13 +61,13 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       add '/after'
     end
     expect(linkset.link_count).to eq(4)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap2.xml.gz")
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/sitemap3.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/en/sitemap_en.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/en/sitemap_en1.xml.gz")
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/en/sitemap_en2.xml.gz")
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap2.xml.gz'))
+    file_should_not_exist(SitemapGenerator.app.root.join('public/sitemap3.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/en/sitemap_en.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/en/sitemap_en1.xml.gz'))
+    file_should_not_exist(SitemapGenerator.app.root.join('public/en/sitemap_en2.xml.gz'))
   end
 
   it 'supports multiple groups' do
@@ -81,9 +80,9 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       end
     end
     expect(linkset.link_count).to eq(2)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/en/sitemap_en.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/fr/sitemap_fr.xml.gz")
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/en/sitemap_en.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/fr/sitemap_fr.xml.gz'))
   end
 
   it 'the sitemap shouldn\'t be finalized until the end if the groups don\'t conflict' do
@@ -95,12 +94,14 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       add 'five'
     end
     expect(linkset.link_count).to eq(6)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/first.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/second.xml.gz")
-    gzipped_xml_file_should_validate_against_schema("#{SitemapGenerator.app.root}/public/sitemap.xml.gz", 'siteindex')
-    gzipped_xml_file_should_validate_against_schema("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz", 'sitemap')
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/first.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/second.xml.gz'))
+    gzipped_xml_file_should_validate_against_schema(
+      SitemapGenerator.app.root.join('public/sitemap.xml.gz'), 'siteindex'
+    )
+    gzipped_xml_file_should_validate_against_schema(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'), 'sitemap')
   end
 
   it 'groups should share the sitemap if the sitemap location is unchanged' do
@@ -112,15 +113,17 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       add 'five'
     end
     expect(linkset.link_count).to eq(6)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap2.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap3.xml.gz")
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/sitemap4.xml.gz")
-    gzipped_xml_file_should_validate_against_schema("#{SitemapGenerator.app.root}/public/sitemap.xml.gz", 'siteindex')
-    gzipped_xml_file_should_validate_against_schema("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz", 'sitemap')
-    gzipped_xml_file_should_validate_against_schema("#{SitemapGenerator.app.root}/public/sitemap2.xml.gz", 'sitemap')
-    gzipped_xml_file_should_validate_against_schema("#{SitemapGenerator.app.root}/public/sitemap3.xml.gz", 'sitemap')
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap2.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap3.xml.gz'))
+    file_should_not_exist(SitemapGenerator.app.root.join('public/sitemap4.xml.gz'))
+    gzipped_xml_file_should_validate_against_schema(
+      SitemapGenerator.app.root.join('public/sitemap.xml.gz'), 'siteindex'
+    )
+    gzipped_xml_file_should_validate_against_schema(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'), 'sitemap')
+    gzipped_xml_file_should_validate_against_schema(SitemapGenerator.app.root.join('public/sitemap2.xml.gz'), 'sitemap')
+    gzipped_xml_file_should_validate_against_schema(SitemapGenerator.app.root.join('public/sitemap3.xml.gz'), 'sitemap')
   end
 
   it 'sitemaps should be finalized if virtual location settings are changed' do
@@ -132,11 +135,11 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       add 'five'
     end
     expect(linkset.link_count).to eq(6)
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap1.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap2.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/sitemap3.xml.gz")
-    file_should_not_exist("#{SitemapGenerator.app.root}/public/sitemap4.xml.gz")
-    file_should_exist("#{SitemapGenerator.app.root}/public/en/sitemap.xml.gz")
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap1.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap2.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/sitemap3.xml.gz'))
+    file_should_not_exist(SitemapGenerator.app.root.join('public/sitemap4.xml.gz'))
+    file_should_exist(SitemapGenerator.app.root.join('public/en/sitemap.xml.gz'))
   end
 end

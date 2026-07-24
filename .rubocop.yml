@@ -30,7 +30,7 @@ RSpec/MultipleExpectations:
   Enabled: false # TODO: follow-up -- split multi-assert examples (172 instances, 31 files)
 
 RSpec/MessageSpies:
-  Enabled: false # TODO: follow-up -- migrate expect().to receive to allow/have_received (85 instances, 13 files)
+  EnforcedStyle: receive # matches this suite's established expect().to receive convention
 
 RSpec/StubbedMock:
   Enabled: false # TODO: follow-up -- same migration as RSpec/MessageSpies (36 instances, 9 files)
@@ -71,15 +71,9 @@ RSpec/NoExpectationExample:
   AllowedPatterns:
     - "^expect_"
     - "^assert_"
-    - "should" # this suite's custom expectation helpers are named e.g. file_should_exist
-
-Lint/EmptyBlock:
-  Exclude:
-    - spec/**/*
-    - integration/spec/**/*
-  # Permanent, not follow-up debt: every instance is `ls.create { |sitemap| }`, an
-  # intentionally empty block required because LinkSet#create only finalizes if
-  # block_given?. Scoped here (not Enabled: false) so lib/ keeps full enforcement.
+    - "should" # this suite's custom expectation helpers are named e.g. file_should_exist.
+               # TODO: follow-up -- move away from the should_* helper naming/style entirely
+               # rather than special-casing it here; not addressing now (out of scope).
 
 Style/Documentation:
   Exclude:

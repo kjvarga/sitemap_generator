@@ -34,24 +34,24 @@ RSpec.describe SitemapGenerator::Utilities do
                          end
     end
 
-    it 'symbolize_keyses' do
+    it 'symbolizes keys' do
       expect(utils.symbolize_keys(@symbols)).to eq(@symbols)
       expect(utils.symbolize_keys(@strings)).to eq(@symbols)
       expect(utils.symbolize_keys(@mixed)).to eq(@symbols)
     end
 
-    it 'symbolize_keys!s' do
+    it 'symbolizes keys destructively' do
       expect(utils.symbolize_keys!(@symbols.dup)).to eq(@symbols)
       expect(utils.symbolize_keys!(@strings.dup)).to eq(@symbols)
       expect(utils.symbolize_keys!(@mixed.dup)).to eq(@symbols)
     end
 
-    it 'symbolize_keys_preserves_keys_that_cant_be_symbolizeds' do
+    it 'preserves keys that cannot be symbolized' do
       expect(utils.symbolize_keys(@illegal_symbols)).to eq(@illegal_symbols)
       expect(utils.symbolize_keys!(@illegal_symbols.dup)).to eq(@illegal_symbols)
     end
 
-    it 'symbolize_keys_preserves_fixnum_keyses' do
+    it 'preserves fixnum keys' do
       expect(utils.symbolize_keys(@fixnums)).to eq(@fixnums)
       expect(utils.symbolize_keys!(@fixnums.dup)).to eq(@fixnums)
     end

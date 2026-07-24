@@ -22,7 +22,7 @@ end
 RSpec.describe SitemapGenerator::Helpers::NumberHelper do
   include described_class
 
-  it 'number_with_delimiters' do
+  it 'formats a number with a delimiter' do
     expect(number_with_delimiter(12_345_678)).to eq('12,345,678')
     expect(number_with_delimiter(0)).to eq('0')
     expect(number_with_delimiter(123)).to eq('123')
@@ -35,14 +35,14 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
     expect(number_with_delimiter('123456.78')).to eq('123,456.78')
   end
 
-  it 'number_with_delimiter_with_options_hashes' do
+  it 'formats a number with a delimiter using custom options' do
     expect(number_with_delimiter(12_345_678, delimiter: ' ')).to eq('12 345 678')
     expect(number_with_delimiter(12_345_678.05, separator: '-')).to eq('12,345,678-05')
     expect(number_with_delimiter(12_345_678.05, separator: ',', delimiter: '.')).to eq('12.345.678,05')
     expect(number_with_delimiter(12_345_678.05, delimiter: '.', separator: ',')).to eq('12.345.678,05')
   end
 
-  it 'number_with_precisions' do
+  it 'formats a number with precision' do
     expect(number_with_precision(-111.2346)).to eq('-111.235')
     expect(number_with_precision(111.2346)).to eq('111.235')
     expect(number_with_precision(31.825, precision: 2)).to eq('31.83')
@@ -65,12 +65,12 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
     expect(number_with_precision(10.995, precision: 2)).to eq('11.00')
   end
 
-  it 'number_with_precision_with_custom_delimiter_and_separators' do
+  it 'formats a number with precision using a custom delimiter and separator' do
     expect(number_with_precision(31.825, precision: 2, separator: ',')).to eq('31,83')
     expect(number_with_precision(1231.825, precision: 2, separator: ',', delimiter: '.')).to eq('1.231,83')
   end
 
-  it 'number_with_precision_with_significant_digitses' do
+  it 'formats a number with precision using significant digits' do
     expect(number_with_precision(123_987, precision: 3, significant: true)).to eq('124000')
     expect(number_with_precision(123_987_876, precision: 2, significant: true)).to eq('120000000')
     expect(number_with_precision('43523', precision: 1, significant: true)).to eq('40000')
@@ -93,7 +93,7 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
     expect(number_with_precision(10.995, precision: 3, significant: true)).to eq('11.0')
   end
 
-  it 'number_with_precision_with_strip_insignificant_zeroses' do
+  it 'strips insignificant zeros when formatting with precision' do
     expect(number_with_precision(9775.43, precision: 4, strip_insignificant_zeros: true)).to eq('9775.43')
     expect(number_with_precision(9775.2, precision: 6, significant: true,
                                          strip_insignificant_zeros: true)).to eq('9775.2')
@@ -101,7 +101,7 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
                                     strip_insignificant_zeros: true)).to eq('0')
   end
 
-  it 'number_with_precision_with_significant_true_and_zero_precisions' do
+  it 'treats significant as false when precision is zero' do
     # Zero precision with significant is a mistake (would always return zero),
     # so we treat it as if significant was false (increases backwards compatibily for number_to_human_size)
     expect(number_with_precision(123.987, precision: 0, significant: true)).to eq('124')
@@ -109,7 +109,7 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
     expect(number_with_precision('12.3', precision: 0, significant: true)).to eq('12')
   end
 
-  it 'number_to_human_sizes' do
+  it 'formats a number as a human-readable size' do
     expect(number_to_human_size(0)).to eq('0 Bytes')
     expect(number_to_human_size(1)).to eq('1 Byte')
     expect(number_to_human_size(3.14159265)).to eq('3 Bytes')
@@ -134,7 +134,7 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
     expect(number_to_human_size(10)).to eq('10 Bytes')
   end
 
-  it 'number_to_human_size_with_options_hashes' do
+  it 'formats a human-readable size using custom options' do
     expect(number_to_human_size(1_234_567, precision: 2)).to eq('1.2 MB')
     expect(number_to_human_size(3.14159265, precision: 4)).to eq('3 Bytes')
     expect(number_to_human_size(kilobytes(1.0123), precision: 2)).to eq('1 KB')
@@ -152,7 +152,7 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
     expect(number_to_human_size(kilobytes(1.0123), precision: 0, significant: true)).to eq('1 KB')
   end
 
-  it 'number_to_human_size_with_custom_delimiter_and_separators' do
+  it 'formats a human-readable size using a custom delimiter and separator' do
     expect(number_to_human_size(kilobytes(1.0123), precision: 3,
                                                    separator: ',')).to eq('1,01 KB')
     expect(number_to_human_size(kilobytes(1.0100), precision: 4,
@@ -161,20 +161,20 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
                                                    separator: ',')).to eq('1.000,1 TB')
   end
 
-  it 'number_helpers_should_return_nil_when_given_nils' do
+  it 'returns nil when given nil' do
     expect(number_with_delimiter(nil)).to be_nil
     expect(number_with_precision(nil)).to be_nil
     expect(number_to_human_size(nil)).to be_nil
   end
 
-  it 'number_helpers_should_return_non_numeric_param_unchangeds' do
+  it 'returns non-numeric input unchanged' do
     expect(number_with_delimiter('x')).to eq('x')
     expect(number_with_precision('x.')).to eq('x.')
     expect(number_with_precision('x')).to eq('x')
     expect(number_to_human_size('x')).to eq('x')
   end
 
-  it 'number_helpers_should_raise_error_if_invalid_when_specifieds' do
+  it 'raises an error for invalid input when raise is specified' do
     expect do
       number_to_human_size('x', raise: true)
     end.to raise_error(SitemapGenerator::Helpers::NumberHelper::InvalidNumberError)
