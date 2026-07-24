@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapHelpers
   def with_max_links(num)
     original = SitemapGenerator::Sitemap.max_sitemap_links

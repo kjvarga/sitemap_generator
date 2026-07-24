@@ -132,23 +132,22 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:w3c_date, DateTime.new(0))).to eq('0000-01-01T00:00:00+00:00')
     end
 
-
     it 'returns strings unmodified' do
       expect(new_url.send(:w3c_date, '2010-01-01')).to eq('2010-01-01')
     end
 
     it 'tries to convert to utc' do
       time = Time.at(0)
-      expect(time).to receive(:respond_to?).and_return(false) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
-      expect(time).to receive(:respond_to?).and_return(true) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
+      expect(time).to receive(:respond_to?).and_return(false)
+      expect(time).to receive(:respond_to?).and_return(true)
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+00:00')
     end
 
     it 'includes timezone for objects which do not respond to iso8601 or utc' do
       time = Time.at(0)
-      expect(time).to receive(:respond_to?).and_return(false) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
-      expect(time).to receive(:respond_to?).and_return(false) # rubocop:disable RSpec/StubbedMock, RSpec/MessageSpies
-      expect(time).to receive(:strftime).and_return(+'+0800', '1970-01-01T00:00:00') # rubocop:disable RSpec/MessageSpies
+      expect(time).to receive(:respond_to?).and_return(false)
+      expect(time).to receive(:respond_to?).and_return(false)
+      expect(time).to receive(:strftime).and_return(+'+0800', '1970-01-01T00:00:00')
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+08:00')
     end
 
@@ -243,7 +242,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   end
 
   describe '#initialize' do
-    context 'lastmod' do
+    context 'when lastmod is not given' do
       let(:frozen_time) { Time.at(1_000_000).utc }
 
       before do
@@ -258,7 +257,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
 
     context 'when path contains non-ASCII characters' do
       it 'percent-encodes non-ASCII characters in the loc' do
-        url = SitemapGenerator::Builder::SitemapUrl.new('/RFC3986ü中文', host: 'http://example.com', lastmod: nil)
+        url = described_class.new('/RFC3986ü中文', host: 'http://example.com', lastmod: nil)
         expect(url[:loc]).to eq('http://example.com/RFC3986%C3%BC%E4%B8%AD%E6%96%87')
       end
     end
@@ -282,7 +281,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   describe 'alternates' do
     let(:xml_doc) do
       Nokogiri::XML(
-        "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' "         "xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{url.to_xml}</root>"
+        "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{url.to_xml}</root>"
       )
     end
     let(:alternate_link) { xml_doc.xpath('//xhtml:link', 'xhtml' => 'http://www.w3.org/1999/xhtml').first }

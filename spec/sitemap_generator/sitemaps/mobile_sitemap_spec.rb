@@ -1,14 +1,14 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'SitemapGenerator' do
-
-  it 'should add the mobile sitemap element' do
+  it 'adds the mobile sitemap element' do
     loc = 'http://www.example.com/mobile_page.html'
 
     mobile_xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('mobile_page.html',
-      :host => 'http://www.example.com',
-      :mobile => true
-    ).to_xml
+                                                                    host: 'http://www.example.com',
+                                                                    mobile: true).to_xml
 
     # Check that the options were parsed correctly
     doc = Nokogiri::XML.parse("<root xmlns:mobile='#{SitemapGenerator::SCHEMAS['mobile']}'>#{mobile_xml_fragment}</root>")

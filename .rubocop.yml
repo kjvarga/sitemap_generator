@@ -12,11 +12,107 @@ AllCops:
     - bin/*
     - gemfiles/*
     - pkg/**/*
-    - spec/**/*
     - vendor/**/*
     - integration/bin/*
-    - integration/spec/**/*
 
 Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: always
+
+# --- Test-suite relaxations (spec/**/*, integration/spec/**/*) ---
+# RuboCop was enabled on the test suite in 2026-07 (previously fully excluded).
+# The cops below are disabled/relaxed because fixing them means restructuring
+# a large fraction of the existing suite -- tracked as deliberate follow-up
+# work, not permanent exceptions. Revisit and re-enable individually as the
+# underlying tests get migrated.
+
+RSpec/MultipleExpectations:
+  Enabled: false # TODO: follow-up -- split multi-assert examples (172 instances, 31 files)
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive # matches this suite's established expect().to receive convention
+
+RSpec/StubbedMock:
+  Enabled: false # TODO: follow-up -- same migration as RSpec/MessageSpies (36 instances, 9 files)
+
+RSpec/InstanceVariable:
+  Enabled: false # TODO: follow-up -- convert @ivar usage to let (57 instances, 5 files)
+
+RSpec/SpecFilePathFormat:
+  Enabled: false # TODO: follow-up -- some are permanent (core_ext/adapters subdirectory layout), some
+                 # could be renamed (sitemap_namer_spec.rb, utilities/*); triage file-by-file (10 instances)
+
+RSpec/VerifiedDoubles:
+  Enabled: false # TODO: follow-up -- migrate plain doubles to instance_double/class_double (13 instances, 4 files)
+
+RSpec/ExpectInHook:
+  Enabled: false # TODO: follow-up -- move expectations out of before/after hooks into the example (9 instances, 5 files)
+
+RSpec/BeforeAfterAll:
+  Enabled: false # TODO: follow-up -- review before(:all)/after(:all) for state-leak risk (8 instances, 3 files)
+
+RSpec/AnyInstance:
+  Enabled: false # TODO: follow-up -- expect_any_instance_of in adapter specs; consider injectable SDK clients (3 instances)
+
+RSpec/SubjectStub:
+  Enabled: false # TODO: follow-up -- stubbing methods on the subject under test, sitemap_location_spec.rb (3 instances)
+
+RSpec/MultipleDescribes:
+  Enabled: false # TODO: follow-up -- nest the two top-level describes in sitemap_location_spec.rb (1 instance)
+
+RSpec/ExampleLength:
+  Enabled: false # TODO: follow-up -- several examples run 15-40 lines (XML fixture building,
+                 # multi-step sitemap generation); split up rather than pick an arbitrary Max
+
+RSpec/NestedGroups:
+  Max: 5 # default is 3; a few adapter/interpreter specs nest one or two levels deeper
+
+RSpec/NoExpectationExample:
+  AllowedPatterns:
+    - "^expect_"
+    - "^assert_"
+    - "should" # this suite's custom expectation helpers are named e.g. file_should_exist.
+               # TODO: follow-up -- move away from the should_* helper naming/style entirely
+               # rather than special-casing it here; not addressing now (out of scope).
+
+Style/Documentation:
+  Exclude:
+    - spec/**/*
+    - integration/spec/**/*
+  # Permanent, not follow-up debt: doc comments on test scaffolding/dummy-app fixtures
+  # add no value. Scoped here (not Enabled: false) so lib/ keeps full enforcement.
+
+Metrics/AbcSize:
+  Exclude:
+    - spec/sitemap_generator/sitemaps/video_sitemap_spec.rb
+  # TODO: follow-up -- validate_video_element test helper could be split up.
+
+Metrics/MethodLength:
+  Exclude:
+    - spec/sitemap_generator/sitemaps/video_sitemap_spec.rb
+  # TODO: follow-up -- same helper as Metrics/AbcSize above.
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - spec/sitemap_generator/adapters/active_storage_adapter_spec.rb
+  # TODO: follow-up -- inline stub-class constant used for the ActiveStorage adapter double.
+
+RSpec/LeakyConstantDeclaration:
+  Exclude:
+    - spec/sitemap_generator/adapters/active_storage_adapter_spec.rb
+  # TODO: follow-up -- same stub double as Lint/ConstantDefinitionInBlock above.
+
+Naming/PredicateMethod:
+  Exclude:
+    - spec/sitemap_generator/adapters/active_storage_adapter_spec.rb
+  # TODO: follow-up -- same stub double as Lint/ConstantDefinitionInBlock above.
+
+RSpec/RemoveConst:
+  Exclude:
+    - integration/spec/sitemap_generator/tasks_spec.rb
+  # TODO: follow-up -- replace remove_const with stub_const in this rake-task spec.
+
+Naming/ConstantName:
+  Exclude:
+    - integration/spec/sitemap_generator/tasks_spec.rb
+  # TODO: follow-up -- same rake-task spec constant as RSpec/RemoveConst above.

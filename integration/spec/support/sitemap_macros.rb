@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SitemapMacros
   def with_max_links(num)
     original = SitemapGenerator::Sitemap.max_sitemap_links
@@ -16,12 +18,13 @@ module SitemapMacros
   end
 
   def copy_sitemap_file_to_rails_app(extension)
-    FileUtils.cp(File.join(this_root, "spec/files/sitemap.#{extension}.rb"), SitemapGenerator.app.root + 'config/sitemap.rb')
+    FileUtils.cp(File.join(this_root, "spec/files/sitemap.#{extension}.rb"),
+                 SitemapGenerator.app.root.join('config/sitemap.rb'))
   end
 
   def delete_sitemap_file_from_rails_app
-    FileUtils.remove(SitemapGenerator.app.root + 'config/sitemap.rb')
-  rescue
+    FileUtils.remove(SitemapGenerator.app.root.join('config/sitemap.rb'))
+  rescue StandardError
     nil
   end
 

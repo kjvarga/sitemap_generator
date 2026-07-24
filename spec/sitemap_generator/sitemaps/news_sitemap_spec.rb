@@ -1,24 +1,23 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'SitemapGenerator' do
-
-  it 'should add the news sitemap element' do
-    loc = 'http://www.example.com/my_article.html'
-
+  it 'adds the news sitemap element' do
     news_xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('my_article.html', {
-      :host => 'http://www.example.com',
+                                                                    host: 'http://www.example.com',
 
-      :news => {
-        :publication_name => 'Example',
-        :publication_language => 'en',
-        :title => 'My Article',
-        :keywords => 'my article, articles about myself',
-        :stock_tickers => 'SAO:PETR3',
-        :publication_date => '2011-08-22',
-        :access => 'Subscription',
-        :genres => 'PressRelease'
-      }
-    }).to_xml
+                                                                    news: {
+                                                                      publication_name: 'Example',
+                                                                      publication_language: 'en',
+                                                                      title: 'My Article',
+                                                                      keywords: 'my article, articles about myself',
+                                                                      stock_tickers: 'SAO:PETR3',
+                                                                      publication_date: '2011-08-22',
+                                                                      access: 'Subscription',
+                                                                      genres: 'PressRelease'
+                                                                    }
+                                                                  }).to_xml
 
     doc = Nokogiri::XML.parse("<root xmlns:news='#{SitemapGenerator::SCHEMAS['news']}'>#{news_xml_fragment}</root>")
 

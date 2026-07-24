@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'google/cloud/storage'
 
@@ -10,7 +12,8 @@ RSpec.describe SitemapGenerator::GoogleStorageAdapter do
     it 'writes the raw data to a file and then uploads that file to Google Storage' do
       storage = double(:storage)
       bucket_resource = double(:bucket_resource)
-      expect(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc', project_id: 'project_id').and_return(storage)
+      expect(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc',
+                                                           project_id: 'project_id').and_return(storage)
       expect(storage).to receive(:bucket).with('bucket').and_return(bucket_resource)
       expect(location).to receive(:path_in_public).and_return('path_in_public')
       expect(location).to receive(:path).and_return('path')
