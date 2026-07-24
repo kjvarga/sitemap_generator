@@ -141,7 +141,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
     context 'when link count is at max' do
       let(:max_sitemap_links) { link_count }
 
-      it 'returns true' do
+      it 'returns false' do
         expect(sitemap).to receive(:max_sitemap_links).and_return(max_sitemap_links)
         expect(sitemap.file_can_fit?(1)).to be(false)
       end
