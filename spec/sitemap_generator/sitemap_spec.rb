@@ -18,7 +18,7 @@ RSpec.describe SitemapGenerator::Sitemap do
       expect(sitemap.method(:default_host)).to be_a Method
     end
 
-    it 'respects inheritance' do
+    it 'respects inheritance', :aggregate_failures do
       include_fake_inherited_method_missing
       expect(sitemap).to respond_to :something_inherited
       expect(sitemap.linkset_doesnt_know).to be :inherited

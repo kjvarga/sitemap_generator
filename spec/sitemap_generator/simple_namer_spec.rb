@@ -5,30 +5,26 @@ require 'spec_helper'
 RSpec.describe SitemapGenerator::SimpleNamer do
   it 'generates file names' do
     namer = described_class.new(:sitemap)
-    expect(namer.to_s).to eq('sitemap.xml.gz')
-    expect(namer.next.to_s).to eq('sitemap1.xml.gz')
-    expect(namer.next.to_s).to eq('sitemap2.xml.gz')
+    names = [namer.to_s, namer.next.to_s, namer.next.to_s]
+    expect(names).to eq(%w[sitemap.xml.gz sitemap1.xml.gz sitemap2.xml.gz])
   end
 
   it 'sets the file extension' do
     namer = described_class.new(:sitemap, extension: '.xyz')
-    expect(namer.to_s).to eq('sitemap.xyz')
-    expect(namer.next.to_s).to eq('sitemap1.xyz')
-    expect(namer.next.to_s).to eq('sitemap2.xyz')
+    names = [namer.to_s, namer.next.to_s, namer.next.to_s]
+    expect(names).to eq(%w[sitemap.xyz sitemap1.xyz sitemap2.xyz])
   end
 
   it 'sets the starting index' do
     namer = described_class.new(:sitemap, start: 10)
-    expect(namer.to_s).to eq('sitemap.xml.gz')
-    expect(namer.next.to_s).to eq('sitemap10.xml.gz')
-    expect(namer.next.to_s).to eq('sitemap11.xml.gz')
+    names = [namer.to_s, namer.next.to_s, namer.next.to_s]
+    expect(names).to eq(%w[sitemap.xml.gz sitemap10.xml.gz sitemap11.xml.gz])
   end
 
   it 'accepts a string name' do
     namer = described_class.new('abc-def')
-    expect(namer.to_s).to eq('abc-def.xml.gz')
-    expect(namer.next.to_s).to eq('abc-def1.xml.gz')
-    expect(namer.next.to_s).to eq('abc-def2.xml.gz')
+    names = [namer.to_s, namer.next.to_s, namer.next.to_s]
+    expect(names).to eq(%w[abc-def.xml.gz abc-def1.xml.gz abc-def2.xml.gz])
   end
 
   it 'returns previous name' do
@@ -51,15 +47,14 @@ RSpec.describe SitemapGenerator::SimpleNamer do
 
   it 'raises if already at the start' do
     namer = described_class.new(:sitemap)
-    expect(namer.to_s).to eq('sitemap.xml.gz')
     # Use a regex because in Ruby 3.1 the error message includes newlines and the first line of backtrace
     expect { namer.previous }.to raise_error(NameError, /Already at the start of the series/)
   end
 
   it 'handles names with underscores' do
     namer = described_class.new('sitemap1_')
-    expect(namer.to_s).to eq('sitemap1_.xml.gz')
-    expect(namer.next.to_s).to eq('sitemap1_1.xml.gz')
+    names = [namer.to_s, namer.next.to_s]
+    expect(names).to eq(%w[sitemap1_.xml.gz sitemap1_1.xml.gz])
   end
 
   it 'resets the namer' do
@@ -77,33 +72,32 @@ RSpec.describe SitemapGenerator::SimpleNamer do
   describe 'should handle the zero option' do
     it 'as a plain string' do
       namer = described_class.new(:sitemap, zero: 'string')
-      expect(namer.to_s).to eq('sitemapstring.xml.gz')
-      expect(namer.next.to_s).to eq('sitemap1.xml.gz')
+      names = [namer.to_s, namer.next.to_s]
+      expect(names).to eq(%w[sitemapstring.xml.gz sitemap1.xml.gz])
     end
 
     it 'as an integer' do
       namer = described_class.new(:sitemap, zero: 0)
-      expect(namer.to_s).to eq('sitemap0.xml.gz')
-      expect(namer.next.to_s).to eq('sitemap1.xml.gz')
+      names = [namer.to_s, namer.next.to_s]
+      expect(names).to eq(%w[sitemap0.xml.gz sitemap1.xml.gz])
     end
 
     it 'as a string with a leading underscore' do
       namer = described_class.new(:sitemap, zero: '_index')
-      expect(namer.to_s).to eq('sitemap_index.xml.gz')
-      expect(namer.next.to_s).to eq('sitemap1.xml.gz')
+      names = [namer.to_s, namer.next.to_s]
+      expect(names).to eq(%w[sitemap_index.xml.gz sitemap1.xml.gz])
     end
 
     it 'as a symbol' do
       namer = described_class.new(:sitemap, zero: :index)
-      expect(namer.to_s).to eq('sitemapindex.xml.gz')
-      expect(namer.next.to_s).to eq('sitemap1.xml.gz')
+      names = [namer.to_s, namer.next.to_s]
+      expect(names).to eq(%w[sitemapindex.xml.gz sitemap1.xml.gz])
     end
 
     it 'with a starting index' do
       namer = described_class.new(:sitemap, zero: 'abc', start: 10)
-      expect(namer.to_s).to eq('sitemapabc.xml.gz')
-      expect(namer.next.to_s).to eq('sitemap10.xml.gz')
-      expect(namer.next.to_s).to eq('sitemap11.xml.gz')
+      names = [namer.to_s, namer.next.to_s, namer.next.to_s]
+      expect(names).to eq(%w[sitemapabc.xml.gz sitemap10.xml.gz sitemap11.xml.gz])
     end
   end
 end

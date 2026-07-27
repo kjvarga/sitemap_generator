@@ -27,8 +27,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   end
 
   it 'is empty' do
-    expect(sitemap.empty?).to be(true)
-    expect(sitemap.link_count).to eq(0)
+    expect(sitemap).to have_attributes(empty?: true, link_count: 0)
   end
 
   it 'is not finalized' do
@@ -58,7 +57,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
         allow(FileUtils).to receive(:mkdir_p)
       end
 
-      it 'calls Utilities.current_time during write and uses the result as lastmod' do
+      it 'calls Utilities.current_time during write and uses the result as lastmod', :aggregate_failures do
         expect(SitemapGenerator::Utilities).to receive(:current_time)
         sitemap.write
         expect(sitemap.lastmod).to eq(frozen_time)
@@ -77,8 +76,8 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
 
     it 'inherits the same options' do
       # The name is the same because the original sitemap was not finalized
-      expect(new_sitemap.location.url).to eq('http://example.com/test/sitemap1.xml.gz')
-      expect(new_sitemap.location.path).to eq(File.expand_path('tmp/test/sitemap1.xml.gz'))
+      expect(new_sitemap.location).to have_attributes(url: 'http://example.com/test/sitemap1.xml.gz',
+                                                      path: File.expand_path('tmp/test/sitemap1.xml.gz'))
     end
 
     it 'does not share the same location instance' do
@@ -91,7 +90,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
   end
 
   describe 'reserve_name' do
-    it 'reserves the name from the location' do
+    it 'reserves the name from the location', :aggregate_failures do
       expect(sitemap.reserved_name?).to be(false)
       allow(sitemap.location).to receive(:reserve_name).and_return('name')
       sitemap.reserve_name
@@ -160,7 +159,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapFile' do
     end
 
     context 'when present in the location' do
-      it 'returns the value from the location' do
+      it 'returns the value from the location', :aggregate_failures do
         allow(sitemap.location).to receive(:[]).with(:max_sitemap_links).and_return(10)
         expect(sitemap.location).to receive(:[]).with(:max_sitemap_links)
         expect(sitemap.max_sitemap_links).to eq(10)

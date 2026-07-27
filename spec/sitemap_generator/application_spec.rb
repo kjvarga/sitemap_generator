@@ -30,7 +30,7 @@ RSpec.describe SitemapGenerator::Application do
   describe 'with Rails' do
     let(:root) { '/test' }
 
-    it 'uses the Rails.root' do
+    it 'uses the Rails.root', :aggregate_failures do
       expect(Rails).to receive(:root).and_return(root).at_least(:once)
       expect(app.root).to be_a(Pathname)
       expect(app.root.to_s).to eq(root)
@@ -47,7 +47,7 @@ RSpec.describe SitemapGenerator::Application do
       expect(app.is_rails?).to be(false)
     end
 
-    it 'uses the current working directory' do
+    it 'uses the current working directory', :aggregate_failures do
       expect(app.root).to be_a(Pathname)
       expect(app.root.to_s).to eq(Dir.getwd)
       expect(app.root.join('public/').to_s).to eq(File.join(Dir.getwd, 'public/'))

@@ -63,9 +63,6 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
 
   it 'formats a number with precision' do
     number_with_precision_cases.each { |args, expected| expect(number_with_precision(*args)).to eq(expected) }
-    # Odd difference between Ruby versions
-    expected_when_rounding_up_a_five = RUBY_VERSION < '1.9.3' ? '9.99' : '10.00'
-    expect(number_with_precision(9.995, precision: 2)).to eq(expected_when_rounding_up_a_five)
   end
 
   def number_with_precision_cases
@@ -76,7 +73,9 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
       [111.2346, { precision: 2 }] => '111.23',
       [111, { precision: 2 }] => '111.00',
       ['111.2346'] => '111.235',
-      ['31.825', { precision: 2 }] => '31.83'
+      ['31.825', { precision: 2 }] => '31.83',
+      # Odd difference between Ruby versions when rounding up a five
+      [9.995, { precision: 2 }] => RUBY_VERSION < '1.9.3' ? '9.99' : '10.00'
     }.merge(more_number_with_precision_cases)
   end
 
@@ -93,8 +92,10 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
   end
 
   it 'formats a number with precision using a custom delimiter and separator' do
-    expect(number_with_precision(31.825, precision: 2, separator: ',')).to eq('31,83')
-    expect(number_with_precision(1231.825, precision: 2, separator: ',', delimiter: '.')).to eq('1.231,83')
+    {
+      [31.825, { precision: 2, separator: ',' }] => '31,83',
+      [1231.825, { precision: 2, separator: ',', delimiter: '.' }] => '1.231,83'
+    }.each { |args, expected| expect(number_with_precision(*args)).to eq(expected) }
   end
 
   it 'formats a number with precision using significant digits' do
@@ -137,19 +138,21 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
   end
 
   it 'strips insignificant zeros when formatting with precision' do
-    expect(number_with_precision(9775.43, precision: 4, strip_insignificant_zeros: true)).to eq('9775.43')
-    expect(number_with_precision(9775.2, precision: 6, significant: true,
-                                         strip_insignificant_zeros: true)).to eq('9775.2')
-    expect(number_with_precision(0, precision: 6, significant: true,
-                                    strip_insignificant_zeros: true)).to eq('0')
+    {
+      [9775.43, { precision: 4, strip_insignificant_zeros: true }] => '9775.43',
+      [9775.2, { precision: 6, significant: true, strip_insignificant_zeros: true }] => '9775.2',
+      [0, { precision: 6, significant: true, strip_insignificant_zeros: true }] => '0'
+    }.each { |args, expected| expect(number_with_precision(*args)).to eq(expected) }
   end
 
   it 'treats significant as false when precision is zero' do
     # Zero precision with significant is a mistake (would always return zero),
     # so we treat it as if significant was false (increases backwards compatibily for number_to_human_size)
-    expect(number_with_precision(123.987, precision: 0, significant: true)).to eq('124')
-    expect(number_with_precision(12, precision: 0, significant: true)).to eq('12')
-    expect(number_with_precision('12.3', precision: 0, significant: true)).to eq('12')
+    {
+      [123.987, { precision: 0, significant: true }] => '124',
+      [12, { precision: 0, significant: true }] => '12',
+      ['12.3', { precision: 0, significant: true }] => '12'
+    }.each { |args, expected| expect(number_with_precision(*args)).to eq(expected) }
   end
 
   it 'formats a number as a human-readable size' do
@@ -229,16 +232,14 @@ RSpec.describe SitemapGenerator::Helpers::NumberHelper do
   end
 
   it 'returns nil when given nil' do
-    expect(number_with_delimiter(nil)).to be_nil
-    expect(number_with_precision(nil)).to be_nil
-    expect(number_to_human_size(nil)).to be_nil
+    results = [number_with_delimiter(nil), number_with_precision(nil), number_to_human_size(nil)]
+    expect(results).to all(be_nil)
   end
 
   it 'returns non-numeric input unchanged' do
-    expect(number_with_delimiter('x')).to eq('x')
-    expect(number_with_precision('x.')).to eq('x.')
-    expect(number_with_precision('x')).to eq('x')
-    expect(number_to_human_size('x')).to eq('x')
+    results = [number_with_delimiter('x'), number_with_precision('x.'), number_with_precision('x'),
+               number_to_human_size('x')]
+    expect(results).to eq(['x', 'x.', 'x', 'x'])
   end
 
   it 'raises an error for invalid input when raise is specified' do

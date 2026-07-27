@@ -6,11 +6,17 @@ require 'bigdecimal'
 RSpec.describe SitemapGenerator::BigDecimal do
   describe 'to_yaml' do
     it 'serializes correctly' do
+      serialization_cases.each { |value, pattern| expect(described_class.new(value).to_yaml).to match(pattern) }
+    end
+
+    def serialization_cases
       big_number = '100000.30020320320000000000000000000000000000001'
-      expect(described_class.new(big_number).to_yaml).to match(/^--- #{Regexp.escape(big_number)}\n/)
-      expect(described_class.new('Infinity').to_yaml).to match(/^--- \.Inf\n/)
-      expect(described_class.new('NaN').to_yaml).to match(/^--- \.NaN\n/)
-      expect(described_class.new('-Infinity').to_yaml).to match(/^--- -\.Inf\n/)
+      {
+        big_number => /^--- #{Regexp.escape(big_number)}\n/,
+        'Infinity' => /^--- \.Inf\n/,
+        'NaN' => /^--- \.NaN\n/,
+        '-Infinity' => /^--- -\.Inf\n/
+      }
     end
   end
 

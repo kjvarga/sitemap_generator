@@ -37,25 +37,24 @@ RSpec.describe SitemapGenerator::Utilities do
     end
 
     it 'symbolizes keys' do
-      expect(utils.symbolize_keys(symbols)).to eq(symbols)
-      expect(utils.symbolize_keys(strings)).to eq(symbols)
-      expect(utils.symbolize_keys(mixed)).to eq(symbols)
+      results = [utils.symbolize_keys(symbols), utils.symbolize_keys(strings), utils.symbolize_keys(mixed)]
+      expect(results).to all(eq(symbols))
     end
 
     it 'symbolizes keys destructively' do
-      expect(utils.symbolize_keys!(symbols.dup)).to eq(symbols)
-      expect(utils.symbolize_keys!(strings.dup)).to eq(symbols)
-      expect(utils.symbolize_keys!(mixed.dup)).to eq(symbols)
+      results = [utils.symbolize_keys!(symbols.dup), utils.symbolize_keys!(strings.dup),
+                 utils.symbolize_keys!(mixed.dup)]
+      expect(results).to all(eq(symbols))
     end
 
     it 'preserves keys that cannot be symbolized' do
-      expect(utils.symbolize_keys(illegal_symbols)).to eq(illegal_symbols)
-      expect(utils.symbolize_keys!(illegal_symbols.dup)).to eq(illegal_symbols)
+      results = [utils.symbolize_keys(illegal_symbols), utils.symbolize_keys!(illegal_symbols.dup)]
+      expect(results).to all(eq(illegal_symbols))
     end
 
     it 'preserves fixnum keys' do
-      expect(utils.symbolize_keys(fixnums)).to eq(fixnums)
-      expect(utils.symbolize_keys!(fixnums.dup)).to eq(fixnums)
+      results = [utils.symbolize_keys(fixnums), utils.symbolize_keys!(fixnums.dup)]
+      expect(results).to all(eq(fixnums))
     end
   end
   # rubocop:enable RSpec/MultipleMemoizedHelpers

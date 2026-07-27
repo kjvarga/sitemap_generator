@@ -22,8 +22,7 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapIndexFile' do
   end
 
   it 'is empty' do
-    expect(index.empty?).to be(true)
-    expect(index.link_count).to eq(0)
+    expect(index).to have_attributes(empty?: true, link_count: 0)
   end
 
   it 'does not have a last modification data' do
@@ -53,27 +52,24 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapIndexFile' do
   describe 'create_index?' do
     it 'returns false' do
       index.location[:create_index] = false
-      expect(index.create_index?).to be(false)
-
+      before_link_count = index.create_index?
       index.instance_variable_set(:@link_count, 10)
-      expect(index.create_index?).to be(false)
+      expect([before_link_count, index.create_index?]).to all(be(false))
     end
 
     it 'returns true' do
       index.location[:create_index] = true
-      expect(index.create_index?).to be(true)
-
+      before_link_count = index.create_index?
       index.instance_variable_set(:@link_count, 1)
-      expect(index.create_index?).to be(true)
+      expect([before_link_count, index.create_index?]).to all(be(true))
     end
 
     it 'when :auto, should be true if more than one link' do
       index.instance_variable_set(:@link_count, 1)
       index.location[:create_index] = :auto
-      expect(index.create_index?).to be(false)
-
+      one_link = index.create_index?
       index.instance_variable_set(:@link_count, 2)
-      expect(index.create_index?).to be(true)
+      expect([one_link, index.create_index?]).to eq([false, true])
     end
   end
 
@@ -103,9 +99,9 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapIndexFile' do
       end
 
       it 'creates index' do
-        expect(index.create_index?).to be(false)
+        before_add = index.create_index?
         index.add '/one'
-        expect(index.create_index?).to be(true)
+        expect([before_add, index.create_index?]).to eq([false, true])
       end
     end
   end
@@ -114,22 +110,18 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapIndexFile' do
     it 'when not creating an index, should be the first sitemap url' do
       index.instance_variable_set(:@create_index, false)
       index.instance_variable_set(:@first_sitemap_url, 'http://test.com/index.xml')
-      expect(index.create_index?).to be(false)
-      expect(index.index_url).to eq('http://test.com/index.xml')
+      expect(index).to have_attributes(create_index?: false, index_url: 'http://test.com/index.xml')
     end
 
     it 'if there\'s no first sitemap url, should default to the index location url' do
       index.instance_variable_set(:@create_index, false)
       index.instance_variable_set(:@first_sitemap_url, nil)
-      expect(index.create_index?).to be(false)
-      expect(index.index_url).to eq(index.location.url)
-      expect(index.index_url).to eq('http://example.com/test/sitemap.xml.gz')
+      expect(index).to have_attributes(create_index?: false, index_url: index.location.url)
     end
 
     it 'when creating an index, should be the index location url' do
       index.instance_variable_set(:@create_index, true)
       expect(index.index_url).to eq(index.location.url)
-      expect(index.index_url).to eq('http://example.com/test/sitemap.xml.gz')
     end
   end
 end

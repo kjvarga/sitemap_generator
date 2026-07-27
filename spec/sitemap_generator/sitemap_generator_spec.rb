@@ -27,7 +27,7 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     # rubocop:disable RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
-    it 'sets a new LinkSet instance' do
+    it 'sets a new LinkSet instance', :aggregate_failures do
       first = SitemapGenerator::Sitemap.instance_variable_get(:@link_set)
       expect(first).to be_a(SitemapGenerator::LinkSet)
       SitemapGenerator::Sitemap.reset!
@@ -290,11 +290,14 @@ RSpec.describe 'SitemapGenerator' do
 
   describe 'yield_sitemap' do
     it 'sets the yield_sitemap flag' do
+      results = [false, true].map { |value| toggle_yield_sitemap?(value) }
       SitemapGenerator.yield_sitemap = false
-      expect(SitemapGenerator.yield_sitemap?).to be(false)
-      SitemapGenerator.yield_sitemap = true
-      expect(SitemapGenerator.yield_sitemap?).to be(true)
-      SitemapGenerator.yield_sitemap = false
+      expect(results).to eq([false, true])
+    end
+
+    def toggle_yield_sitemap?(value)
+      SitemapGenerator.yield_sitemap = value
+      SitemapGenerator.yield_sitemap?
     end
   end
 
@@ -509,10 +512,8 @@ RSpec.describe 'SitemapGenerator' do
 
   describe 'respond_to?' do
     it 'correctly identifies the methods that it responds to' do
-      expect(SitemapGenerator::Sitemap.respond_to?(:create)).to be(true)
-      expect(SitemapGenerator::Sitemap.respond_to?(:adapter)).to be(true)
-      expect(SitemapGenerator::Sitemap.respond_to?(:default_host)).to be(true)
-      expect(SitemapGenerator::Sitemap.respond_to?(:invalid_func)).to be(false)
+      methods = %i[create adapter default_host invalid_func]
+      expect(methods.map { |m| SitemapGenerator::Sitemap.respond_to?(m) }).to eq([true, true, true, false])
     end
   end
 end

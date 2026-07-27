@@ -15,7 +15,7 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     # rubocop:disable RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
-    it 'sets a new LinkSet instance' do
+    it 'sets a new LinkSet instance', :aggregate_failures do
       first = SitemapGenerator::Sitemap.instance_variable_get(:@link_set)
       expect(first).to be_a(SitemapGenerator::LinkSet)
       SitemapGenerator::Sitemap.reset!
@@ -235,7 +235,7 @@ RSpec.describe 'SitemapGenerator' do
     describe 'rails' do
       before { hide_const('Rails') }
 
-      it 'works outside of Rails' do
+      it 'works outside of Rails', :aggregate_failures do
         expect(defined?(Rails)).to be_nil
         expect { SitemapGenerator::LinkSet.new }.not_to raise_exception
       end

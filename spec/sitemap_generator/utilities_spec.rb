@@ -26,34 +26,31 @@ RSpec.describe SitemapGenerator::Utilities do
 
   describe 'titleize' do
     it 'titleizes words and replace underscores' do
-      expect(described_class.titleize('google')).to eq('Google')
-      expect(described_class.titleize('amy_and_jon')).to eq('Amy And Jon')
+      { 'google' => 'Google', 'amy_and_jon' => 'Amy And Jon' }.each do |input, expected|
+        expect(described_class.titleize(input)).to eq(expected)
+      end
     end
   end
 
   describe 'truthy?' do
     it 'is truthy' do
-      ['1', 1, 't', 'true', true].each do |value|
-        expect(described_class.truthy?(value)).to be(true)
-      end
-      expect(described_class.truthy?(nil)).to be(false)
+      truthy_cases = { '1' => true, 1 => true, 't' => true, 'true' => true, true => true, nil => false }
+      truthy_cases.each { |value, expected| expect(described_class.truthy?(value)).to be(expected) }
     end
   end
 
   describe 'falsy?' do
     it 'is falsy' do
-      ['0', 0, 'f', 'false', false].each do |value|
-        expect(described_class.falsy?(value)).to be(true)
-      end
-      expect(described_class.falsy?(nil)).to be(false)
+      falsy_cases = { '0' => true, 0 => true, 'f' => true, 'false' => true, false => true, nil => false }
+      falsy_cases.each { |value, expected| expect(described_class.falsy?(value)).to be(expected) }
     end
   end
 
   describe 'as_array' do
     it 'returns an array unchanged' do
-      expect(described_class.as_array([])).to eq([])
-      expect(described_class.as_array([1])).to eq([1])
-      expect(described_class.as_array([1, 2, 3])).to eq([1, 2, 3])
+      { [] => [], [1] => [1], [1, 2, 3] => [1, 2, 3] }.each do |input, expected|
+        expect(described_class.as_array(input)).to eq(expected)
+      end
     end
 
     it 'returns empty array on nil' do
@@ -61,10 +58,9 @@ RSpec.describe SitemapGenerator::Utilities do
     end
 
     it 'makes array of item otherwise' do
-      expect(described_class.as_array('')).to eq([''])
-      expect(described_class.as_array(1)).to eq([1])
-      expect(described_class.as_array('hello')).to eq(['hello'])
-      expect(described_class.as_array({})).to eq([{}])
+      [['', ['']], [1, [1]], ['hello', ['hello']], [{}, [{}]]].each do |input, expected|
+        expect(described_class.as_array(input)).to eq(expected)
+      end
     end
   end
 
@@ -107,9 +103,9 @@ RSpec.describe SitemapGenerator::Utilities do
 
     context 'when string is shorter than the ellipsis itself' do
       it 'returns ellipsis' do
-        expect(described_class.ellipsis('a', 1)).to eq('a')
-        expect(described_class.ellipsis('aa', 1)).to eq('...')
-        expect(described_class.ellipsis('aaa', 1)).to eq('...')
+        { 'a' => 'a', 'aa' => '...', 'aaa' => '...' }.each do |input, expected|
+          expect(described_class.ellipsis(input, 1)).to eq(expected)
+        end
       end
     end
   end

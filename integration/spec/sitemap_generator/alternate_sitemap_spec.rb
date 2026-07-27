@@ -6,9 +6,8 @@ RSpec.describe 'SitemapGenerator' do
   it 'does not include media element unless provided' do
     alternate = alternate_link_node(alternates: [{ lang: 'de',
                                                    href: 'http://www.example.de/link_with_alternate.html' }])
-    expect(alternate.attribute('rel').value).to eq('alternate')
-    expect(alternate.attribute('hreflang').value).to eq('de')
-    expect(alternate.attribute('media')).to be_nil
+    attrs = [alternate.attribute('rel').value, alternate.attribute('hreflang').value, alternate.attribute('media')]
+    expect(attrs).to eq(['alternate', 'de', nil])
   end
 
   it 'adds alternate links to sitemap' do

@@ -142,7 +142,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+00:00')
     end
 
-    it 'includes timezone for objects which do not respond to iso8601 or utc' do
+    it 'includes timezone for objects which do not respond to iso8601 or utc', :aggregate_failures do
       time = Time.at(0)
       allow(time).to receive(:respond_to?).and_return(false)
       expect(time).to receive(:strftime).and_return(+'+0800', '1970-01-01T00:00:00')
@@ -204,8 +204,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
     end
 
     it 'raises on unrecognized strings' do
-      expect { new_url.send(:yes_or_no, 'dunno') }.to raise_error(ArgumentError)
-      expect { new_url.send(:yes_or_no, 'yessir') }.to raise_error(ArgumentError)
+      %w[dunno yessir].each { |value| expect { new_url.send(:yes_or_no, value) }.to raise_error(ArgumentError) }
     end
   end
 

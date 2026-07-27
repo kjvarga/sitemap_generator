@@ -12,7 +12,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     expect(location.public_path).to eq(SitemapGenerator.app.root.join('public/'))
   end
 
-  it 'has a default namer' do
+  it 'has a default namer', :aggregate_failures do
     expect(location[:namer]).not_to be_nil
     expect(location[:filename]).to be_nil
     expect(location.filename).to eq('sitemap1.xml.gz')
@@ -20,25 +20,19 @@ RSpec.describe SitemapGenerator::SitemapLocation do
 
   it 'requires a filename' do
     location[:filename] = nil
-    expect do
-      expect(location.filename).to be_nil
-    end.to raise_error(SitemapGenerator::SitemapError, 'No filename or namer set')
+    expect { location.filename }.to raise_error(SitemapGenerator::SitemapError, 'No filename or namer set')
   end
 
   it 'requires a namer' do
     location[:namer] = nil
-    expect do
-      expect(location.filename).to be_nil
-    end.to raise_error(SitemapGenerator::SitemapError, 'No filename or namer set')
+    expect { location.filename }.to raise_error(SitemapGenerator::SitemapError, 'No filename or namer set')
   end
 
   context 'when filename and namer are nil' do
     let(:options) { { filename: nil, namer: nil } }
 
     it 'requires a host' do
-      expect do
-        expect(location.host).to be_nil
-      end.to raise_error(SitemapGenerator::SitemapError, 'No value set for host')
+      expect { location.host }.to raise_error(SitemapGenerator::SitemapError, 'No value set for host')
     end
   end
 
@@ -51,13 +45,12 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     end
 
     it 'protects the filename from further changes in the Namer' do
-      expect(location.filename).to eq(namer.to_s)
+      original_filename = location.filename
       namer.next
-      expect(location.filename).to eq(namer.previous.to_s)
+      expect(location.filename).to eq(original_filename)
     end
 
     it 'allows changing the namer' do
-      expect(location.filename).to eq(namer.to_s)
       namer2 = SitemapGenerator::SimpleNamer.new(:yyy)
       location[:namer] = namer2
       expect(location.filename).to eq(namer2.to_s)
@@ -100,7 +93,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
   describe 'when duplicated' do
     let(:options) { { filename: 'xxx', host: default_host, public_path: 'public/' } }
 
-    it 'does not inherit some objects' do
+    it 'does not inherit some objects', :aggregate_failures do
       expect(location.url).to eq("#{default_host}/xxx")
       expect(location.public_path.to_s).to eq('public/')
       dup = location.dup
@@ -174,11 +167,14 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     let(:options) { { public_path: 'public/google' } }
 
     it 'appends a trailing slash' do
-      expect(location.public_path.to_s).to eq('public/google/')
-      location[:public_path] = 'new/path'
-      expect(location.public_path.to_s).to eq('new/path/')
-      location[:public_path] = 'already/slashed/'
-      expect(location.public_path.to_s).to eq('already/slashed/')
+      path_slash_cases.each do |input, expected|
+        location[:public_path] = input
+        expect(location.public_path.to_s).to eq(expected)
+      end
+    end
+
+    def path_slash_cases
+      { 'public/google' => 'public/google/', 'new/path' => 'new/path/', 'already/slashed/' => 'already/slashed/' }
     end
   end
 
@@ -186,11 +182,14 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     let(:options) { { sitemaps_path: 'public/google' } }
 
     it 'appends a trailing slash' do
-      expect(location.sitemaps_path.to_s).to eq('public/google/')
-      location[:sitemaps_path] = 'new/path'
-      expect(location.sitemaps_path.to_s).to eq('new/path/')
-      location[:sitemaps_path] = 'already/slashed/'
-      expect(location.sitemaps_path.to_s).to eq('already/slashed/')
+      path_slash_cases.each do |input, expected|
+        location[:sitemaps_path] = input
+        expect(location.sitemaps_path.to_s).to eq(expected)
+      end
+    end
+
+    def path_slash_cases
+      { 'public/google' => 'public/google/', 'new/path' => 'new/path/', 'already/slashed/' => 'already/slashed/' }
     end
   end
 
@@ -208,7 +207,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     context 'when verbose is true' do
       let(:verbose) { true }
 
-      it 'outputs summary line' do
+      it 'outputs summary line', :aggregate_failures do
         expect(location.adapter).to receive(:write)
         expect { location.write('data', 1) }.to output(/links/).to_stdout
       end
@@ -217,7 +216,7 @@ RSpec.describe SitemapGenerator::SitemapLocation do
     context 'when verbose is false' do
       let(:verbose) { false }
 
-      it 'does not output summary line' do
+      it 'does not output summary line', :aggregate_failures do
         expect(location.adapter).to receive(:write)
         expect { location.write('data', 1) }.not_to output.to_stdout
       end

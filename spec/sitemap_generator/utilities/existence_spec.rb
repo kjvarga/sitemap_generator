@@ -21,12 +21,14 @@ RSpec.describe Object do
   let(:utils) { SitemapGenerator::Utilities }
 
   it 'defines blankness' do
-    BLANK.each { |v| expect(utils.blank?(v)).to be(true) }
-    NOT.each   { |v| expect(utils.blank?(v)).to be(false) }
+    blankness_cases.each { |v, expected| expect(utils.blank?(v)).to be(expected) }
   end
 
   it 'defines presence' do
-    BLANK.each { |v| expect(utils.present?(v)).to be(false) }
-    NOT.each   { |v| expect(utils.present?(v)).to be(true) }
+    blankness_cases.each { |v, expected| expect(utils.present?(v)).to be(!expected) }
+  end
+
+  def blankness_cases
+    BLANK.map { |v| [v, true] } + NOT.map { |v| [v, false] }
   end
 end

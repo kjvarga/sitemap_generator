@@ -28,7 +28,7 @@ RSpec.describe SitemapGenerator::Interpreter do
     expect { described_class.run }.not_to raise_error
   end
 
-  it 'sets the verbose option' do
+  it 'sets the verbose option', :aggregate_failures do
     allow(described_class).to receive(:new).and_wrap_original do |original_new, *args|
       original_new.call(*args).tap { |instance| expect(instance).to receive(:instance_eval) }
     end

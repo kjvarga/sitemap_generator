@@ -24,15 +24,22 @@ RSpec.describe SitemapGenerator::Utilities do
     end
 
     it 'rounds for negative number' do
-      expect(utils.round(-1.4)).to eq(-1)
-      expect(utils.round(-1.6)).to eq(-2)
-      expect(utils.round(-1.4, 1)).to eq(-1.4)
-      expect(utils.round(-1.45, 1)).to eq(-1.5)
+      negative_rounding_cases.each { |args, expected| expect(utils.round(*args)).to eq(expected) }
+    end
+
+    def negative_rounding_cases
+      {
+        [-1.4] => -1,
+        [-1.6] => -2,
+        [-1.4, 1] => -1.4,
+        [-1.45, 1] => -1.5
+      }
     end
 
     it 'rounds with negative precision' do
-      expect(utils.round(123_456.0, -1)).to eq(123_460.0)
-      expect(utils.round(123_456.0, -2)).to eq(123_500.0)
+      { [123_456.0, -1] => 123_460.0, [123_456.0, -2] => 123_500.0 }.each do |args, expected|
+        expect(utils.round(*args)).to eq(expected)
+      end
     end
   end
 end

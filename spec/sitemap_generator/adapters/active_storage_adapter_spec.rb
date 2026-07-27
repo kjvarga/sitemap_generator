@@ -30,7 +30,7 @@ RSpec.describe 'SitemapGenerator::ActiveStorageAdapter' do
   end
 
   describe 'write' do
-    it 'creates an ActiveStorage::Blob record' do
+    it 'creates an ActiveStorage::Blob record', :aggregate_failures do
       expect(location).to receive(:filename).and_return('sitemap.xml.gz').at_least(:twice)
       expect(adapter.write(location, 'data')).to eq 'ActiveStorage::Blob'
     end

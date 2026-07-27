@@ -19,9 +19,6 @@ Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: always
 
-RSpec/MultipleExpectations:
-  Enabled: false # TODO: follow-up -- split multi-assert examples (172 instances, 31 files)
-
 RSpec/MessageSpies:
   EnforcedStyle: receive
 

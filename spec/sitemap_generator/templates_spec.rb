@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe SitemapGenerator::Templates do
   it 'provides method access to each template' do
     SitemapGenerator::Templates::FILES.each do |name, file|
-      expect(SitemapGenerator.templates.send(name)).not_to be_nil
-      expect(SitemapGenerator.templates.send(name)).to eq(File.read(File.join(SitemapGenerator.root, 'templates',
-                                                                              file)))
+      expected = File.read(File.join(SitemapGenerator.root, 'templates', file))
+      expect(SitemapGenerator.templates.send(name)).to eq(expected)
     end
   end
 
