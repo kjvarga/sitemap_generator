@@ -13,5 +13,5 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.metadata = { 'rubygems_mfa_required' => 'true' }
   s.add_dependency 'builder', '~> 3.0'
-  s.files = Dir.glob('{lib,rails,templates}/**/*') + %w[CHANGES.md MIT-LICENSE README.md VERSION]
+  s.files = Dir.glob('{lib,rails,templates}/**/*') + %w[CHANGELOG.md MIT-LICENSE README.md VERSION]
 end
