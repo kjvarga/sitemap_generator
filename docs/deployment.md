@@ -16,7 +16,7 @@
 1. **Audit commits since the last release.** Run `git log vX.Y.Z..HEAD --oneline` (substituting the previous release tag) and confirm every commit is intentional and accounted for. PRs can accumulate on `master` between releases without being noticed — this step prevents unintentional changes from shipping as patch releases.
 1. Create a release branch named `release-X.Y.Z` (for example, `release-7.0.2`).
 1. Update `VERSION` (e.g. `7.0.2`).
-1. Add a `## [X.Y.Z] - YYYY-MM-DD` section to `CHANGELOG.md` describing every change identified in step 2. Entries follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/): group bullets under `### Added` / `### Changed` / `### Deprecated` / `### Removed` / `### Fixed` / `### Security`, and flag breaking changes with a `**BREAKING**` prefix.
+1. Add a `## [X.Y.Z] - YYYY-MM-DD` section to `CHANGELOG.md` describing every change identified in step 2. Entries follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/): group bullets under `### Added` / `### Changed` / `### Deprecated` / `### Removed` / `### Fixed` / `### Security` (plus this project's `### Internal` extension for tooling/CI/test/docs-only changes), and flag breaking changes with a `**BREAKING**` prefix.
 1. Add the version's link reference at the bottom of `CHANGELOG.md` (`[X.Y.Z]: .../compare/vPREVIOUS...vX.Y.Z`) and update `[Unreleased]` to compare against the new tag.
 1. Open a pull request with the `VERSION` and `CHANGELOG.md` updates.
 1. After the release PR is approved, passing CI, and merged, check out the updated `master` branch.

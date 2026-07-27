@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+This changelog extends the spec with an additional `### Internal` category for
+notable non-functional changes (tooling, CI, test suite, documentation) that
+don't affect the gem's public API or runtime behavior.
+
 ## [Unreleased]
 
 ## [7.1.1] - 2026-07-27
@@ -18,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SitemapGenerator.verbose = false` is now respected by `rake sitemap:refresh` and other rake tasks, silencing output as configured. [#332](https://github.com/kjvarga/sitemap_generator/issues/332) [#503](https://github.com/kjvarga/sitemap_generator/pull/503)
 - Sitemap file `lastmod` is now captured at write time rather than read back via `File.mtime`, fixing incorrect timestamps and improving compatibility with time-freezing test helpers. [#427](https://github.com/kjvarga/sitemap_generator/issues/427) [#508](https://github.com/kjvarga/sitemap_generator/pull/508)
 - URL `lastmod` now defaults to `Time.zone.now` under Rails (falling back to `Time.now` otherwise), so the configured Rails timezone and time-freezing helpers like `travel_to` are respected instead of always using system local time. [#422](https://github.com/kjvarga/sitemap_generator/issues/422) [#427](https://github.com/kjvarga/sitemap_generator/issues/427) [#505](https://github.com/kjvarga/sitemap_generator/pull/505)
+
+### Internal
+
+- Enable RuboCop on the spec suite (previously fully excluded), fix real bugs the linting surfaced along the way (always-passing tests with no assertions, a latent `NameError`, broken path comparisons), and resolve all temporary RuboCop spec-suite exclusions. [#510](https://github.com/kjvarga/sitemap_generator/pull/510) [#511](https://github.com/kjvarga/sitemap_generator/pull/511) [#512](https://github.com/kjvarga/sitemap_generator/pull/512) [#513](https://github.com/kjvarga/sitemap_generator/pull/513) [#514](https://github.com/kjvarga/sitemap_generator/pull/514)
 
 ## [7.1.0] - 2026-07-03
 
@@ -33,12 +41,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `AwsSdkAdapter` and `S3Adapter` now derive the `Content-Type` header from the file extension (`.xml` → `application/xml`, `.xml.gz` → `application/x-gzip`) via the new `SitemapLocation#content_type` helper, rather than always sending `application/x-gzip`. [#329](https://github.com/kjvarga/sitemap_generator/issues/329) [#338](https://github.com/kjvarga/sitemap_generator/issues/338) [#495](https://github.com/kjvarga/sitemap_generator/pull/495)
 
+### Internal
+
+- Replace broken links in README and CHANGELOG; add deprecation notices for mobile sitemaps (deprecated by Google in August 2022) and geo sitemaps (retired by Google in February 2012). [#497](https://github.com/kjvarga/sitemap_generator/pull/497)
+- Enforce RuboCop across all source files, resolve all pre-existing offenses, add RuboCop and mdl (Markdown) linting to GitHub Actions CI, and add pre-commit git hooks that lint staged Ruby and Markdown files locally. [#487](https://github.com/kjvarga/sitemap_generator/pull/487) [#492](https://github.com/kjvarga/sitemap_generator/pull/492) [#493](https://github.com/kjvarga/sitemap_generator/pull/493) [#494](https://github.com/kjvarga/sitemap_generator/pull/494) [#500](https://github.com/kjvarga/sitemap_generator/pull/500)
+
 ## [7.0.3] - 2026-07-02
 
 ### Fixed
 
 - Revert railtie enhancements (#478) that were unintentionally included in 7.0.2. Those changes introduced an `ArgumentError: Missing host to link to!` during `assets:precompile` and other Rails boot contexts where no host is configured (reported in [#488](https://github.com/kjvarga/sitemap_generator/issues/488)). The railtie is restored to its 7.0.1 behaviour: it loads rake tasks only. The enhancements will return in a future release with proper documentation and test coverage. [#489](https://github.com/kjvarga/sitemap_generator/pull/489)
 - Restore sitemap generation on Ruby 2.x when `--enable=frozen-string-literal` is set globally. Ruby 2.6/2.7 freezes interpolated heredocs under that flag, causing `gsub!` to raise `FrozenError`. [#486](https://github.com/kjvarga/sitemap_generator/pull/486)
+
+### Internal
+
+- Skip duplicate git tag creation in the release task if the tag already points at HEAD.
 
 ## [7.0.2] - 2026-06-29
 
@@ -72,6 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix uninitialized constant `ActiveSupport::LoggerThreadSafeLevel::Logger`. [#449](https://github.com/kjvarga/sitemap_generator/pull/449)
 
+### Internal
+
+- Migrate continuous integration from CircleCI to GitHub Actions with expanded Ruby × Rails CI matrix.
+
 ## [6.3.0] - 2022-08-09
 
 ### Added
@@ -82,6 +103,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Remove Bing's deprecated sitemap submission. [#400](https://github.com/kjvarga/sitemap_generator/pull/400)
+
+### Internal
+
+- Fix CircleCI specs for Ruby 3. [#407](https://github.com/kjvarga/sitemap_generator/pull/407)
 
 ## [6.2.1] - 2022-01-19
 
@@ -104,6 +129,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update the Bing notification URL. [#386](https://github.com/kjvarga/sitemap_generator/pull/386)
 - `SitemapGenerator::GoogleStorageAdapter`: Support Ruby 3 kwarg changes. [#375](https://github.com/kjvarga/sitemap_generator/pull/375)
+
+### Internal
+
+- Set up integration testing against a matrix of Ruby and Rails versions; test against Ruby 3.1 and Rails 7.
 
 ## [6.1.2] - 2020-06-03
 
@@ -161,6 +190,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensure files have 644 permissions when building, to try to address issue [#264](https://github.com/kjvarga/sitemap_generator/issues/264).
 
+### Internal
+
+- Use HTTPS in the Gemfile. [#263](https://github.com/kjvarga/sitemap_generator/pull/263)
+
 ## [5.3.0] - 2017-02-21
 
 ### Added
@@ -179,6 +212,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use presence of `Rails::VERSION` to detect when running under Rails, rather than just the `Rails` constant. [#221](https://github.com/kjvarga/sitemap_generator/pull/221)
+
+### Internal
+
+- Upgrade development dependencies.
+- Modernize Gemfile & gemspec.
+- Bring specs up to RSpec 3.5.
 
 ## [5.2.0] - 2016-09-23
 
@@ -205,6 +244,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Require only `fog-aws` instead of `fog` for the `S3Adapter` and support using an IAM profile instead of setting the access key & secret directly.
 - Make `:lang` optional on alternate links so they can be used for [AppIndexing](https://developers.google.com/app-indexing/reference/deeplinks).
+
+### Internal
+
+- Documented Mobile Sitemaps `:mobile` option.
 
 ## [5.0.5] - 2014-07-30
 
@@ -250,6 +293,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix usage of `attr_*` methods in `LinkSet`.
 - Don't override custom getters/setters. [#144](https://github.com/kjvarga/sitemap_generator/pull/144)
 
+### Internal
+
+- Fix breaking spec in Ruby 2. [#142](https://github.com/kjvarga/sitemap_generator/pull/142)
+
 ## [5.0.0] - 2014-02-05
 
 ### Added
@@ -270,6 +317,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support integer timestamps.
+
+### Internal
+
+- Update README for new features added in last release.
 
 ## [4.3.0] - 2013-11-14
 
@@ -310,11 +361,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed bug where incorrect URL was being used in the ping to search engines - only affected sites with a single sitemap file and no index file.
 
+### Internal
+
+- Test in Rails 4.
+
 ## [4.1.0] - 2013-06-03
 
 ### Added
 
 - [PageMap sitemap](https://developers.google.com/custom-search/docs/structured_data#pagemaps) support.
+
+### Internal
+
+- Tested with Rails 4 pre-release.
 
 ## [4.0.1] - 2013-05-03
 
@@ -486,6 +545,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support host names with path segments so you can use a `default_host` like `'http://mysite.com/subdirectory/'`.
 - Turn off `include_index` when the `sitemaps_host` differs from `default_host`.
 
+### Internal
+
+- Add docs about how to upload to remote hosts.
+
 ## [2.1.0] - 2011-08-31
 
 ### Added
@@ -525,6 +588,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New options `include_root`, `include_index`.
+
+### Internal
+
+- Major testing & refactoring.
 
 ## [1.4.0] - 2011-03-05
 
