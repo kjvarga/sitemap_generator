@@ -9,7 +9,7 @@ RSpec.describe SitemapGenerator::Interpreter do
   let(:link_set)    { SitemapGenerator::LinkSet.new }
   let(:interpreter) { described_class.new(link_set: link_set) }
 
-  before :all do
+  before do
     SitemapGenerator::Sitemap.reset!
     clean_sitemap_files_from_rails_app
     copy_sitemap_file_to_rails_app(:create)
@@ -18,13 +18,13 @@ RSpec.describe SitemapGenerator::Interpreter do
 
   # The interpreter doesn't have the URL helpers included for some reason, so it
   # fails when adding links.  That messes up later specs unless we reset the sitemap object.
-  after :all do
+  after do
     SitemapGenerator::Sitemap.reset!
     delete_sitemap_file_from_rails_app
   end
 
   it "finds the config file if Rails.root doesn't end in a slash" do
-    stub_const('Rails', double('Rails', root: SitemapGenerator.app.root.to_s.sub(%r{/$}, '')))
+    stub_const('Rails', class_double(Rails, root: SitemapGenerator.app.root.to_s.sub(%r{/$}, '')))
     expect { described_class.run }.not_to raise_error
   end
 
