@@ -181,22 +181,23 @@ RSpec.describe 'SitemapGenerator' do
         add '/goerss'
         add '/kml'
       end
-      expect_file_created_but_not('public/geo_sitemap.xml.gz', 'public/geo_sitemap1.xml.gz')
+      expect_file_created_but_not(rails_path('public/geo_sitemap.xml.gz'), rails_path('public/geo_sitemap1.xml.gz'))
     end
 
     it 'supports setting a sitemap path' do
       expect_directory_not_to_exist(rails_path('public/sitemaps/'))
       SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
       create_sitemap_with_links('/', '/another')
-      expect_file_created_but_not('public/sitemaps/sitemap.xml.gz', 'public/sitemaps/sitemap1.xml.gz')
+      expect_file_created_but_not(rails_path('public/sitemaps/sitemap.xml.gz'),
+                                  rails_path('public/sitemaps/sitemap1.xml.gz'))
     end
 
     it 'supports setting a deeply nested sitemap path' do
       expect_directory_not_to_exist(rails_path('public/sitemaps/deep/directory'))
       SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/deep/directory/'
       create_sitemap_with_links('/', '/another', '/yet-another')
-      expect_file_created_but_not('public/sitemaps/deep/directory/sitemap.xml.gz',
-                                  'public/sitemaps/deep/directory/sitemap1.xml.gz')
+      expect_file_created_but_not(rails_path('public/sitemaps/deep/directory/sitemap.xml.gz'),
+                                  rails_path('public/sitemaps/deep/directory/sitemap1.xml.gz'))
     end
 
     def create_sitemap_with_links(*paths)
@@ -204,8 +205,8 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     def expect_file_created_but_not(created_path, not_created_path)
-      expect_file_to_exist(rails_path(created_path))
-      expect_file_not_to_exist(rails_path(not_created_path))
+      expect_file_to_exist(created_path)
+      expect_file_not_to_exist(not_created_path)
     end
   end
 
