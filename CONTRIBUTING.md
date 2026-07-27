@@ -38,7 +38,7 @@ Before opening a PR:
 - All specs pass: `bundle exec rake spec`
 - Lint is clean: `bundle exec rubocop` and `bundle exec rake mdl`
 - New behaviour is covered by tests
-- `CHANGES.md` is updated with a bullet under the next version heading
+- `CHANGELOG.md` is updated with a bullet under the next version heading, following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `VERSION` is bumped if this is a release PR
 
 PR title: use semantic commit style — `<type>(<scope>): <description>` — matching the commit format above.
@@ -53,8 +53,8 @@ Maintainer review is required before merging. Reviews focus on:
 - No new runtime gem dependencies
 - `frozen_string_literal: true` present on new Ruby files (enforced by RuboCop)
 - Adapter changes don't eagerly `require` backend gems
-- Public API changes are documented in `CHANGES.md`
-- Breaking changes are clearly called out in `CHANGES.md` under `**Breaking:**` and require a major version bump
+- Public API changes are documented in `CHANGELOG.md`
+- Breaking changes are clearly called out in `CHANGELOG.md` with a `**BREAKING**` prefix and require a major version bump
 - Backwards compatibility is preserved across all supported Ruby and Rails versions
 
 ## Getting merged
