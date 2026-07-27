@@ -75,9 +75,6 @@ RSpec/BeforeAfterAll:
   # its output, it only reset global state) and has been converted to before/after :each, which is
   # strictly safer isolation with no performance cost.
 
-RSpec/NestedGroups:
-  Max: 5 # default is 3; a few adapter/interpreter specs nest one or two levels deeper
-
 RSpec/NoExpectationExample:
   AllowedPatterns:
     - "^expect_"

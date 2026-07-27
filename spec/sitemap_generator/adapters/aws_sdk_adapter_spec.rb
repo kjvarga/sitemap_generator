@@ -78,47 +78,43 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
   end
 
   shared_examples 'deprecated option' do |deprecated_key, new_key|
-    context 'when a deprecated option set' do
-      context 'when it is not nil' do
+    context 'when the deprecated option is set to a value' do
+      let(:options) do
+        { deprecated_key => 'value' }
+      end
+
+      it 'sets the option' do
+        expect(adapter_options[new_key]).to eq('value')
+      end
+
+      context 'when the new option key is also set to a value' do
         let(:options) do
-          { deprecated_key => 'value' }
+          { deprecated_key => 'value', new_key => 'new_endpoint' }
         end
 
-        it 'sets the option' do
-          expect(adapter_options[new_key]).to eq('value')
-        end
-
-        context 'when the new option key is set' do
-          context 'when it is not nil' do
-            let(:options) do
-              { deprecated_key => 'value', new_key => 'new_endpoint' }
-            end
-
-            it 'does not override it' do
-              expect(adapter_options[new_key]).to eq('new_endpoint')
-            end
-          end
-
-          context 'when it is nil' do
-            let(:options) do
-              { deprecated_key => 'value', new_key => nil }
-            end
-
-            it 'overrides it' do
-              expect(adapter_options[new_key]).to eq('value')
-            end
-          end
+        it 'does not override it' do
+          expect(adapter_options[new_key]).to eq('new_endpoint')
         end
       end
 
-      context 'when it is nil' do
+      context 'when the new option key is explicitly nil' do
         let(:options) do
-          { deprecated_key => nil }
+          { deprecated_key => 'value', new_key => nil }
         end
 
-        it 'does not set the option' do
-          expect(adapter_options).not_to have_key(new_key)
+        it 'overrides it' do
+          expect(adapter_options[new_key]).to eq('value')
         end
+      end
+    end
+
+    context 'when the deprecated option is nil' do
+      let(:options) do
+        { deprecated_key => nil }
+      end
+
+      it 'does not set the option' do
+        expect(adapter_options).not_to have_key(new_key)
       end
     end
   end

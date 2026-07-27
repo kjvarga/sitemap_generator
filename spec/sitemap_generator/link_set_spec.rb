@@ -420,16 +420,14 @@ RSpec.describe SitemapGenerator::LinkSet do
       end
     end
 
-    describe 'when a new-location option is present' do
-      {
-        filename: :xxx,
-        sitemaps_path: 'en/',
-        namer: SitemapGenerator::SimpleNamer.new(:sitemap)
-      }.each do |key, value|
-        context "when #{key} is present" do
-          it 'does not share the current sitemap' do
-            expect(ls.group(key => value).sitemap).not_to eq(ls.sitemap)
-          end
+    {
+      filename: :xxx,
+      sitemaps_path: 'en/',
+      namer: SitemapGenerator::SimpleNamer.new(:sitemap)
+    }.each do |key, value|
+      context "when a new-location option (#{key}) is present" do
+        it 'does not share the current sitemap' do
+          expect(ls.group(key => value).sitemap).not_to eq(ls.sitemap)
         end
       end
     end

@@ -71,15 +71,15 @@ RSpec.describe SitemapGenerator::S3Adapter do
       it 'defaults to true' do
         expect(adapter.instance_variable_get(:@fog_public)).to be(true)
       end
+    end
 
-      context 'when a string value' do
-        let(:options) do
-          { fog_public: 'false' }
-        end
+    context 'when fog_public is a string value' do
+      let(:options) do
+        { fog_public: 'false' }
+      end
 
-        it 'converts to a boolean' do
-          expect(adapter.instance_variable_get(:@fog_public)).to be(false)
-        end
+      it 'converts to a boolean' do
+        expect(adapter.instance_variable_get(:@fog_public)).to be(false)
       end
     end
   end

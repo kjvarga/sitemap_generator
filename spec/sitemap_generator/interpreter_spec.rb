@@ -84,25 +84,29 @@ RSpec.describe SitemapGenerator::Interpreter do
       end
     end
 
-    context 'when ActionController::Base is defined' do
+    context 'when ActionController::Base is defined and default_url_options has values' do
       let(:base_class) { double('ActionController::Base') }
 
-      before { stub_const('ActionController::Base', base_class) }
-
-      context 'when default_url_options has values' do
-        before { allow(base_class).to receive(:default_url_options).and_return({ trailing_slash: true }) }
-
-        it 'returns the configured options' do
-          expect(interpreter.default_url_options).to eq({ trailing_slash: true })
-        end
+      before do
+        stub_const('ActionController::Base', base_class)
+        allow(base_class).to receive(:default_url_options).and_return({ trailing_slash: true })
       end
 
-      context 'when default_url_options returns nil' do
-        before { allow(base_class).to receive(:default_url_options).and_return(nil) }
+      it 'returns the configured options' do
+        expect(interpreter.default_url_options).to eq({ trailing_slash: true })
+      end
+    end
 
-        it 'returns an empty hash' do
-          expect(interpreter.default_url_options).to eq({})
-        end
+    context 'when ActionController::Base is defined and default_url_options returns nil' do
+      let(:base_class) { double('ActionController::Base') }
+
+      before do
+        stub_const('ActionController::Base', base_class)
+        allow(base_class).to receive(:default_url_options).and_return(nil)
+      end
+
+      it 'returns an empty hash' do
+        expect(interpreter.default_url_options).to eq({})
       end
     end
   end
