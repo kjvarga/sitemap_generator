@@ -1,5 +1,16 @@
 # Changelog
 
+## 7.1.1
+
+* Fix: `rake sitemap:clean` (`clean_files`) now respects the configured `sitemaps_path`/`public_path` and also removes uncompressed `.xml` sitemaps, instead of only deleting hardcoded `public/sitemap*.xml.gz` files. [#474](https://github.com/kjvarga/sitemap_generator/issues/474) [#502](https://github.com/kjvarga/sitemap_generator/pull/502)
+* Fix: `SitemapGenerator::Interpreter` now respects `ActionController::Base.default_url_options`, so Rails URL helpers honor globally configured defaults (e.g. `:protocol`, `:port`) instead of ignoring them. [#355](https://github.com/kjvarga/sitemap_generator/issues/355) [#507](https://github.com/kjvarga/sitemap_generator/pull/507)
+* Fix: Non-ASCII characters in URL paths are now percent-encoded in the `<loc>` element, so generated sitemaps conform to the sitemap protocol. [#346](https://github.com/kjvarga/sitemap_generator/issues/346) [#506](https://github.com/kjvarga/sitemap_generator/pull/506)
+* Fix: Relative alternate hreflang hrefs (starting with `/`) are now expanded to absolute URLs using the configured host, producing valid sitemap XML instead of broken relative links. [#343](https://github.com/kjvarga/sitemap_generator/issues/343) [#504](https://github.com/kjvarga/sitemap_generator/pull/504)
+* Fix: `SitemapGenerator.verbose = false` is now respected by `rake sitemap:refresh` and other rake tasks, silencing output as configured. [#332](https://github.com/kjvarga/sitemap_generator/issues/332) [#503](https://github.com/kjvarga/sitemap_generator/pull/503)
+* Fix: Sitemap file `lastmod` is now captured at write time rather than read back via `File.mtime`, fixing incorrect timestamps and improving compatibility with time-freezing test helpers. [#508](https://github.com/kjvarga/sitemap_generator/pull/508)
+* Fix: URL `lastmod` now defaults to `Time.zone.now` under Rails (falling back to `Time.now` otherwise), so the configured Rails timezone and time-freezing helpers like `travel_to` are respected instead of always using system local time. [#422](https://github.com/kjvarga/sitemap_generator/issues/422) [#505](https://github.com/kjvarga/sitemap_generator/pull/505)
+* Internal: Enable RuboCop on the spec suite (previously fully excluded), fix real bugs the linting surfaced along the way (always-passing tests with no assertions, a latent `NameError`, broken path comparisons), and resolve all temporary RuboCop spec-suite exclusions. [#510](https://github.com/kjvarga/sitemap_generator/pull/510) [#511](https://github.com/kjvarga/sitemap_generator/pull/511) [#512](https://github.com/kjvarga/sitemap_generator/pull/512) [#513](https://github.com/kjvarga/sitemap_generator/pull/513) [#514](https://github.com/kjvarga/sitemap_generator/pull/514)
+
 ## 7.1.0
 
 * **Breaking:** `SitemapGenerator::FileAdapter#plain` has been removed. It was an internal helper inlined into `#write` to fix a file descriptor leak; any code calling it directly should call `#write` instead. [#492](https://github.com/kjvarga/sitemap_generator/pull/492)
