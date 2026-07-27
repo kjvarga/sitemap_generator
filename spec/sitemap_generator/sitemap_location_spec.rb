@@ -104,10 +104,18 @@ RSpec.describe SitemapGenerator::SitemapLocation do
       expect(location.url).to eq("#{default_host}/xxx")
       expect(location.public_path.to_s).to eq('public/')
       dup = location.dup
-      expect(dup.url).to eq(location.url)
-      expect(dup.url).not_to be(location.url)
-      expect(dup.public_path.to_s).to eq(location.public_path.to_s)
-      expect(dup.public_path).not_to be(location.public_path)
+      expect_dup_value_not_shared(dup.url, location.url)
+      expect_dup_path_not_shared(dup.public_path, location.public_path)
+    end
+
+    def expect_dup_value_not_shared(dup_value, original_value)
+      expect(dup_value).to eq(original_value)
+      expect(dup_value).not_to be(original_value)
+    end
+
+    def expect_dup_path_not_shared(dup_path, original_path)
+      expect(dup_path.to_s).to eq(original_path.to_s)
+      expect(dup_path).not_to be(original_path)
     end
   end
 

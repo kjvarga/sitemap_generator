@@ -48,15 +48,19 @@ RSpec.describe SitemapGenerator::S3Adapter do
 
   describe 'initialize' do
     it 'sets options on the instance' do
-      expect(adapter.instance_variable_get(:@aws_access_key_id)).to eq('aws_access_key_id')
-      expect(adapter.instance_variable_get(:@aws_secret_access_key)).to eq('aws_secret_access_key')
-      expect(adapter.instance_variable_get(:@aws_session_token)).to eq('aws_session_token')
-      expect(adapter.instance_variable_get(:@fog_provider)).to eq('fog_provider')
-      expect(adapter.instance_variable_get(:@fog_directory)).to eq('fog_directory')
-      expect(adapter.instance_variable_get(:@fog_region)).to eq('fog_region')
-      expect(adapter.instance_variable_get(:@fog_path_style)).to eq('fog_path_style')
-      expect(adapter.instance_variable_get(:@fog_storage_options)).to eq(options[:fog_storage_options])
-      expect(adapter.instance_variable_get(:@fog_public)).to be(false)
+      option_ivar_mapping.each { |ivar, value| expect(adapter.instance_variable_get(ivar)).to eq(value) }
+    end
+
+    def option_ivar_mapping
+      {
+        :@aws_access_key_id => 'aws_access_key_id',
+        :@aws_secret_access_key => 'aws_secret_access_key',
+        :@aws_session_token => 'aws_session_token',
+        :@fog_provider => 'fog_provider',
+        :@fog_directory => 'fog_directory',
+        :@fog_region => 'fog_region',
+        :@fog_path_style => 'fog_path_style'
+      }.merge(:@fog_storage_options => options[:fog_storage_options], :@fog_public => false)
     end
 
     context 'when fog_public is nil' do
@@ -81,15 +85,20 @@ RSpec.describe SitemapGenerator::S3Adapter do
   end
 
   describe 'write' do
+    before { allow(Fog::Storage).to receive(:new).and_return(directories) }
+
     it 'creates the file in S3 with a single operation' do
-      allow(Fog::Storage).to receive(:new).and_return(directories)
-      expect(directory.files).to receive(:create).with(
+      expect(directory.files).to receive(:create).with(single_operation_upload_attrs)
+      adapter.write(location, 'payload')
+    end
+
+    def single_operation_upload_attrs
+      {
         body: instance_of(File),
         key: 'test/sitemap.xml.gz',
         public: false,
         content_type: 'application/x-gzip'
-      )
-      adapter.write(location, 'payload')
+      }
     end
 
     context 'when the path ends in .xml' do
@@ -104,7 +113,6 @@ RSpec.describe SitemapGenerator::S3Adapter do
       end
 
       it 'sets content_type to application/xml' do
-        allow(Fog::Storage).to receive(:new).and_return(directories)
         expect(directory.files).to receive(:create).with(
           hash_including(content_type: 'application/xml')
         )

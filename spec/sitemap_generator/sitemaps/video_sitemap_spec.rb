@@ -58,7 +58,7 @@ RSpec.describe 'SitemapGenerator' do
     validate_video_player(video_doc, video_options)
     validate_video_uploader(video_doc, video_options)
     validate_video_price(video_doc, video_options)
-    xml_fragment_should_validate_against_schema(video_doc, 'sitemap-video', 'xmlns:video' => SitemapGenerator::SCHEMAS['video'])
+    expect_xml_fragment_to_validate_against_schema(video_doc, 'sitemap-video', 'xmlns:video' => SitemapGenerator::SCHEMAS['video'])
   end
 
   def validate_video_basic_fields(video_doc, video_options)
@@ -158,10 +158,7 @@ RSpec.describe 'SitemapGenerator' do
     xml = video_xml([video_options, video_options])
     doc = video_doc(xml)
     expect(doc.at_xpath('//url/loc').text).to eq(File.join(url_options[:host], url_options[:path]))
-    expect(doc.xpath('//url/video:video').count).to eq(2)
-    doc.xpath('//url/video:video').each do |video|
-      validate_video_element(video, video_options)
-    end
+    expect_valid_video_elements(doc, count: 2)
   end
 
   it "defaults allow_embed to 'yes'" do
@@ -171,19 +168,35 @@ RSpec.describe 'SitemapGenerator' do
   end
 
   it 'does not include optional elements if they are not passed' do
-    optional = %i[player_loc content_loc category tags tag uploader gallery_loc family_friendly
-                  publication_date expiration_date view_count rating duration]
-    required_options = video_options.delete_if { |k, _v| optional.include?(k) }
-    xml = video_xml(required_options)
-    doc = video_doc(xml)
-    optional.each do |element|
-      expect(doc.at_xpath("//url/video:video/video:#{element}")).to be_nil
-    end
+    doc = video_doc_without(optional_video_elements)
+    expect_video_elements_absent(doc, optional_video_elements)
   end
 
   it 'does not include autoplay param if blank' do
     xml = video_xml(video_options.tap { |v| v.delete(:autoplay) })
     doc = video_doc(xml)
     expect(doc.at_xpath('//url/video:video/video:player_loc').attribute('autoplay')).to be_nil
+  end
+
+  def expect_valid_video_elements(doc, count:)
+    video_nodes = doc.xpath('//url/video:video')
+    expect(video_nodes.count).to eq(count)
+    video_nodes.each { |video| validate_video_element(video, video_options) }
+  end
+
+  def optional_video_elements
+    %i[player_loc content_loc category tags tag uploader gallery_loc family_friendly
+       publication_date expiration_date view_count rating duration]
+  end
+
+  def video_doc_without(excluded_keys)
+    required_options = video_options.delete_if { |k, _v| excluded_keys.include?(k) }
+    video_doc(video_xml(required_options))
+  end
+
+  def expect_video_elements_absent(doc, elements)
+    elements.each do |element|
+      expect(doc.at_xpath("//url/video:video/video:#{element}")).to be_nil
+    end
   end
 end

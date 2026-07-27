@@ -4,92 +4,60 @@ require 'spec_helper'
 
 RSpec.describe 'SitemapGenerator' do
   it 'does not include media element unless provided' do
-    xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-                                                             host: 'http://www.example.com',
-                                                             alternates: [
-                                                               {
-                                                                 lang: 'de',
-                                                                 href: 'http://www.example.de/link_with_alternate.html'
-                                                               }
-                                                             ]).to_xml
-
-    doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
-    url = doc.css('url')
-    expect(url).not_to be_nil
-    expect(url.css('loc').text).to eq('http://www.example.com/link_with_alternates.html')
-
-    alternate = url.at_xpath('xhtml:link')
-    expect(alternate).not_to be_nil
+    alternate = alternate_link_node(lang: 'de', href: 'http://www.example.de/link_with_alternate.html')
     expect(alternate.attribute('rel').value).to eq('alternate')
     expect(alternate.attribute('hreflang').value).to eq('de')
     expect(alternate.attribute('media')).to be_nil
   end
 
   it 'does not include hreflang element unless provided' do
-    xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-                                                             host: 'http://www.example.com',
-                                                             alternates: [
-                                                               {
-                                                                 href: 'http://www.example.de/link_with_alternate.html'
-                                                               }
-                                                             ]).to_xml
-
-    doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
-    url = doc.css('url')
-    expect(url).not_to be_nil
-    expect(url.css('loc').text).to eq('http://www.example.com/link_with_alternates.html')
-
-    alternate = url.at_xpath('xhtml:link')
-    expect(alternate).not_to be_nil
+    alternate = alternate_link_node(href: 'http://www.example.de/link_with_alternate.html')
     expect(alternate.attribute('rel').value).to eq('alternate')
     expect(alternate.attribute('hreflang')).to be_nil
   end
 
   it 'adds alternate links to sitemap' do
-    xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
-                                                             host: 'http://www.example.com',
-                                                             alternates: [
-                                                               {
-                                                                 lang: 'de',
-                                                                 href: 'http://www.example.de/link_with_alternate.html',
-                                                                 media: 'only screen and (max-width: 640px)'
-                                                               }
-                                                             ]).to_xml
-
-    doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
-    url = doc.css('url')
-    expect(url).not_to be_nil
-    expect(url.css('loc').text).to eq('http://www.example.com/link_with_alternates.html')
-
-    alternate = url.at_xpath('xhtml:link')
-    expect(alternate).not_to be_nil
-    expect(alternate.attribute('rel').value).to eq('alternate')
-    expect(alternate.attribute('hreflang').value).to eq('de')
-    expect(alternate.attribute('href').value).to eq('http://www.example.de/link_with_alternate.html')
-    expect(alternate.attribute('media').value).to eq('only screen and (max-width: 640px)')
+    alternate = alternate_link_node(lang: 'de', href: 'http://www.example.de/link_with_alternate.html',
+                                    media: 'only screen and (max-width: 640px)')
+    expect_valid_alternate_link(alternate, rel: 'alternate')
   end
 
   it 'adds alternate links to sitemap with rel nofollow' do
+    alternate = alternate_link_node(lang: 'de', href: 'http://www.example.de/link_with_alternate.html',
+                                    nofollow: true, media: 'only screen and (max-width: 640px)')
+    expect_valid_alternate_link(alternate, rel: 'alternate nofollow')
+  end
+
+  def alternate_link_node(alternate_options)
     xml_fragment = SitemapGenerator::Builder::SitemapUrl.new('link_with_alternates.html',
                                                              host: 'http://www.example.com',
-                                                             alternates: [
-                                                               {
-                                                                 lang: 'de',
-                                                                 href: 'http://www.example.de/link_with_alternate.html',
-                                                                 nofollow: true,
-                                                                 media: 'only screen and (max-width: 640px)'
-                                                               }
-                                                             ]).to_xml
+                                                             alternates: [alternate_options]).to_xml
+    doc = alternate_sitemap_doc(xml_fragment)
+    expect_valid_alternate_url(doc.css('url'))
+    alternate = doc.css('url').at_xpath('xhtml:link')
+    expect(alternate).not_to be_nil
+    alternate
+  end
 
-    doc = Nokogiri::XML.parse("<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>")
-    url = doc.css('url')
+  def alternate_sitemap_doc(xml_fragment)
+    Nokogiri::XML.parse(
+      "<root xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' " \
+      "xmlns:xhtml='http://www.w3.org/1999/xhtml'>#{xml_fragment}</root>"
+    )
+  end
+
+  def expect_valid_alternate_url(url)
     expect(url).not_to be_nil
     expect(url.css('loc').text).to eq('http://www.example.com/link_with_alternates.html')
+  end
 
-    alternate = url.at_xpath('xhtml:link')
-    expect(alternate).not_to be_nil
-    expect(alternate.attribute('rel').value).to eq('alternate nofollow')
+  def expect_valid_alternate_link(alternate, rel:)
+    expect(alternate.attribute('rel').value).to eq(rel)
     expect(alternate.attribute('hreflang').value).to eq('de')
+    expect_valid_alternate_link_href_and_media(alternate)
+  end
+
+  def expect_valid_alternate_link_href_and_media(alternate)
     expect(alternate.attribute('href').value).to eq('http://www.example.de/link_with_alternate.html')
     expect(alternate.attribute('media').value).to eq('only screen and (max-width: 640px)')
   end

@@ -19,13 +19,6 @@ Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: always
 
-# --- Test-suite relaxations (spec/**/*, integration/spec/**/*) ---
-# RuboCop was enabled on the test suite in 2026-07 (previously fully excluded).
-# The cops below are disabled/relaxed because fixing them means restructuring
-# a large fraction of the existing suite -- tracked as deliberate follow-up
-# work, not permanent exceptions. Revisit and re-enable individually as the
-# underlying tests get migrated.
-
 RSpec/MultipleExpectations:
   Enabled: false # TODO: follow-up -- split multi-assert examples (172 instances, 31 files)
 
@@ -58,18 +51,14 @@ RSpec/SpecFilePathFormat:
 
 RSpec/VerifiedDoubles:
   Exclude:
-    - spec/sitemap_generator/adapters/aws_sdk_adapter_spec.rb
-    - spec/sitemap_generator/adapters/google_storage_adapter_spec.rb
     - spec/sitemap_generator/adapters/s3_adapter_spec.rb
     - spec/sitemap_generator/interpreter_spec.rb
-  # s3_adapter_spec.rb's doubles stand in for Fog's provider-specific classes, which are defined
-  # via metaprogramming and inconsistently resolvable as constants (e.g. Fog::AWS::Storage::Directory
-  # isn't even defined until certain methods are called) -- too fragile to verify against reliably;
-  # permanent, not follow-up debt. interpreter_spec.rb's remaining double stands in for
-  # ActionController::Base, which isn't loaded in this (deliberately non-Rails) unit test
-  # environment, so there's no real class to verify against; also permanent. aws_sdk_adapter_spec.rb
-  # and google_storage_adapter_spec.rb still have unverified doubles -- TODO: follow-up, in progress
-  # alongside the RSpec/ExampleLength cleanup pass below.
+  # Permanent, not follow-up debt: s3_adapter_spec.rb's doubles stand in for Fog's
+  # provider-specific classes, which are defined via metaprogramming and inconsistently
+  # resolvable as constants (e.g. Fog::AWS::Storage::Directory isn't even defined until
+  # certain methods are called) -- too fragile to verify against reliably. interpreter_spec.rb's
+  # remaining double stands in for ActionController::Base, which isn't loaded in this
+  # (deliberately non-Rails) unit test environment, so there's no real class to verify against.
 
 RSpec/BeforeAfterAll:
   Exclude:
@@ -86,20 +75,12 @@ RSpec/BeforeAfterAll:
   # its output, it only reset global state) and has been converted to before/after :each, which is
   # strictly safer isolation with no performance cost.
 
-RSpec/ExampleLength:
-  Enabled: false # TODO: follow-up -- several examples run 15-40 lines (XML fixture building,
-                 # multi-step sitemap generation); split up rather than pick an arbitrary Max
-
 RSpec/NestedGroups:
   Max: 5 # default is 3; a few adapter/interpreter specs nest one or two levels deeper
 
 RSpec/NoExpectationExample:
   AllowedPatterns:
     - "^expect_"
-    - "^assert_"
-    - "should" # this suite's custom expectation helpers are named e.g. file_should_exist.
-               # TODO: follow-up -- move away from the should_* helper naming/style entirely
-               # rather than special-casing it here; not addressing now (out of scope).
 
 Style/Documentation:
   Exclude:

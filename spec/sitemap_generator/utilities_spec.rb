@@ -6,22 +6,21 @@ require 'tmpdir'
 RSpec.describe SitemapGenerator::Utilities do
   describe 'assert_valid_keys' do
     it 'raises error on invalid keys' do
-      expect do
-        described_class.assert_valid_keys({ name: 'Rob', years: '28' }, :name, :age)
-      end.to raise_exception(ArgumentError)
-      expect do
-        described_class.assert_valid_keys({ name: 'Rob', age: '28' }, 'name', 'age')
-      end.to raise_exception(ArgumentError)
+      expect_invalid_keys_to_raise({ name: 'Rob', years: '28' }, :name, :age)
+      expect_invalid_keys_to_raise({ name: 'Rob', age: '28' }, 'name', 'age')
     end
 
     it 'does not raise error on valid keys' do
-      expect do
-        described_class.assert_valid_keys({ name: 'Rob', age: '28' }, :name, :age)
-      end.not_to raise_exception
+      expect_valid_keys_not_to_raise({ name: 'Rob', age: '28' }, :name, :age)
+      expect_valid_keys_not_to_raise({ name: 'Rob' }, :name, :age)
+    end
 
-      expect do
-        described_class.assert_valid_keys({ name: 'Rob' }, :name, :age)
-      end.not_to raise_exception
+    def expect_invalid_keys_to_raise(hash, *keys)
+      expect { described_class.assert_valid_keys(hash, *keys) }.to raise_exception(ArgumentError)
+    end
+
+    def expect_valid_keys_not_to_raise(hash, *keys)
+      expect { described_class.assert_valid_keys(hash, *keys) }.not_to raise_exception
     end
   end
 
@@ -71,13 +70,19 @@ RSpec.describe SitemapGenerator::Utilities do
 
   describe 'append_slash' do
     it 'yields the expect result' do
-      expect(described_class.append_slash('')).to eq('')
-      expect(described_class.append_slash(nil)).to eq('')
-      expect(described_class.append_slash(Pathname.new(''))).to eq('')
-      expect(described_class.append_slash('tmp')).to eq('tmp/')
-      expect(described_class.append_slash(Pathname.new('tmp'))).to eq('tmp/')
-      expect(described_class.append_slash('tmp/')).to eq('tmp/')
-      expect(described_class.append_slash(Pathname.new('tmp/'))).to eq('tmp/')
+      append_slash_cases.each { |input, expected| expect(described_class.append_slash(input)).to eq(expected) }
+    end
+
+    def append_slash_cases
+      {
+        '' => '',
+        nil => '',
+        Pathname.new('') => '',
+        'tmp' => 'tmp/',
+        Pathname.new('tmp') => 'tmp/',
+        'tmp/' => 'tmp/',
+        Pathname.new('tmp/') => 'tmp/'
+      }
     end
   end
 

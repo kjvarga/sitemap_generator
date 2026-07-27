@@ -18,57 +18,62 @@ RSpec.describe SitemapGenerator::AwsSdkAdapter do
 
     if defined?(Aws::S3::TransferManager)
       it 'writes the raw data to a file and uploads using TransferManager' do
-        file_adapter = instance_double(SitemapGenerator::FileAdapter)
-        allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
-        expect(file_adapter).to receive(:write).with(location, 'raw_data')
+        expect_file_adapter_write(location)
         allow(location).to receive(:path_in_public).and_return('path_in_public')
-        s3_client = double(:s3_client)
-        transfer_manager = double(:transfer_manager)
-        allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
-        allow(Aws::S3::TransferManager).to receive(:new).with(client: s3_client).and_return(transfer_manager)
-        expect(Aws::S3::TransferManager).to receive(:new).with(client: s3_client)
-        allow(transfer_manager).to receive(:upload_file).with(path, hash_including(
-                                                                      bucket: 'bucket',
-                                                                      key: 'path_in_public',
-                                                                      acl: acl,
-                                                                      cache_control: cache_control,
-                                                                      content_type: content_type
-                                                                    )).and_return(nil)
-        expect(transfer_manager).to receive(:upload_file).with(path, hash_including(
-                                                                       bucket: 'bucket',
-                                                                       key: 'path_in_public',
-                                                                       acl: acl,
-                                                                       cache_control: cache_control,
-                                                                       content_type: content_type
-                                                                     ))
+        expect_transfer_manager_upload(path, acl, cache_control, content_type)
         adapter.write(location, 'raw_data')
       end
     else
       it 'writes the raw data to a file and uploads using S3 Resource' do
-        file_adapter = instance_double(SitemapGenerator::FileAdapter)
-        allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
-        expect(file_adapter).to receive(:write).with(location, 'raw_data')
+        expect_file_adapter_write(location)
         allow(location).to receive(:path_in_public).and_return('path_in_public')
-        s3_resource = double(:s3_resource)
-        s3_bucket = double(:s3_bucket)
-        s3_object = double(:s3_object)
-        allow(Aws::S3::Resource).to receive(:new).and_return(s3_resource)
-        allow(s3_resource).to receive(:bucket).with('bucket').and_return(s3_bucket)
-        expect(s3_resource).to receive(:bucket).with('bucket')
-        allow(s3_bucket).to receive(:object).with('path_in_public').and_return(s3_object)
-        expect(s3_bucket).to receive(:object).with('path_in_public')
-        allow(s3_object).to receive(:upload_file).with(path, hash_including(
-                                                               acl: acl,
-                                                               cache_control: cache_control,
-                                                               content_type: content_type
-                                                             )).and_return(nil)
-        expect(s3_object).to receive(:upload_file).with(path, hash_including(
-                                                                acl: acl,
-                                                                cache_control: cache_control,
-                                                                content_type: content_type
-                                                              ))
+        expect_s3_resource_upload(path, acl, cache_control, content_type)
         adapter.write(location, 'raw_data')
       end
+    end
+
+    def expect_file_adapter_write(location)
+      file_adapter = instance_double(SitemapGenerator::FileAdapter)
+      allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
+      expect(file_adapter).to receive(:write).with(location, 'raw_data')
+    end
+
+    def expect_transfer_manager_upload(path, acl, cache_control, content_type)
+      s3_client = instance_double(Aws::S3::Client)
+      transfer_manager = instance_double(Aws::S3::TransferManager)
+      allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
+      allow(Aws::S3::TransferManager).to receive(:new).with(client: s3_client).and_return(transfer_manager)
+      expect(Aws::S3::TransferManager).to receive(:new).with(client: s3_client)
+      expect_transfer_manager_upload_file(transfer_manager, path, acl, cache_control, content_type)
+    end
+
+    def expect_transfer_manager_upload_file(transfer_manager, path, acl, cache_control, content_type)
+      upload_args = hash_including(bucket: 'bucket', key: 'path_in_public', acl: acl,
+                                   cache_control: cache_control, content_type: content_type)
+      allow(transfer_manager).to receive(:upload_file).with(path, upload_args).and_return(nil)
+      expect(transfer_manager).to receive(:upload_file).with(path, upload_args)
+    end
+
+    def expect_s3_resource_upload(path, acl, cache_control, content_type)
+      s3_resource = instance_double(Aws::S3::Resource)
+      s3_bucket = instance_double(Aws::S3::Bucket)
+      allow(Aws::S3::Resource).to receive(:new).and_return(s3_resource)
+      allow(s3_resource).to receive(:bucket).with('bucket').and_return(s3_bucket)
+      expect(s3_resource).to receive(:bucket).with('bucket')
+      expect_s3_bucket_object_upload(s3_bucket, path, acl, cache_control, content_type)
+    end
+
+    def expect_s3_bucket_object_upload(s3_bucket, path, acl, cache_control, content_type)
+      s3_object = instance_double(Aws::S3::Object)
+      allow(s3_bucket).to receive(:object).with('path_in_public').and_return(s3_object)
+      expect(s3_bucket).to receive(:object).with('path_in_public')
+      expect_s3_object_upload_file(s3_object, path, acl, cache_control, content_type)
+    end
+
+    def expect_s3_object_upload_file(s3_object, path, acl, cache_control, content_type)
+      upload_args = hash_including(acl: acl, cache_control: cache_control, content_type: content_type)
+      allow(s3_object).to receive(:upload_file).with(path, upload_args).and_return(nil)
+      expect(s3_object).to receive(:upload_file).with(path, upload_args)
     end
   end
 

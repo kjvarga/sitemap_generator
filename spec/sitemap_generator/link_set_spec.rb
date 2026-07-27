@@ -144,11 +144,14 @@ RSpec.describe SitemapGenerator::LinkSet do
 
     it 'supports being set to nil' do
       ls = described_class.new(default_host: 'http://one.com', search_engines: nil)
-      expect(ls.search_engines).to be_a(Hash)
-      expect(ls.search_engines).to be_empty
+      expect_empty_hash(ls.search_engines)
       ls.search_engines = nil
-      expect(ls.search_engines).to be_a(Hash)
-      expect(ls.search_engines).to be_empty
+      expect_empty_hash(ls.search_engines)
+    end
+
+    def expect_empty_hash(value)
+      expect(value).to be_a(Hash)
+      expect(value).to be_empty
     end
   end
 
@@ -168,16 +171,11 @@ RSpec.describe SitemapGenerator::LinkSet do
     end
 
     it 'uses the sitemap index url from the link set' do
-      ls = described_class.new(
-        default_host: default_host,
-        search_engines: { google: 'http://google.com/?url=%s' }
-      )
-      index_url = ls.sitemap_index_url
-      request = stub_request(:get, "http://google.com/?url=#{URI.encode_www_form_component(index_url)}")
-      ls.ping_search_engines
-      expect(request).to have_been_requested
+      ls = described_class.new(default_host: default_host, search_engines: { google: 'http://google.com/?url=%s' })
+      expect_search_engine_pinged(ls.sitemap_index_url) { ls.ping_search_engines }
     end
 
+    # rubocop:disable RSpec/ExampleLength -- 2 distinct scenarios (single ping, then reset + double ping)
     it 'includes the given search engines' do
       ls.search_engines = nil
       request = stub_request(:get, %r{^http://newnegine\.com\?})
@@ -187,6 +185,13 @@ RSpec.describe SitemapGenerator::LinkSet do
       WebMock.reset_executed_requests!
       ls.ping_search_engines(newengine: 'http://newnegine.com?%s', anotherengine: 'http://newnegine.com?%s')
       expect(request).to have_been_requested.twice
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    def expect_search_engine_pinged(index_url)
+      request = stub_request(:get, "http://google.com/?url=#{URI.encode_www_form_component(index_url)}")
+      yield
+      expect(request).to have_been_requested
     end
   end
 
@@ -541,18 +546,17 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls.create(namer: namer, filename: 'sitemap1')
       expect(ls.namer).to eq(namer)
       expect(ls.sitemap.location.namer).to eq(namer)
-      expect(ls.sitemap.location.filename).to match(/^sitemap2/)
-      expect(ls.sitemap_index.location.filename).to match(/^sitemap2/)
+      expect_filenames_to_match(/^sitemap2/)
     end
 
     it 'supports both namer and filename options no matter the order' do
-      options = {
-        namer: SitemapGenerator::SimpleNamer.new('sitemap1'),
-        filename: 'sitemap2'
-      }
-      ls.create(options)
-      expect(ls.sitemap.location.filename).to match(/^sitemap1/)
-      expect(ls.sitemap_index.location.filename).to match(/^sitemap1/)
+      ls.create(namer: SitemapGenerator::SimpleNamer.new('sitemap1'), filename: 'sitemap2')
+      expect_filenames_to_match(/^sitemap1/)
+    end
+
+    def expect_filenames_to_match(pattern)
+      expect(ls.sitemap.location.filename).to match(pattern)
+      expect(ls.sitemap_index.location.filename).to match(pattern)
     end
 
     it 'does not modify the options hash' do
@@ -623,13 +627,15 @@ RSpec.describe SitemapGenerator::LinkSet do
     end
 
     it 'is false if include_index is false or sitemaps_host differs' do
-      ls.include_index = false
-      ls.sitemaps_host = default_host
-      expect(ls.include_index?).to be(false)
+      false_include_index_scenarios.each do |include_index, host|
+        ls.include_index = include_index
+        ls.sitemaps_host = host
+        expect(ls.include_index?).to be(false)
+      end
+    end
 
-      ls.include_index = true
-      ls.sitemaps_host = sitemaps_host
-      expect(ls.include_index?).to be(false)
+    def false_include_index_scenarios
+      [[false, default_host], [true, sitemaps_host]]
     end
 
     it 'returns false' do
@@ -673,11 +679,13 @@ RSpec.describe SitemapGenerator::LinkSet do
     end
 
     it 'yields the sitemap in the call to create' do
-      expect(ls.send(:interpreter)).to receive(:eval).with(yield_sitemap: true)
-      ls.yield_sitemap = true
-      ls.create
-      expect(ls.send(:interpreter)).to receive(:eval).with(yield_sitemap: false)
-      ls.yield_sitemap = false
+      expect_create_yields(true)
+      expect_create_yields(false)
+    end
+
+    def expect_create_yields(yield_sitemap)
+      expect(ls.send(:interpreter)).to receive(:eval).with(yield_sitemap: yield_sitemap)
+      ls.yield_sitemap = yield_sitemap
       ls.create
     end
   end
@@ -812,10 +820,13 @@ RSpec.describe SitemapGenerator::LinkSet do
         ls.sitemap_index.add sitemap.new
         ls.send(:finalize_sitemap_index!)
         expect(ls.sitemap_index.written?).to be(true)
+        expect_index_url_reported_correctly('http://example.com/sitemap.xml.gz')
+      end
 
-        # Test that the index url is reported correctly
+      # Test that the index url is reported correctly
+      def expect_index_url_reported_correctly(expected_url)
         expect(ls.sitemap_index.index_url).to eq(ls.sitemap_index.location.url)
-        expect(ls.sitemap_index.index_url).to eq('http://example.com/sitemap.xml.gz')
+        expect(ls.sitemap_index.index_url).to eq(expected_url)
       end
 
       it 'writes the index when it has more than one link' do
@@ -916,12 +927,17 @@ RSpec.describe SitemapGenerator::LinkSet do
     it 'returns an instance initialized with values from the link set' do
       allow(ls).to receive_messages(sitemaps_host: :host, namer: :namer, public_path: :public_path,
                                     verbose: :verbose, max_sitemap_links: :max_sitemap_links)
+      assign_ivars(sitemaps_path: :sitemaps_path, adapter: :adapter, compress: :compress)
+      expect(SitemapGenerator::SitemapLocation).to receive(:new).with(expected_sitemap_location_args)
+      ls.sitemap_location
+    end
 
-      ls.instance_variable_set(:@sitemaps_path, :sitemaps_path)
-      ls.instance_variable_set(:@adapter, :adapter)
-      ls.instance_variable_set(:@compress, :compress)
+    def assign_ivars(ivars)
+      ivars.each { |name, value| ls.instance_variable_set(:"@#{name}", value) }
+    end
 
-      expect(SitemapGenerator::SitemapLocation).to receive(:new).with(
+    def expected_sitemap_location_args
+      {
         host: :host,
         namer: :namer,
         public_path: :public_path,
@@ -930,8 +946,7 @@ RSpec.describe SitemapGenerator::LinkSet do
         verbose: :verbose,
         compress: :compress,
         max_sitemap_links: :max_sitemap_links
-      )
-      ls.sitemap_location
+      }
     end
   end
 

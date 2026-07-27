@@ -8,8 +8,8 @@ RSpec.describe SitemapGenerator::Numeric do
   end
 
   describe 'bytes' do
-    it 'defines equality of different units' do
-      relationships = {
+    let(:byte_unit_relationships) do
+      {
         numeric(1024).bytes => numeric(1).kilobyte,
         numeric(1024).kilobytes => numeric(1).megabyte,
         numeric(3584.0).kilobytes => numeric(3.5).megabytes,
@@ -21,25 +21,31 @@ RSpec.describe SitemapGenerator::Numeric do
         numeric(1).kilobyte**5 => numeric(1).petabyte,
         numeric(1).kilobyte**6 => numeric(1).exabyte
       }
+    end
 
-      relationships.each do |left, right|
-        expect(left).to eq(right)
-      end
+    let(:byte_unit_values) do
+      {
+        numeric(3).megabytes => 3_145_728,
+        numeric(3).megabyte => 3_145_728,
+        numeric(3).kilobytes => 3072,
+        numeric(3).kilobyte => 3072,
+        numeric(3).gigabytes => 3_221_225_472,
+        numeric(3).gigabyte => 3_221_225_472,
+        numeric(3).terabytes => 3_298_534_883_328,
+        numeric(3).terabyte => 3_298_534_883_328,
+        numeric(3).petabytes => 3_377_699_720_527_872,
+        numeric(3).petabyte => 3_377_699_720_527_872,
+        numeric(3).exabytes => 3_458_764_513_820_540_928,
+        numeric(3).exabyte => 3_458_764_513_820_540_928
+      }
+    end
+
+    it 'defines equality of different units' do
+      byte_unit_relationships.each { |left, right| expect(left).to eq(right) }
     end
 
     it 'represents units as bytes' do
-      expect(numeric(3).megabytes).to eq(3_145_728)
-      expect(numeric(3).megabyte).to eq(3_145_728)
-      expect(numeric(3).kilobytes).to eq(3072)
-      expect(numeric(3).kilobyte).to eq(3072)
-      expect(numeric(3).gigabytes).to eq(3_221_225_472)
-      expect(numeric(3).gigabyte).to eq(3_221_225_472)
-      expect(numeric(3).terabytes).to eq(3_298_534_883_328)
-      expect(numeric(3).terabyte).to eq(3_298_534_883_328)
-      expect(numeric(3).petabytes).to eq(3_377_699_720_527_872)
-      expect(numeric(3).petabyte).to eq(3_377_699_720_527_872)
-      expect(numeric(3).exabytes).to eq(3_458_764_513_820_540_928)
-      expect(numeric(3).exabyte).to eq(3_458_764_513_820_540_928)
+      byte_unit_values.each { |value, bytes| expect(value).to eq(bytes) }
     end
   end
 end

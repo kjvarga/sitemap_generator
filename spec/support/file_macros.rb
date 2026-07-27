@@ -1,34 +1,34 @@
 # frozen_string_literal: true
 
 module FileMacros
-  def files_should_be_identical(first, second)
+  def expect_files_to_be_identical(first, second)
     expect(identical_files?(first, second)).to be(true)
   end
 
-  def files_should_not_be_identical(first, second)
+  def expect_files_not_to_be_identical(first, second)
     expect(identical_files?(first, second)).to be(false)
   end
 
-  def file_should_exist(file)
+  def expect_file_to_exist(file)
     expect(File.exist?(file)).to be(true), "File #{file} should exist"
   end
 
-  def directory_should_exist(dir)
+  def expect_directory_to_exist(dir)
     expect(File.exist?(dir)).to be(true), "Directory #{dir} should exist"
     expect(File.directory?(dir)).to be(true), "#{dir} should be a directory"
   end
 
-  def directory_should_not_exist(dir)
+  def expect_directory_not_to_exist(dir)
     expect(File.exist?(dir)).to be(false), "Directory #{dir} should not exist"
   end
 
-  def file_should_not_exist(file)
+  def expect_file_not_to_exist(file)
     expect(File.exist?(file)).to be(false), "File #{file} should not exist"
   end
 
   def identical_files?(first, second)
-    file_should_exist(first)
-    file_should_exist(second)
+    expect_file_to_exist(first)
+    expect_file_to_exist(second)
     expect(File.read(second)).to eq(File.read(first))
   end
 

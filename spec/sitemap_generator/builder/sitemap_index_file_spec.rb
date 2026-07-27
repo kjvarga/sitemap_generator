@@ -79,21 +79,21 @@ RSpec.describe 'SitemapGenerator::Builder::SitemapIndexFile' do
 
   describe 'add' do
     it 'uses the host provided' do
-      url = SitemapGenerator::Builder::SitemapIndexUrl.new('/one', host: 'http://newhost.com/')
-      allow(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new)
-        .with('/one', { host: 'http://newhost.com' }).and_return(url)
-      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new)
-        .with('/one', { host: 'http://newhost.com' })
+      expect_sitemap_index_url_new('/one', 'http://newhost.com/', 'http://newhost.com')
       index.add '/one', host: 'http://newhost.com'
     end
 
     it 'uses the host from the location' do
-      url = SitemapGenerator::Builder::SitemapIndexUrl.new('/one', host: 'http://example.com/')
-      allow(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new)
-        .with('/one', { host: 'http://example.com/' }).and_return(url)
-      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new)
-        .with('/one', { host: 'http://example.com/' })
+      expect_sitemap_index_url_new('/one', 'http://example.com/', 'http://example.com/')
       index.add '/one'
+    end
+
+    def expect_sitemap_index_url_new(path, build_host, expected_host)
+      url = SitemapGenerator::Builder::SitemapIndexUrl.new(path, host: build_host)
+      allow(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new)
+        .with(path, { host: expected_host }).and_return(url)
+      expect(SitemapGenerator::Builder::SitemapIndexUrl).to receive(:new)
+        .with(path, { host: expected_host })
     end
 
     describe 'when adding manually' do

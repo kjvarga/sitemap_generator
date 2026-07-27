@@ -14,6 +14,7 @@ RSpec.describe 'SitemapGenerator' do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet
     end
 
+    # rubocop:disable RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
     it 'sets a new LinkSet instance' do
       first = SitemapGenerator::Sitemap.instance_variable_get(:@link_set)
       expect(first).to be_a(SitemapGenerator::LinkSet)
@@ -22,6 +23,7 @@ RSpec.describe 'SitemapGenerator' do
       expect(second).to be_a(SitemapGenerator::LinkSet)
       expect(first).not_to be(second)
     end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   describe 'app root' do
@@ -38,9 +40,9 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'deletes the sitemaps' do
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
+      expect_file_to_exist(rails_path('public/sitemap.xml.gz'))
       Helpers.invoke_task('sitemap:clean')
-      file_should_not_exist(rails_path('public/sitemap.xml.gz'))
+      expect_file_not_to_exist(rails_path('public/sitemap.xml.gz'))
     end
   end
 
@@ -51,12 +53,12 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'creates config/sitemap.rb' do
-      file_should_exist(rails_path('config/sitemap.rb'))
+      expect_file_to_exist(rails_path('config/sitemap.rb'))
     end
 
     it 'creates config/sitemap.rb matching template' do
       sitemap_template = SitemapGenerator.templates.template_path(:sitemap_sample)
-      files_should_be_identical(rails_path('config/sitemap.rb'), sitemap_template)
+      expect_files_to_be_identical(rails_path('config/sitemap.rb'), sitemap_template)
     end
   end
 
@@ -68,7 +70,7 @@ RSpec.describe 'SitemapGenerator' do
 
     it 'does not overwrite config/sitemap.rb' do
       sitemap_file = File.join(this_root, 'spec/files/sitemap.create.rb')
-      files_should_be_identical(sitemap_file, rails_path('config/sitemap.rb'))
+      expect_files_to_be_identical(sitemap_file, rails_path('config/sitemap.rb'))
     end
   end
 
@@ -81,10 +83,10 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'creates sitemaps' do
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemap1.xml.gz'))
-      file_should_exist(rails_path('public/sitemap2.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap3.xml.gz'))
+      expect_file_to_exist(rails_path('public/sitemap.xml.gz'))
+      expect_file_to_exist(rails_path('public/sitemap1.xml.gz'))
+      expect_file_to_exist(rails_path('public/sitemap2.xml.gz'))
+      expect_file_not_to_exist(rails_path('public/sitemap3.xml.gz'))
     end
 
     it 'has 13 links' do
@@ -92,20 +94,20 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'index XML should validate' do
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
     end
 
     it 'sitemap XML should validate' do
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap2.xml.gz'), 'sitemap'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/sitemap2.xml.gz'), 'sitemap'
     end
 
     it 'index XML should not have excess whitespace' do
-      gzipped_xml_file_should_have_minimal_whitespace rails_path('public/sitemap.xml.gz')
+      expect_gzipped_xml_file_to_have_minimal_whitespace rails_path('public/sitemap.xml.gz')
     end
 
     it 'sitemap XML should not have excess whitespace' do
-      gzipped_xml_file_should_have_minimal_whitespace rails_path('public/sitemap1.xml.gz')
+      expect_gzipped_xml_file_to_have_minimal_whitespace rails_path('public/sitemap1.xml.gz')
     end
   end
 
@@ -131,12 +133,18 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'creates sitemaps' do
-      @expected.each { |file| file_should_exist(rails_path(file)) }
-      file_should_not_exist(rails_path('public/fr/new_sitemaps5.xml.gz'))
-      file_should_not_exist(rails_path('public/en/xxx1.xml.gz'))
-      file_should_not_exist(rails_path('public/fr/abc2.xml.gz'))
-      file_should_not_exist(rails_path('public/fr/abc5.xml.gz'))
-      file_should_not_exist(rails_path('public/fr/def2.xml.gz'))
+      @expected.each { |file| expect_file_to_exist(rails_path(file)) }
+      unexpected_grouped_sitemap_files.each { |file| expect_file_not_to_exist(rails_path(file)) }
+    end
+
+    def unexpected_grouped_sitemap_files
+      %w[
+        public/fr/new_sitemaps5.xml.gz
+        public/en/xxx1.xml.gz
+        public/fr/abc2.xml.gz
+        public/fr/abc5.xml.gz
+        public/fr/def2.xml.gz
+      ]
     end
 
     it 'has 16 links' do
@@ -144,19 +152,19 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'index XML should validate' do
-      gzipped_xml_file_should_validate_against_schema rails_path('public/fr/new_sitemaps.xml.gz'), 'siteindex'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/fr/new_sitemaps.xml.gz'), 'siteindex'
     end
 
     it 'index XML should not have excess whitespace' do
-      gzipped_xml_file_should_have_minimal_whitespace rails_path('public/fr/new_sitemaps.xml.gz')
+      expect_gzipped_xml_file_to_have_minimal_whitespace rails_path('public/fr/new_sitemaps.xml.gz')
     end
 
     it 'sitemaps XML should validate' do
-      @sitemaps.each { |file| gzipped_xml_file_should_validate_against_schema(rails_path(file), 'sitemap') }
+      @sitemaps.each { |file| expect_gzipped_xml_file_to_validate_against_schema(rails_path(file), 'sitemap') }
     end
 
     it 'sitemap XML should not have excess whitespace' do
-      @sitemaps.each { |file| gzipped_xml_file_should_have_minimal_whitespace(rails_path(file)) }
+      @sitemaps.each { |file| expect_gzipped_xml_file_to_have_minimal_whitespace(rails_path(file)) }
     end
   end
 
@@ -173,37 +181,31 @@ RSpec.describe 'SitemapGenerator' do
         add '/goerss'
         add '/kml'
       end
-      file_should_exist(rails_path('public/geo_sitemap.xml.gz'))
-      file_should_not_exist(rails_path('public/geo_sitemap1.xml.gz'))
+      expect_file_created_but_not('public/geo_sitemap.xml.gz', 'public/geo_sitemap1.xml.gz')
     end
 
     it 'supports setting a sitemap path' do
-      directory_should_not_exist(rails_path('public/sitemaps/'))
-
-      sm = SitemapGenerator::Sitemap
-      sm.sitemaps_path = 'sitemaps/'
-      sm.create do
-        add '/'
-        add '/another'
-      end
-
-      file_should_exist(rails_path('public/sitemaps/sitemap.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemaps/sitemap1.xml.gz'))
+      expect_directory_not_to_exist(rails_path('public/sitemaps/'))
+      SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+      create_sitemap_with_links('/', '/another')
+      expect_file_created_but_not('public/sitemaps/sitemap.xml.gz', 'public/sitemaps/sitemap1.xml.gz')
     end
 
     it 'supports setting a deeply nested sitemap path' do
-      directory_should_not_exist(rails_path('public/sitemaps/deep/directory'))
+      expect_directory_not_to_exist(rails_path('public/sitemaps/deep/directory'))
+      SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/deep/directory/'
+      create_sitemap_with_links('/', '/another', '/yet-another')
+      expect_file_created_but_not('public/sitemaps/deep/directory/sitemap.xml.gz',
+                                  'public/sitemaps/deep/directory/sitemap1.xml.gz')
+    end
 
-      sm = SitemapGenerator::Sitemap
-      sm.sitemaps_path = 'sitemaps/deep/directory/'
-      sm.create do
-        add '/'
-        add '/another'
-        add '/yet-another'
-      end
+    def create_sitemap_with_links(*paths)
+      SitemapGenerator::Sitemap.create { paths.each { |path| add(path) } }
+    end
 
-      file_should_exist(rails_path('public/sitemaps/deep/directory/sitemap.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemaps/deep/directory/sitemap1.xml.gz'))
+    def expect_file_created_but_not(created_path, not_created_path)
+      expect_file_to_exist(rails_path(created_path))
+      expect_file_not_to_exist(rails_path(not_created_path))
     end
   end
 
@@ -220,14 +222,12 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'is applied when generating links via url helpers' do
-      SitemapGenerator::Sitemap.create(default_host: 'http://test.local') do
-        add contents_path
-      end
+      SitemapGenerator::Sitemap.create(default_host: 'http://test.local') { add contents_path }
+      expect(gzipped_file_contents('public/sitemap.xml.gz')).to include('/contents/')
+    end
 
-      Zlib::GzipReader.open(rails_path('public/sitemap.xml.gz')) do |gz|
-        xml = gz.read
-        expect(xml).to include('/contents/')
-      end
+    def gzipped_file_contents(path)
+      Zlib::GzipReader.open(rails_path(path), &:read)
     end
   end
 

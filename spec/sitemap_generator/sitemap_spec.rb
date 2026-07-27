@@ -19,6 +19,12 @@ RSpec.describe SitemapGenerator::Sitemap do
     end
 
     it 'respects inheritance' do
+      include_fake_inherited_method_missing
+      expect(sitemap).to respond_to :something_inherited
+      expect(sitemap.linkset_doesnt_know).to be :inherited
+    end
+
+    def include_fake_inherited_method_missing
       sitemap.class.include(Module.new do
         def method_missing(*_args)
           :inherited
@@ -28,9 +34,6 @@ RSpec.describe SitemapGenerator::Sitemap do
           name == :something_inherited
         end
       end)
-
-      expect(sitemap).to respond_to :something_inherited
-      expect(sitemap.linkset_doesnt_know).to be :inherited
     end
 
     it 'unconventionally delegates private (and protected) methods' do

@@ -12,11 +12,21 @@ end
 RSpec.describe 'SitemapGenerator' do
   include SitemapHelpers
 
+  def expect_files(exist: [], not_exist: [])
+    exist.each { |path| expect_file_to_exist(rails_path(path)) }
+    not_exist.each { |path| expect_file_not_to_exist(rails_path(path)) }
+  end
+
+  def expect_schema_valid(mapping)
+    mapping.each { |path, schema| expect_gzipped_xml_file_to_validate_against_schema(rails_path(path), schema) }
+  end
+
   describe 'reset!' do
     before do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet
     end
 
+    # rubocop:disable RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
     it 'sets a new LinkSet instance' do
       first = SitemapGenerator::Sitemap.instance_variable_get(:@link_set)
       expect(first).to be_a(SitemapGenerator::LinkSet)
@@ -25,6 +35,7 @@ RSpec.describe 'SitemapGenerator' do
       expect(second).to be_a(SitemapGenerator::LinkSet)
       expect(first).not_to be(second)
     end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   describe 'root' do
@@ -46,10 +57,8 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'creates sitemaps' do
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemap1.xml.gz'))
-      file_should_exist(rails_path('public/sitemap2.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap3.xml.gz'))
+      expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz public/sitemap2.xml.gz],
+                   not_exist: %w[public/sitemap3.xml.gz])
     end
 
     it 'has 13 links' do
@@ -57,20 +66,20 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'index XML should validate' do
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
     end
 
     it 'sitemap XML should validate' do
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap2.xml.gz'), 'sitemap'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/sitemap2.xml.gz'), 'sitemap'
     end
 
     it 'index XML should not have excess whitespace' do
-      gzipped_xml_file_should_have_minimal_whitespace rails_path('public/sitemap.xml.gz')
+      expect_gzipped_xml_file_to_have_minimal_whitespace rails_path('public/sitemap.xml.gz')
     end
 
     it 'sitemap XML should not have excess whitespace' do
-      gzipped_xml_file_should_have_minimal_whitespace rails_path('public/sitemap1.xml.gz')
+      expect_gzipped_xml_file_to_have_minimal_whitespace rails_path('public/sitemap1.xml.gz')
     end
   end
 
@@ -99,10 +108,8 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'creates sitemaps' do
-      @expected.each { |file| file_should_exist(rails_path(file)) }
-      file_should_not_exist(rails_path('public/fr/new_sitemaps5.xml.gz'))
-      file_should_not_exist(rails_path('public/en/xxx1.xml.gz'))
-      file_should_not_exist(rails_path('public/fr/abc5.xml.gz'))
+      @expected.each { |file| expect_file_to_exist(rails_path(file)) }
+      expect_files(not_exist: %w[public/fr/new_sitemaps5.xml.gz public/en/xxx1.xml.gz public/fr/abc5.xml.gz])
     end
 
     it 'has 16 links' do
@@ -110,19 +117,19 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'index XML should validate' do
-      gzipped_xml_file_should_validate_against_schema rails_path('public/fr/new_sitemaps.xml.gz'), 'siteindex'
+      expect_gzipped_xml_file_to_validate_against_schema rails_path('public/fr/new_sitemaps.xml.gz'), 'siteindex'
     end
 
     it 'index XML should not have excess whitespace' do
-      gzipped_xml_file_should_have_minimal_whitespace rails_path('public/fr/new_sitemaps.xml.gz')
+      expect_gzipped_xml_file_to_have_minimal_whitespace rails_path('public/fr/new_sitemaps.xml.gz')
     end
 
     it 'sitemaps XML should validate' do
-      @sitemaps.each { |file| gzipped_xml_file_should_validate_against_schema(rails_path(file), 'sitemap') }
+      @sitemaps.each { |file| expect_gzipped_xml_file_to_validate_against_schema(rails_path(file), 'sitemap') }
     end
 
     it 'sitemap XML should not have excess whitespace' do
-      @sitemaps.each { |file| gzipped_xml_file_should_have_minimal_whitespace(rails_path(file)) }
+      @sitemaps.each { |file| expect_gzipped_xml_file_to_have_minimal_whitespace(rails_path(file)) }
     end
   end
 
@@ -141,10 +148,8 @@ RSpec.describe 'SitemapGenerator' do
     end
 
     it 'creates the index and start the sitemap numbering from 4' do
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemap4.xml.gz'))
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap4.xml.gz'), 'sitemap'
+      expect_files(exist: %w[public/sitemap.xml.gz public/sitemap4.xml.gz])
+      expect_schema_valid('public/sitemap.xml.gz' => 'siteindex', 'public/sitemap4.xml.gz' => 'sitemap')
     end
   end
 
@@ -156,6 +161,7 @@ RSpec.describe 'SitemapGenerator' do
       SitemapGenerator::Sitemap.include_root = false
     end
 
+    # rubocop:disable RSpec/ExampleLength -- the add/add_to_index call sequence is the scenario under test
     it 'creates the index when add_to_index is called before the sitemap links' do
       with_max_links(1) do
         SitemapGenerator::Sitemap.create do
@@ -164,11 +170,9 @@ RSpec.describe 'SitemapGenerator' do
           add '/two'
         end
       end
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemap1.xml.gz'))
-      file_should_exist(rails_path('public/sitemap2.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap3.xml.gz'))
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
+      expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz public/sitemap2.xml.gz],
+                   not_exist: %w[public/sitemap3.xml.gz])
+      expect_schema_valid('public/sitemap.xml.gz' => 'siteindex')
     end
 
     it 'creates the index when add_to_index is called between the sitemap links' do
@@ -179,24 +183,21 @@ RSpec.describe 'SitemapGenerator' do
           add '/two'
         end
       end
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemap1.xml.gz'))
-      file_should_exist(rails_path('public/sitemap2.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap3.xml.gz'))
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
+      expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz public/sitemap2.xml.gz],
+                   not_exist: %w[public/sitemap3.xml.gz])
+      expect_schema_valid('public/sitemap.xml.gz' => 'siteindex')
     end
+    # rubocop:enable RSpec/ExampleLength
 
     it 'creates an index for a single manually added link' do
       with_max_links(1) do
-        SitemapGenerator::Sitemap.create(create_index: :auto) do
-          add_to_index 'customsitemap1.xml.gz'
-        end
+        SitemapGenerator::Sitemap.create(create_index: :auto) { add_to_index 'customsitemap1.xml.gz' }
       end
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap1.xml.gz'))
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
+      expect_files(exist: %w[public/sitemap.xml.gz], not_exist: %w[public/sitemap1.xml.gz])
+      expect_schema_valid('public/sitemap.xml.gz' => 'siteindex')
     end
 
+    # rubocop:disable RSpec/ExampleLength -- the 3 add_to_index calls are the scenario under test
     it 'creates an index for multiple manually added links' do
       with_max_links(1) do
         SitemapGenerator::Sitemap.create(create_index: :auto) do
@@ -205,9 +206,8 @@ RSpec.describe 'SitemapGenerator' do
           add_to_index 'customsitemap3.xml.gz'
         end
       end
-      file_should_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap1.xml.gz'))
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
+      expect_files(exist: %w[public/sitemap.xml.gz], not_exist: %w[public/sitemap1.xml.gz])
+      expect_schema_valid('public/sitemap.xml.gz' => 'siteindex')
     end
 
     it 'does not create an index or a sitemap when only manually added links exist' do
@@ -218,17 +218,14 @@ RSpec.describe 'SitemapGenerator' do
         add_to_index 'customsitemap2.xml.gz'
         add_to_index 'customsitemap3.xml.gz'
       end
-      file_should_not_exist(rails_path('public/sitemap.xml.gz'))
-      file_should_not_exist(rails_path('public/sitemap1.xml.gz'))
+      expect_files(not_exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz])
     end
+    # rubocop:enable RSpec/ExampleLength
 
     it 'does not create an index when a link is added normally' do
-      SitemapGenerator::Sitemap.create(create_index: false) do
-        add '/one'
-      end
-      file_should_exist(rails_path('public/sitemap.xml.gz')) # the sitemap, not an index
-      file_should_not_exist(rails_path('public/sitemap1.xml.gz'))
-      gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'sitemap'
+      SitemapGenerator::Sitemap.create(create_index: false) { add '/one' }
+      expect_files(exist: %w[public/sitemap.xml.gz], not_exist: %w[public/sitemap1.xml.gz]) # the sitemap, not an index
+      expect_schema_valid('public/sitemap.xml.gz' => 'sitemap')
     end
   end
 
@@ -246,37 +243,26 @@ RSpec.describe 'SitemapGenerator' do
         add '/goerss'
         add '/kml'
       end
-      file_should_exist(rails_path('public/geo_sitemap.xml.gz'))
-      file_should_exist(rails_path('public/geo_sitemap1.xml.gz'))
+      expect_files(exist: %w[public/geo_sitemap.xml.gz public/geo_sitemap1.xml.gz])
     end
 
     it 'supports setting a sitemap path' do
-      directory_should_not_exist(rails_path('public/sitemaps/'))
-
-      sm = SitemapGenerator::Sitemap
-      sm.sitemaps_path = 'sitemaps/'
-      sm.create do
-        add '/'
-        add '/another'
-      end
-
-      file_should_exist(rails_path('public/sitemaps/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemaps/sitemap1.xml.gz'))
+      expect_directory_not_to_exist(rails_path('public/sitemaps/'))
+      SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+      create_sitemap_with_links('/', '/another')
+      expect_files(exist: %w[public/sitemaps/sitemap.xml.gz public/sitemaps/sitemap1.xml.gz])
     end
 
     it 'supports setting a deeply nested sitemap path' do
-      directory_should_not_exist(rails_path('public/sitemaps/deep/directory'))
+      expect_directory_not_to_exist(rails_path('public/sitemaps/deep/directory'))
+      SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/deep/directory/'
+      create_sitemap_with_links('/', '/another', '/yet-another')
+      expect_files(exist: %w[public/sitemaps/deep/directory/sitemap.xml.gz
+                             public/sitemaps/deep/directory/sitemap1.xml.gz])
+    end
 
-      sm = SitemapGenerator::Sitemap
-      sm.sitemaps_path = 'sitemaps/deep/directory/'
-      sm.create do
-        add '/'
-        add '/another'
-        add '/yet-another'
-      end
-
-      file_should_exist(rails_path('public/sitemaps/deep/directory/sitemap.xml.gz'))
-      file_should_exist(rails_path('public/sitemaps/deep/directory/sitemap1.xml.gz'))
+    def create_sitemap_with_links(*paths)
+      SitemapGenerator::Sitemap.create { paths.each { |path| add(path) } }
     end
   end
 
@@ -290,13 +276,15 @@ RSpec.describe 'SitemapGenerator' do
   describe 'verbose' do
     it "is set via ENV['VERBOSE']" do
       original = SitemapGenerator.verbose
-      SitemapGenerator.verbose = nil
-      ENV['VERBOSE'] = 'true'
-      expect(SitemapGenerator.verbose).to be(true)
-      SitemapGenerator.verbose = nil
-      ENV['VERBOSE'] = 'false'
-      expect(SitemapGenerator.verbose).to be(false)
+      expect_verbose_reflects_env('true', true)
+      expect_verbose_reflects_env('false', false)
       SitemapGenerator.verbose = original
+    end
+
+    def expect_verbose_reflects_env(env_value, expected)
+      SitemapGenerator.verbose = nil
+      ENV['VERBOSE'] = env_value
+      expect(SitemapGenerator.verbose).to be(expected)
     end
   end
 
@@ -328,22 +316,23 @@ RSpec.describe 'SitemapGenerator' do
       clean_sitemap_files_from_rails_app
     end
 
+    def expect_index_url_pinged
+      ls.search_engines = { google: 'http://google.com/?url=%s' }
+      ls.ping_search_engines
+      expect(request).to have_been_requested.once
+    end
+
     describe 'when true' do
       let(:create_index) { true }
 
+      # rubocop:disable RSpec/ExampleLength -- exercises creation, file layout, schema, and search engine ping together
       it 'always creates the index when there is only one sitemap' do
         ls.create { add('/one') }
         expect(ls.sitemap_index.link_count).to eq(1) # one sitemap
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_exist(rails_path('public/sitemap1.xml.gz'))
-        file_should_not_exist(rails_path('public/sitemap2.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz],
+                     not_exist: %w[public/sitemap2.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'siteindex', 'public/sitemap1.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
 
       it 'always creates the index when there are multiple sitemaps' do
@@ -352,18 +341,12 @@ RSpec.describe 'SitemapGenerator' do
           add('/two')
         end
         expect(ls.sitemap_index.link_count).to eq(2) # two sitemaps
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_exist(rails_path('public/sitemap1.xml.gz'))
-        file_should_exist(rails_path('public/sitemap2.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap2.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz public/sitemap2.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'siteindex', 'public/sitemap1.xml.gz' => 'sitemap',
+                            'public/sitemap2.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
+      # rubocop:enable RSpec/ExampleLength
     end
 
     # Technically when there's no index, the first sitemap is the 'index'
@@ -374,33 +357,24 @@ RSpec.describe 'SitemapGenerator' do
       it 'never creates the index when there is only one sitemap' do
         ls.create { add('/one') }
         expect(ls.sitemap_index.link_count).to eq(1) # one sitemap
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_not_exist(rails_path('public/sitemap1.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz], not_exist: %w[public/sitemap1.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
 
+      # rubocop:disable RSpec/ExampleLength -- exercises creation, file layout, schema, and search engine ping together
       it 'never creates the index when there are multiple sitemaps' do
         ls.create do
           add('/one')
           add('/two')
         end
         expect(ls.sitemap_index.link_count).to eq(2) # two sitemaps
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_exist(rails_path('public/sitemap1.xml.gz'))
-        file_should_not_exist(rails_path('public/sitemap2.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'sitemap'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz],
+                     not_exist: %w[public/sitemap2.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'sitemap', 'public/sitemap1.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
+      # rubocop:enable RSpec/ExampleLength
     end
 
     describe 'when :auto' do
@@ -409,34 +383,23 @@ RSpec.describe 'SitemapGenerator' do
       it 'does not create index if only one sitemap file' do
         ls.create { add('/one') }
         expect(ls.sitemap_index.link_count).to eq(1) # one sitemap
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_not_exist(rails_path('public/sitemap1.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz], not_exist: %w[public/sitemap1.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
 
+      # rubocop:disable RSpec/ExampleLength -- exercises creation, file layout, schema, and search engine ping together
       it 'creates index if more than one sitemap file' do
         ls.create do
           add('/one')
           add('/two')
         end
         expect(ls.sitemap_index.link_count).to eq(2) # two sitemaps
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_exist(rails_path('public/sitemap1.xml.gz'))
-        file_should_exist(rails_path('public/sitemap2.xml.gz'))
-        file_should_not_exist(rails_path('public/sitemap3.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap1.xml.gz'), 'sitemap'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap2.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz public/sitemap1.xml.gz public/sitemap2.xml.gz],
+                     not_exist: %w[public/sitemap3.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'siteindex', 'public/sitemap1.xml.gz' => 'sitemap',
+                            'public/sitemap2.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
 
       it 'creates index if more than one group' do
@@ -445,18 +408,12 @@ RSpec.describe 'SitemapGenerator' do
           group(filename: :group2) { add('/two') }
         end
         expect(ls.sitemap_index.link_count).to eq(2) # two sitemaps
-        file_should_exist(rails_path('public/sitemap.xml.gz'))
-        file_should_exist(rails_path('public/group1.xml.gz'))
-        file_should_exist(rails_path('public/group2.xml.gz'))
-        gzipped_xml_file_should_validate_against_schema rails_path('public/sitemap.xml.gz'), 'siteindex'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/group1.xml.gz'), 'sitemap'
-        gzipped_xml_file_should_validate_against_schema rails_path('public/group2.xml.gz'), 'sitemap'
-
-        # Test that the index url is reported correctly
-        ls.search_engines = { google: 'http://google.com/?url=%s' }
-        ls.ping_search_engines
-        expect(request).to have_been_requested.once
+        expect_files(exist: %w[public/sitemap.xml.gz public/group1.xml.gz public/group2.xml.gz])
+        expect_schema_valid('public/sitemap.xml.gz' => 'siteindex', 'public/group1.xml.gz' => 'sitemap',
+                            'public/group2.xml.gz' => 'sitemap')
+        expect_index_url_pinged
       end
+      # rubocop:enable RSpec/ExampleLength
     end
   end
 
@@ -477,6 +434,7 @@ RSpec.describe 'SitemapGenerator' do
     describe 'when false' do
       let(:compress) { false }
 
+      # rubocop:disable RSpec/ExampleLength -- 2 top-level adds plus a group are the scenario under test
       it 'does not compress files' do
         ls.create do
           add('/one')
@@ -486,16 +444,15 @@ RSpec.describe 'SitemapGenerator' do
             add('/group2')
           end
         end
-        file_should_exist(rails_path('public/sitemap.xml'))
-        file_should_exist(rails_path('public/sitemap1.xml'))
-        file_should_exist(rails_path('public/group.xml'))
-        file_should_exist(rails_path('public/group1.xml'))
+        expect_files(exist: %w[public/sitemap.xml public/sitemap1.xml public/group.xml public/group1.xml])
       end
+      # rubocop:enable RSpec/ExampleLength
     end
 
     context 'when compress is :all_but_first' do
       let(:compress) { :all_but_first }
 
+      # rubocop:disable RSpec/ExampleLength -- the 3 groups with differing compress settings are the scenario
       it 'does not compress first file' do
         ls.create do
           add('/one')
@@ -514,19 +471,18 @@ RSpec.describe 'SitemapGenerator' do
             add('/group2')
           end
         end
-        file_should_exist(rails_path('public/sitemap.xml'))
-        file_should_exist(rails_path('public/sitemap1.xml.gz'))
-        file_should_exist(rails_path('public/sitemap2.xml.gz'))
-        file_should_exist(rails_path('public/group.xml'))
-        file_should_exist(rails_path('public/group1.xml.gz'))
-        file_should_exist(rails_path('public/group2.xml.gz'))
-        file_should_exist(rails_path('public/group21.xml.gz'))
+        expect_files(exist: %w[
+                       public/sitemap.xml public/sitemap1.xml.gz public/sitemap2.xml.gz
+                       public/group.xml public/group1.xml.gz public/group2.xml.gz public/group21.xml.gz
+                     ])
       end
+      # rubocop:enable RSpec/ExampleLength
     end
 
     describe 'in groups' do
       let(:compress) { nil }
 
+      # rubocop:disable RSpec/ExampleLength -- the 3 groups with differing compress settings are the scenario
       it 'respects passed in compress option' do
         ls.create do
           group(filename: :group1, compress: :all_but_first) do
@@ -542,13 +498,12 @@ RSpec.describe 'SitemapGenerator' do
             add('/group2')
           end
         end
-        file_should_exist(rails_path('public/group1.xml'))
-        file_should_exist(rails_path('public/group11.xml.gz'))
-        file_should_exist(rails_path('public/group2.xml.gz'))
-        file_should_exist(rails_path('public/group21.xml.gz'))
-        file_should_exist(rails_path('public/group3.xml'))
-        file_should_exist(rails_path('public/group31.xml'))
+        expect_files(exist: %w[
+                       public/group1.xml public/group11.xml.gz public/group2.xml.gz
+                       public/group21.xml.gz public/group3.xml public/group31.xml
+                     ])
       end
+      # rubocop:enable RSpec/ExampleLength
     end
   end
 

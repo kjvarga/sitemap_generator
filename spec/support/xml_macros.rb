@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module XmlMacros
-  def gzipped_xml_file_should_validate_against_schema(xml_gz_filename, schema_name)
+  def expect_gzipped_xml_file_to_validate_against_schema(xml_gz_filename, schema_name)
     Zlib::GzipReader.open(xml_gz_filename) do |xml_file|
-      xml_data_should_validate_against_schema(xml_file.read, schema_name)
+      expect_xml_data_to_validate_against_schema(xml_file.read, schema_name)
     end
   end
 
@@ -11,7 +11,7 @@ module XmlMacros
   #
   # `schema_name` gives the name of the schema file to validate against.  The schema
   # file is looked for in `spec/support/schemas/<schema_name>.xsd`.
-  def xml_data_should_validate_against_schema(xml, schema_name)
+  def expect_xml_data_to_validate_against_schema(xml, schema_name)
     xml = xml.to_s unless xml.is_a?(String)
     doc = Nokogiri::XML(xml)
     schema_file = File.join(File.dirname(__FILE__), 'schemas', "#{schema_name}.xsd")
@@ -37,25 +37,25 @@ module XmlMacros
   # look like: 'xmlns:video' => 'http://www.google.com/schemas/sitemap-video/1.1'
   #
   # Example:
-  #   xml_fragment_should_validate_against_schema('<video/>', 'sitemap-video', 'xmlns:video' => 'http://www.google.com/schemas/sitemap-video/1.1')
+  #   expect_xml_fragment_to_validate_against_schema('<video/>', 'sitemap-video', 'xmlns:video' => 'http://www.google.com/schemas/sitemap-video/1.1')
   #
   #   This validates the given XML using the spec/support/schemas/sitemap-video.xsd`
   #   schema.  The XML namespace `xmlns:video='http://www.google.com/schemas/sitemap-video/1.1'` is automatically
   #   added to the root element for you.
-  def xml_fragment_should_validate_against_schema(xml, schema_name, xmlns = {})
+  def expect_xml_fragment_to_validate_against_schema(xml, schema_name, xmlns = {})
     xml = xml.to_s unless xml.is_a?(String)
     doc = Nokogiri::XML(xml)
     doc.root.send(:[]=, *xmlns.first)
-    xml_data_should_validate_against_schema(doc, schema_name)
+    expect_xml_data_to_validate_against_schema(doc, schema_name)
   end
 
-  def gzipped_xml_file_should_have_minimal_whitespace(xml_gz_filename)
+  def expect_gzipped_xml_file_to_have_minimal_whitespace(xml_gz_filename)
     Zlib::GzipReader.open(xml_gz_filename) do |xml_file|
-      xml_data_should_have_minimal_whitespace xml_file.read
+      expect_xml_data_to_have_minimal_whitespace xml_file.read
     end
   end
 
-  def xml_data_should_have_minimal_whitespace(xml_data)
+  def expect_xml_data_to_have_minimal_whitespace(xml_data)
     expect(xml_data).not_to match(/^\s/)
     expect(xml_data).not_to match(/\s$/)
     expect(xml_data).not_to match(/\s\s+/)

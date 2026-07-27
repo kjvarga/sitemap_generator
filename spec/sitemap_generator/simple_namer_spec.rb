@@ -34,12 +34,19 @@ RSpec.describe SitemapGenerator::SimpleNamer do
   it 'returns previous name' do
     namer = described_class.new(:sitemap)
     expect(namer.to_s).to eq('sitemap.xml.gz')
+    expect_next_then_previous_sequence(namer)
+  end
+
+  def expect_next_then_previous_sequence(namer)
     expect(namer.next.to_s).to eq('sitemap1.xml.gz')
     expect(namer.previous.to_s).to eq('sitemap.xml.gz')
-    expect(namer.next.next.to_s).to eq('sitemap2.xml.gz')
-    expect(namer.previous.to_s).to eq('sitemap1.xml.gz')
-    expect(namer.next.next.to_s).to eq('sitemap3.xml.gz')
-    expect(namer.previous.to_s).to eq('sitemap2.xml.gz')
+    expect_double_next_then_previous(namer, 'sitemap2.xml.gz', 'sitemap1.xml.gz')
+    expect_double_next_then_previous(namer, 'sitemap3.xml.gz', 'sitemap2.xml.gz')
+  end
+
+  def expect_double_next_then_previous(namer, next_name, previous_name)
+    expect(namer.next.next.to_s).to eq(next_name)
+    expect(namer.previous.to_s).to eq(previous_name)
   end
 
   it 'raises if already at the start' do
@@ -57,9 +64,12 @@ RSpec.describe SitemapGenerator::SimpleNamer do
 
   it 'resets the namer' do
     namer = described_class.new(:sitemap)
-    expect(namer.to_s).to eq('sitemap.xml.gz')
-    expect(namer.next.to_s).to eq('sitemap1.xml.gz')
+    expect_initial_and_first_name(namer)
     namer.reset
+    expect_initial_and_first_name(namer)
+  end
+
+  def expect_initial_and_first_name(namer)
     expect(namer.to_s).to eq('sitemap.xml.gz')
     expect(namer.next.to_s).to eq('sitemap1.xml.gz')
   end

@@ -10,21 +10,36 @@ RSpec.describe SitemapGenerator::GoogleStorageAdapter do
 
   shared_examples 'writes the raw data to a file and then uploads that file to Google Storage' do |acl|
     it 'writes the raw data to a file and then uploads that file to Google Storage' do
-      storage = double(:storage)
-      bucket_resource = double(:bucket_resource)
+      expect_file_adapter_write(location)
+      allow(location).to receive_messages(path_in_public: 'path_in_public', path: 'path')
+      expect_google_storage_upload(acl)
+      adapter.write(location, 'raw_data')
+    end
+
+    def expect_file_adapter_write(location)
       file_adapter = instance_double(SitemapGenerator::FileAdapter)
       allow(SitemapGenerator::FileAdapter).to receive(:new).and_return(file_adapter)
-      allow(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc',
-                                                          project_id: 'project_id').and_return(storage)
-      expect(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc',
-                                                           project_id: 'project_id')
+      expect(file_adapter).to receive(:write).with(location, 'raw_data')
+    end
+
+    def expect_google_storage_upload(acl)
+      storage = instance_double(Google::Cloud::Storage::Project)
+      allow(Google::Cloud::Storage).to receive(:new)
+        .with(credentials: 'abc', project_id: 'project_id').and_return(storage)
+      expect(Google::Cloud::Storage).to receive(:new).with(credentials: 'abc', project_id: 'project_id')
+      expect_bucket_create_file(storage, acl)
+    end
+
+    def expect_bucket_create_file(storage, acl)
+      bucket_resource = instance_double(Google::Cloud::Storage::Bucket)
       allow(storage).to receive(:bucket).with('bucket').and_return(bucket_resource)
       expect(storage).to receive(:bucket).with('bucket')
-      allow(location).to receive_messages(path_in_public: 'path_in_public', path: 'path')
+      expect_bucket_resource_create_file(bucket_resource, acl)
+    end
+
+    def expect_bucket_resource_create_file(bucket_resource, acl)
       allow(bucket_resource).to receive(:create_file).with('path', 'path_in_public', acl: acl).and_return(nil)
       expect(bucket_resource).to receive(:create_file).with('path', 'path_in_public', acl: acl)
-      expect(file_adapter).to receive(:write).with(location, 'raw_data')
-      adapter.write(location, 'raw_data')
     end
   end
 
