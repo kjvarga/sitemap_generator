@@ -71,21 +71,42 @@ module SitemapGenerator
   class << self
     attr_accessor :root, :app, :templates
     attr_writer :yield_sitemap, :verbose
+
+    # An external verbose signal which takes precedence over any value set in
+    # application code, used for Rake's <tt>-v</tt>/<tt>-s</tt>/<tt>-q</tt> flags.
+    # +nil+ means no external override was given.
+    attr_accessor :verbose_override
   end
   @yield_sitemap = nil
+  @verbose_override = nil
 
-  # Global default for the verbose setting.
+  # The verbose setting read from ENV['VERBOSE'], or +nil+ when it is unset or
+  # holds a value which is neither truthy nor falsy.
+  def self.verbose_from_env
+    return true if SitemapGenerator::Utilities.truthy?(ENV['VERBOSE'])
+    return false if SitemapGenerator::Utilities.falsy?(ENV['VERBOSE'])
+
+    nil
+  end
+
+  # The verbose setting configured in application code, or +nil+ when unset.
+  # Unlike +verbose+ this ignores the external override and the environment.
+  def self.configured_verbose
+    @verbose
+  end
+
+  # Global default for the verbose setting.  Signals from outside the
+  # application take precedence over a value configured in code, so that
+  # verbosity can be controlled per-invocation without editing the config.
+  # Resolved in order: external override, ENV['VERBOSE'], then code.
+  # Returns +nil+ when verbose has not been configured at any level.
   def self.verbose
-    if @verbose.nil?
-      @verbose =
-        if SitemapGenerator::Utilities.truthy?(ENV['VERBOSE'])
-          true
-        elsif SitemapGenerator::Utilities.falsy?(ENV['VERBOSE'])
-          false
-        end
-    else
-      @verbose
-    end
+    return @verbose_override unless @verbose_override.nil?
+
+    env_verbose = verbose_from_env
+    return env_verbose unless env_verbose.nil?
+
+    @verbose
   end
 
   # Returns true if we should yield the sitemap instance to the block, false otherwise.

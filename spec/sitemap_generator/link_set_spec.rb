@@ -180,6 +180,13 @@ RSpec.describe SitemapGenerator::LinkSet do
   end
 
   describe 'verbose' do
+    around do |example|
+      original_verbose = SitemapGenerator.configured_verbose
+      example.run
+    ensure
+      SitemapGenerator.verbose = original_verbose
+    end
+
     it 'is set as an initialize option' do
       [false, true].each do |value|
         expect(described_class.new(default_host: default_host, verbose: value).verbose).to be(value)
@@ -193,14 +200,19 @@ RSpec.describe SitemapGenerator::LinkSet do
       end
     end
 
-    it 'uses SitemapGenerator.verbose as a default when true', :aggregate_failures do
-      expect(SitemapGenerator).to receive(:verbose).and_return(true).twice
+    it 'uses SitemapGenerator.verbose as a default when true' do
+      SitemapGenerator.verbose = true
       expect(described_class.new.verbose).to be(true)
     end
 
-    it 'uses SitemapGenerator.verbose as a default when false', :aggregate_failures do
-      expect(SitemapGenerator).to receive(:verbose).and_return(false).twice
+    it 'uses SitemapGenerator.verbose as a default when false' do
+      SitemapGenerator.verbose = false
       expect(described_class.new.verbose).to be(false)
+    end
+
+    it 'defaults to true when verbose is not configured at any level' do
+      SitemapGenerator.verbose = nil
+      expect(described_class.new.verbose).to be(true)
     end
   end
 
