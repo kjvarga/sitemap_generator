@@ -38,6 +38,12 @@ namespace :sitemap do
 
   desc "Generate sitemaps but don't ping search engines.  Alias for refresh:no_ping."
   task create: :require do
+    # Rake's verbose flag defaults to a truthy sentinel object rather than to
+    # +true+ or +false+, so it can only be forwarded when -v/--verbose or
+    # -s/-q/--quiet was actually passed.  Forwarding it unconditionally would
+    # make every run verbose and clobber SitemapGenerator.verbose.
+    flag = Rake::FileUtilsExt.verbose_flag
+    SitemapGenerator.verbose_override = flag unless flag == Rake::FileUtilsExt::DEFAULT
     SitemapGenerator::Interpreter.run(config_file: ENV.fetch('CONFIG_FILE', nil))
   end
 end

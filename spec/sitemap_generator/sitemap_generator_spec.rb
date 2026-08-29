@@ -274,11 +274,20 @@ RSpec.describe 'SitemapGenerator' do
   end
 
   describe 'verbose' do
+    # ENV['VERBOSE'] now takes precedence over a value set in code, so leaking it
+    # out of these examples would silently override verbose everywhere else.
+    around do |example|
+      original_env = ENV.fetch('VERBOSE', nil)
+      original_verbose = SitemapGenerator.configured_verbose
+      example.run
+    ensure
+      ENV['VERBOSE'] = original_env
+      SitemapGenerator.verbose = original_verbose
+    end
+
     it "is set via ENV['VERBOSE']" do
-      original = SitemapGenerator.verbose
       expect_verbose_reflects_env('true', true)
       expect_verbose_reflects_env('false', false)
-      SitemapGenerator.verbose = original
     end
 
     def expect_verbose_reflects_env(env_value, expected)

@@ -362,12 +362,26 @@ module SitemapGenerator
       !!@include_root
     end
 
-    # Set verbose on the instance or by setting ENV['VERBOSE'] to true or false.
-    # By default verbose is true.  When running rake tasks, pass the <tt>-s</tt>
-    # option to rake to turn verbose off.
+    # Whether to output a summary of the run to STDOUT.
+    #
+    # Resolved in order of precedence, so that signals from outside the
+    # application can turn output on or off for a single run without the
+    # config file having to be edited:
+    #
+    # 1. an external override, such as rake's <tt>-v</tt>/<tt>-s</tt>/<tt>-q</tt> flags
+    # 2. <tt>ENV['VERBOSE']</tt>
+    # 3. the value set on this instance, e.g. in <tt>config/sitemap.rb</tt>
+    # 4. the global <tt>SitemapGenerator.verbose</tt> setting
+    # 5. the default, +true+
     def verbose
-      @verbose = SitemapGenerator.verbose.nil? || SitemapGenerator.verbose if @verbose.nil?
-      @verbose
+      return SitemapGenerator.verbose_override unless SitemapGenerator.verbose_override.nil?
+
+      env_verbose = SitemapGenerator.verbose_from_env
+      return env_verbose unless env_verbose.nil?
+      return @verbose unless @verbose.nil?
+      return SitemapGenerator.configured_verbose unless SitemapGenerator.configured_verbose.nil?
+
+      true
     end
 
     # Return a boolean indicating whether or not to yield the sitemap.
