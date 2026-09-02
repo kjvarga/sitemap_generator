@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 require 'sitemap_generator/simple_namer'
 require 'sitemap_generator/builder'
 require 'sitemap_generator/link_set'
@@ -49,20 +51,41 @@ module SitemapGenerator
 
     # Lazy-initialize the LinkSet instance
     Sitemap = (Config = Class.new do
+      extend Forwardable
+
       # Use a new LinkSet instance
       def reset!
         @link_set = LinkSet.new
       end
 
+      # The public LinkSet API is delegated explicitly so that it is visible to +methods+,
+      # +instance_methods+, documentation generators and editor autocompletion, instead of
+      # only existing at call time. +method_missing+ below remains the fallback, so anything
+      # not listed here (including LinkSet's private and protected methods) still works.
+      def_delegators :link_set,
+                     :add, :add_to_index, :adapter, :adapter=, :compress, :compress=,
+                     :create, :create_index, :create_index=, :default_host, :default_host=,
+                     :filename, :filename=, :finalize!, :group, :include_index, :include_index=,
+                     :include_index?, :include_root, :include_root=, :include_root?, :link_count,
+                     :max_sitemap_links, :max_sitemap_links=, :namer, :namer=, :ping_search_engines,
+                     :public_path, :public_path=, :search_engines, :search_engines=, :sitemap,
+                     :sitemap_index, :sitemap_index_location, :sitemap_index_url, :sitemap_location,
+                     :sitemaps_host, :sitemaps_host=, :sitemaps_path, :sitemaps_path=,
+                     :verbose, :verbose=, :yield_sitemap, :yield_sitemap=, :yield_sitemap?
+
       private
 
-      def method_missing(name, *args, &block)
+      # The LinkSet is not built until something actually needs it.
+      def link_set
         @link_set ||= reset!
-        @link_set.respond_to?(name, true) ? @link_set.__send__(name, *args, &block) : super
+      end
+
+      def method_missing(name, *args, &block)
+        link_set.respond_to?(name, true) ? link_set.__send__(name, *args, &block) : super
       end
 
       def respond_to_missing?(name, include_private = false)
-        (@link_set ||= reset!).respond_to?(name, include_private) || super
+        link_set.respond_to?(name, include_private) || super
       end
     end).new
     # rubocop:enable Lint/ConstantDefinitionInBlock

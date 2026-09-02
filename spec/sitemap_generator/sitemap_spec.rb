@@ -9,6 +9,23 @@ RSpec.describe SitemapGenerator::Sitemap do
     expect(sitemap.class.name).to match 'SitemapGenerator::'
   end
 
+  describe 'delegation' do
+    after { sitemap.reset! }
+
+    it 'defines the public LinkSet API as real methods', :aggregate_failures do
+      public_api = SitemapGenerator::LinkSet.public_instance_methods - Object.public_instance_methods
+      expect(sitemap.methods).to include(*public_api)
+      expect(sitemap.methods).not_to include :link_set
+    end
+
+    it 'forwards arguments to the link set' do
+      sitemap.reset!
+      sitemap.default_host = 'http://example.com'
+
+      expect(sitemap.default_host).to eq 'http://example.com'
+    end
+  end
+
   describe 'method missing' do
     it 'is not public' do
       expect(sitemap.methods).not_to include :method_missing
