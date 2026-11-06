@@ -60,9 +60,8 @@ module Helpers
   end
 end
 
-# rubocop:disable RSpec/Output -- useful in CI logs across the Appraisal Rails version matrix
+# rubocop:disable-next RSpec/Output -- useful in CI logs across the Appraisal Rails version matrix
 puts "Running RSpec with Rails version: #{Rails.version}"
-# rubocop:enable RSpec/Output
 
 # Load our own gem
 require 'sitemap_generator/tasks' # Combusition fails to load these tasks

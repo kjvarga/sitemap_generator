@@ -159,7 +159,7 @@ RSpec.describe SitemapGenerator::LinkSet do
       expect_search_engine_pinged(ls.sitemap_index_url) { ls.ping_search_engines }
     end
 
-    # rubocop:disable RSpec/ExampleLength -- 2 distinct scenarios (single ping, then reset + double ping)
+    # rubocop:disable-next RSpec/ExampleLength -- 2 distinct scenarios (single ping, then reset + double ping)
     it 'includes the given search engines', :aggregate_failures do
       ls.search_engines = nil
       request = stub_request(:get, %r{^http://newnegine\.com\?})
@@ -170,7 +170,6 @@ RSpec.describe SitemapGenerator::LinkSet do
       ls.ping_search_engines(newengine: 'http://newnegine.com?%s', anotherengine: 'http://newnegine.com?%s')
       expect(request).to have_been_requested.twice
     end
-    # rubocop:enable RSpec/ExampleLength
 
     def expect_search_engine_pinged(index_url)
       request = stub_request(:get, "http://google.com/?url=#{URI.encode_www_form_component(index_url)}")

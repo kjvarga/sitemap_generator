@@ -26,7 +26,7 @@ RSpec.describe 'SitemapGenerator' do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet
     end
 
-    # rubocop:disable RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
+    # rubocop:disable-next RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
     it 'sets a new LinkSet instance', :aggregate_failures do
       first = SitemapGenerator::Sitemap.instance_variable_get(:@link_set)
       expect(first).to be_a(SitemapGenerator::LinkSet)
@@ -35,7 +35,6 @@ RSpec.describe 'SitemapGenerator' do
       expect(second).to be_a(SitemapGenerator::LinkSet)
       expect(first).not_to be(second)
     end
-    # rubocop:enable RSpec/ExampleLength
   end
 
   describe 'root' do
@@ -365,7 +364,7 @@ RSpec.describe 'SitemapGenerator' do
         expect_index_url_pinged
       end
 
-      # rubocop:disable RSpec/ExampleLength -- exercises creation, file layout, schema, and search engine ping together
+      # rubocop:disable-next RSpec/ExampleLength -- exercises creation, file layout, schema, and search engine ping together
       it 'never creates the index when there are multiple sitemaps' do
         ls.create do
           add('/one')
@@ -377,7 +376,6 @@ RSpec.describe 'SitemapGenerator' do
         expect_schema_valid('public/sitemap.xml.gz' => 'sitemap', 'public/sitemap1.xml.gz' => 'sitemap')
         expect_index_url_pinged
       end
-      # rubocop:enable RSpec/ExampleLength
     end
 
     describe 'when :auto' do
@@ -437,7 +435,7 @@ RSpec.describe 'SitemapGenerator' do
     describe 'when false' do
       let(:compress) { false }
 
-      # rubocop:disable RSpec/ExampleLength -- 2 top-level adds plus a group are the scenario under test
+      # rubocop:disable-next RSpec/ExampleLength -- 2 top-level adds plus a group are the scenario under test
       it 'does not compress files' do
         ls.create do
           add('/one')
@@ -449,13 +447,12 @@ RSpec.describe 'SitemapGenerator' do
         end
         expect_files(exist: %w[public/sitemap.xml public/sitemap1.xml public/group.xml public/group1.xml])
       end
-      # rubocop:enable RSpec/ExampleLength
     end
 
     context 'when compress is :all_but_first' do
       let(:compress) { :all_but_first }
 
-      # rubocop:disable RSpec/ExampleLength -- the 3 groups with differing compress settings are the scenario
+      # rubocop:disable-next RSpec/ExampleLength -- the 3 groups with differing compress settings are the scenario
       it 'does not compress first file' do
         ls.create do
           add('/one')
@@ -479,13 +476,12 @@ RSpec.describe 'SitemapGenerator' do
                        public/group.xml public/group1.xml.gz public/group2.xml.gz public/group21.xml.gz
                      ])
       end
-      # rubocop:enable RSpec/ExampleLength
     end
 
     describe 'in groups' do
       let(:compress) { nil }
 
-      # rubocop:disable RSpec/ExampleLength -- the 3 groups with differing compress settings are the scenario
+      # rubocop:disable-next RSpec/ExampleLength -- the 3 groups with differing compress settings are the scenario
       it 'respects passed in compress option' do
         ls.create do
           group(filename: :group1, compress: :all_but_first) do
@@ -506,7 +502,6 @@ RSpec.describe 'SitemapGenerator' do
                        public/group21.xml.gz public/group3.xml public/group31.xml
                      ])
       end
-      # rubocop:enable RSpec/ExampleLength
     end
   end
 
