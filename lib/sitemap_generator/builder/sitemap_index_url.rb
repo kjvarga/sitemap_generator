@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'builder'
-
 module SitemapGenerator
   module Builder
     # Wraps a sitemap file reference as a +<sitemap>+ XML entry for use in a sitemap index.
@@ -15,14 +13,13 @@ module SitemapGenerator
         super
       end
 
-      # Return the URL as XML
+      # Return the URL as an XML string. See SitemapUrl#to_xml.
       def to_xml(builder = nil)
-        builder = ::Builder::XmlMarkup.new if builder.nil?
-        builder.sitemap do
-          builder.loc        self[:loc]
-          builder.lastmod    w3c_date(self[:lastmod]) if self[:lastmod]
-        end
-        builder << '' # force to string
+        xml = +'<sitemap>'
+        xml_tag(xml, 'loc', self[:loc])
+        xml_tag(xml, 'lastmod', w3c_date(self[:lastmod])) if self[:lastmod]
+        xml << '</sitemap>'
+        builder.nil? ? xml : builder << xml
       end
     end
   end
