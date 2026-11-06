@@ -19,4 +19,32 @@ RSpec.describe 'SitemapGenerator::FileAdapter' do
       adapter.write(location, 'data')
     end
   end
+
+  describe 'write to a directory' do
+    let(:dir) { Dir.mktmpdir }
+    let(:location) { SitemapGenerator::SitemapLocation.new(public_path: dir, filename: 'sitemap.xml') }
+    let(:path) { File.join(dir, 'sitemap.xml') }
+
+    after { FileUtils.remove_entry(dir) }
+
+    it 'writes the file without leaving temporary files', :aggregate_failures do
+      adapter.write(location, 'data')
+      expect(File.read(path)).to eq('data')
+      expect(Dir.children(dir)).to eq(['sitemap.xml'])
+    end
+
+    context 'when writing fails' do
+      before do
+        File.write(path, 'previous')
+        allow(adapter).to receive(:gzip).and_raise(Errno::ENOSPC)
+        allow(location).to receive(:gzip?).and_return(true)
+      end
+
+      it 'keeps the previous file and removes the temporary file', :aggregate_failures do
+        expect { adapter.write(location, 'data') }.to raise_error(Errno::ENOSPC)
+        expect(File.read(path)).to eq('previous')
+        expect(Dir.children(dir)).to eq(['sitemap.xml'])
+      end
+    end
+  end
 end

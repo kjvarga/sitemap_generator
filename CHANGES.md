@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Fix: `FileAdapter` now writes each sitemap to a temporary file and renames it into place, so web servers and crawlers never serve a partially written sitemap, and a failed regeneration (disk full, process killed) no longer leaves an empty or truncated file in place of the previous sitemap. Sitemap files are therefore recreated rather than overwritten in place.
+
 ## 7.1.1
 
 * Fix: `rake sitemap:clean` (`clean_files`) now respects the configured `sitemaps_path`/`public_path` and also removes uncompressed `.xml` sitemaps, instead of only deleting hardcoded `public/sitemap*.xml.gz` files. [#474](https://github.com/kjvarga/sitemap_generator/issues/474) [#502](https://github.com/kjvarga/sitemap_generator/pull/502)
