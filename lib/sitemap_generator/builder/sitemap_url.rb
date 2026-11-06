@@ -15,7 +15,13 @@ module SitemapGenerator
       ].freeze
       DEFAULT_OPTIONS = { priority: 0.5, changefreq: 'weekly', mobile: false }.freeze
       LIST_OPTIONS = %i[images videos alternates].freeze # default to a new empty Array
-      private_constant :VALID_OPTIONS, :DEFAULT_OPTIONS, :LIST_OPTIONS
+      # Paths and queries made only of characters that URI never escapes or normalizes.
+      SIMPLE_PATH_AND_QUERY = '(?:/(?:[A-Za-z0-9\\-._~]|%\\h\\h)*)+(?:\\?(?:[A-Za-z0-9\\-._~=&]|%\\h\\h)*)?'
+      SIMPLE_ABSOLUTE_URL = %r{\Ahttps?://[a-z0-9-]+(?:\.[a-z0-9-]+)*(?:#{SIMPLE_PATH_AND_QUERY})?\z}.freeze
+      SIMPLE_ABSOLUTE_PATH = %r{\A(?!//)#{SIMPLE_PATH_AND_QUERY}\z}.freeze # not a protocol-relative URL
+      DOT_SEGMENT = %r{/\.\.?(?:/|\?|\z)}.freeze
+      private_constant :VALID_OPTIONS, :DEFAULT_OPTIONS, :LIST_OPTIONS, :SIMPLE_PATH_AND_QUERY, :SIMPLE_ABSOLUTE_URL,
+                       :SIMPLE_ABSOLUTE_PATH, :DOT_SEGMENT
 
       # Caches used by #join_url and #w3c_time. They are replaced, never modified, so they are thread-safe.
       @host_uri_cache = {}.freeze
@@ -252,18 +258,43 @@ module SitemapGenerator
         end
       end
 
-      # Same as URI.join(host, url).to_s, parsing each host only once.
+      # Same as URI.join(host, url).to_s, but faster.
+      #
+      # Each host is parsed only once, and URLs made only of characters that URI never
+      # escapes or normalizes (an absolute http(s) URL or an absolute path, without dot
+      # segments) are joined without parsing them.
       def join_url(host, url)
         return URI.join(host, url).to_s unless host.is_a?(String)
 
-        cache = SitemapUrl.host_uri_cache
-        base = cache[host]
-        unless base
-          base = URI.parse(host)
-          # Copy-on-write so readers in other threads never see a Hash being modified.
-          SitemapUrl.host_uri_cache = (cache.size < 100 ? cache : {}).merge(host.dup.freeze => base).freeze
+        base, origin = host_uri(host)
+        if url.is_a?(String) && !DOT_SEGMENT.match?(url)
+          return url if SIMPLE_ABSOLUTE_URL.match?(url)
+          return origin + url if origin && SIMPLE_ABSOLUTE_PATH.match?(url)
         end
         base.merge(url).to_s
+      end
+
+      # Return the parsed host URI and its origin (the URI without path, query and fragment),
+      # or nil for the origin if the host is not an absolute URI.
+      def host_uri(host)
+        cache = SitemapUrl.host_uri_cache
+        cache[host] || begin
+          base = URI.parse(host)
+          entry = [base, uri_origin(base)].freeze
+          # Copy-on-write so readers in other threads never see a Hash being modified.
+          SitemapUrl.host_uri_cache = (cache.size < 100 ? cache : {}).merge(host.dup.freeze => entry).freeze
+          entry
+        end
+      end
+
+      def uri_origin(uri)
+        return unless uri.absolute? && uri.host
+
+        origin = uri.dup
+        origin.path = ''
+        origin.query = nil
+        origin.fragment = nil
+        origin.to_s
       end
 
       def w3c_date(date) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity

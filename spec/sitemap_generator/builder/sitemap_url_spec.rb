@@ -339,12 +339,21 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
   describe 'join_url' do
     [
       ['http://example.com', '/a.png'], ['http://example.com/sub/', 'a.png'], ['http://example.com/sub', '/a.png'],
-      ['http://example.com/', 'https://cdn.example.com/a.png'], ['http://example.com/a/b/', '../c.png']
+      ['http://example.com/', 'https://cdn.example.com/a.png'], ['http://example.com/a/b/', '../c.png'],
+      ['http://example.com/sub/', '/a/./b/../c.png'], ['http://example.com', '//cdn.example.com/a.png'],
+      ['http://example.com:8080/sub?q=1', '/a.png?w=100&h=50'], ['https://example.com:443', '/a.png'],
+      ['HTTP://Example.COM', 'HTTPS://CDN.example.com/a.png'], ['http://example.com', '/caf%C3%A9.png']
     ].each do |host, path|
       context "when joining #{host} and #{path}" do
         it 'resolves the url like URI.join' do
           expect(new_url.send(:join_url, host, path)).to eq(URI.join(host, path).to_s)
         end
+      end
+    end
+
+    context 'when the host is not an absolute url' do
+      it 'raises like URI.join' do
+        expect { new_url.send(:join_url, 'example.com', '/a.png') }.to raise_error(URI::BadURIError)
       end
     end
   end
