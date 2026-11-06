@@ -61,12 +61,12 @@ module SitemapGenerator
         )
         raise 'Cannot generate a url without a host' unless SitemapGenerator::Utilities.present?(options[:host])
 
+        # Build new arrays rather than appending to the caller's arrays, which may be reused across URLs.
         if (video = options.delete(:video))
-          options[:videos] = video.is_a?(Array) ? options[:videos].concat(video) : options[:videos] << video
+          options[:videos] = options[:videos] + (video.is_a?(Array) ? video : [video])
         end
         if (alternate = options.delete(:alternate))
-          options[:alternates] =
-            alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
+          options[:alternates] = options[:alternates] + (alternate.is_a?(Array) ? alternate : [alternate])
         end
 
         path = encode_non_ascii(path.to_s.sub(%r{^/}, ''))
@@ -236,13 +236,17 @@ module SitemapGenerator
       end
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
+      #
+      # The caller's images are not modified: they are often shared between URLs, and possibly
+      # between groups with different hosts, so each image loc must be resolved against this URL's host.
       def prepare_images(images, host)
-        images.delete_if { |key, _value| key[:loc].nil? }
-        images.each do |r|
-          SitemapGenerator::Utilities.assert_valid_keys(r, :loc, :caption, :geo_location, :title, :license)
-          r[:loc] = URI.join(host, r[:loc]).to_s
+        images = images.reject { |image| image[:loc].nil? }
+        images.each do |image|
+          SitemapGenerator::Utilities.assert_valid_keys(image, :loc, :caption, :geo_location, :title, :license)
         end
-        images[0..(SitemapGenerator::MAX_SITEMAP_IMAGES - 1)]
+        images.first(SitemapGenerator::MAX_SITEMAP_IMAGES).map do |image|
+          image.merge(loc: URI.join(host, image[:loc]).to_s)
+        end
       end
 
       def w3c_date(date) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
