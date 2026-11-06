@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Performance: Speed up `SitemapUrl` creation by about 50%: avoid regexps and allocations for plain ASCII paths and hosts, only compute the default `lastmod` when it is not given, reuse the formatted `lastmod` of the previous URL when it is in the same second, and parse each host only once when resolving image and alternate URLs.
 * Fix: `add` no longer modifies the `images`, `videos` and `alternates` options passed to it. Image locs were rewritten in place, so images shared between URLs kept the host of the first URL (wrong host in groups with a different `default_host`), and a `videos` or `alternates` array combined with `video` or `alternate` grew on every call, leaking videos and alternates into other URLs.
 
 ## 7.1.1

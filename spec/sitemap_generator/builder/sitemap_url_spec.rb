@@ -136,6 +136,16 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:w3c_date, '2010-01-01')).to eq('2010-01-01')
     end
 
+    context 'when consecutive times have the same seconds but different offsets' do
+      it 'formats each time with its own offset' do
+        url = new_url
+        times = [Time.at(0).utc, Time.at(0).getlocal('+05:30'), Time.at(0).getlocal('-03:00'), Time.at(0).utc]
+        expect(times.map { |time| url.send(:w3c_date, time) }).to eq(
+          %w[1970-01-01T00:00:00+00:00 1970-01-01T05:30:00+05:30 1969-12-31T21:00:00-03:00 1970-01-01T00:00:00+00:00]
+        )
+      end
+    end
+
     it 'tries to convert to utc' do
       time = Time.at(0)
       allow(time).to receive(:respond_to?).and_return(false, true)
@@ -322,6 +332,19 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
 
       it 'leaves the href unchanged' do
         expect(alternate_link['href']).to eq('https://es.example.com/page')
+      end
+    end
+  end
+
+  describe 'join_url' do
+    [
+      ['http://example.com', '/a.png'], ['http://example.com/sub/', 'a.png'], ['http://example.com/sub', '/a.png'],
+      ['http://example.com/', 'https://cdn.example.com/a.png'], ['http://example.com/a/b/', '../c.png']
+    ].each do |host, path|
+      context "when joining #{host} and #{path}" do
+        it 'resolves the url like URI.join' do
+          expect(new_url.send(:join_url, host, path)).to eq(URI.join(host, path).to_s)
+        end
       end
     end
   end
