@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Internal: Fix the offenses RuboCop 1.90+ reports, using `rubocop:disable-next` directives. [#524](https://github.com/kjvarga/sitemap_generator/pull/524)
+
 ## 7.1.1
 
 * Fix: `rake sitemap:clean` (`clean_files`) now respects the configured `sitemaps_path`/`public_path` and also removes uncompressed `.xml` sitemaps, instead of only deleting hardcoded `public/sitemap*.xml.gz` files. [#474](https://github.com/kjvarga/sitemap_generator/issues/474) [#502](https://github.com/kjvarga/sitemap_generator/pull/502)
