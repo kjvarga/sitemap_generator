@@ -376,6 +376,16 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
     end
 
+    context 'when an image loc is an absolute url' do
+      let(:loc) { +'https://cdn.example.com/logo.png' }
+
+      it 'does not share the loc string with the caller', :aggregate_failures do
+        image_loc = new_url('/a', host: 'http://example.com', images: [{ loc: loc }])[:images].first[:loc]
+        expect(image_loc).to eq(loc)
+        expect(image_loc).not_to be(loc)
+      end
+    end
+
     context 'when given both videos and video' do
       let(:videos) { [{ thumbnail_loc: 'http://example.com/1.jpg', title: '1', description: '1' }] }
       let(:video) { { thumbnail_loc: 'http://example.com/2.jpg', title: '2', description: '2' } }

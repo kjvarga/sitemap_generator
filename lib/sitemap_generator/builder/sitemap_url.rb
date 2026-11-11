@@ -258,45 +258,6 @@ module SitemapGenerator
         end
       end
 
-      # Same as URI.join(host, url).to_s, but faster.
-      #
-      # Each host is parsed only once, and URLs made only of characters that URI never
-      # escapes or normalizes (an absolute http(s) URL or an absolute path, without dot
-      # segments) are joined without parsing them.
-      def join_url(host, url)
-        return URI.join(host, url).to_s unless host.is_a?(String)
-
-        base, origin = host_uri(host)
-        if url.is_a?(String) && !DOT_SEGMENT.match?(url)
-          return url if SIMPLE_ABSOLUTE_URL.match?(url)
-          return origin + url if origin && SIMPLE_ABSOLUTE_PATH.match?(url)
-        end
-        base.merge(url).to_s
-      end
-
-      # Return the parsed host URI and its origin (the URI without path, query and fragment),
-      # or nil for the origin if the host is not an absolute URI.
-      def host_uri(host)
-        cache = SitemapUrl.host_uri_cache
-        cache[host] || begin
-          base = URI.parse(host)
-          entry = [base, uri_origin(base)].freeze
-          # Copy-on-write so readers in other threads never see a Hash being modified.
-          SitemapUrl.host_uri_cache = (cache.size < 100 ? cache : {}).merge(host.dup.freeze => entry).freeze
-          entry
-        end
-      end
-
-      def uri_origin(uri)
-        return unless uri.absolute? && uri.host
-
-        origin = uri.dup
-        origin.path = ''
-        origin.query = nil
-        origin.fragment = nil
-        origin.to_s
-      end
-
       def w3c_date(date) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         if date.is_a?(String)
           date
@@ -322,19 +283,6 @@ module SitemapGenerator
             date.strftime('%Y-%m-%dT%H:%M:%S') + zone
           end
         end
-      end
-
-      # Format a Time as W3C datetime, caching the last result. URLs often share a lastmod,
-      # or get the current time by default, so consecutive URLs usually format the same second.
-      def w3c_time(time)
-        seconds = time.to_i
-        offset = time.utc_offset
-        cached = SitemapUrl.w3c_time_cache
-        return cached[3] if cached && cached[0] == seconds && cached[1] == offset && cached[2].equal?(time.class)
-
-        formatted = time.iso8601.sub(/Z$/i, '+00:00')
-        SitemapUrl.w3c_time_cache = [seconds, offset, time.class, formatted].freeze
-        formatted
       end
 
       # Accept a string or boolean and return 'yes' or 'no'.  If a string, the
@@ -364,6 +312,58 @@ module SitemapGenerator
       end
 
       private
+
+      # Same as URI.join(host, url).to_s, but faster.
+      #
+      # Each host is parsed only once, and URLs made only of characters that URI never
+      # escapes or normalizes (an absolute http(s) URL or an absolute path, without dot
+      # segments) are joined without parsing them.
+      def join_url(host, url)
+        return URI.join(host, url).to_s unless host.is_a?(String)
+
+        base, origin = host_uri(host)
+        if url.is_a?(String) && !DOT_SEGMENT.match?(url)
+          return url.dup if SIMPLE_ABSOLUTE_URL.match?(url) # a new String, like URI.join, not the caller's
+          return origin + url if origin && SIMPLE_ABSOLUTE_PATH.match?(url)
+        end
+        base.merge(url).to_s
+      end
+
+      # Return the parsed host URI and its origin (the URI without path, query and fragment),
+      # or nil for the origin if the host is not an absolute URI.
+      def host_uri(host)
+        cache = SitemapUrl.host_uri_cache
+        cache[host] || begin
+          base = URI.parse(host)
+          entry = [base, uri_origin(base)].freeze
+          # Copy-on-write so readers in other threads never see a Hash being modified.
+          SitemapUrl.host_uri_cache = (cache.size < 100 ? cache : {}).merge(host.dup.freeze => entry).freeze
+          entry
+        end
+      end
+
+      def uri_origin(uri)
+        return unless uri.absolute? && uri.host
+
+        origin = uri.dup
+        origin.path = ''
+        origin.query = nil
+        origin.fragment = nil
+        origin.to_s
+      end
+
+      # Format a Time as W3C datetime, caching the last result. URLs often share a lastmod,
+      # or get the current time by default, so consecutive URLs usually format the same second.
+      def w3c_time(time)
+        seconds = time.to_i
+        offset = time.utc_offset
+        cached = SitemapUrl.w3c_time_cache
+        return cached[3] if cached && cached[0] == seconds && cached[1] == offset && cached[2].equal?(time.class)
+
+        formatted = time.iso8601.sub(/Z$/i, '+00:00')
+        SitemapUrl.w3c_time_cache = [seconds, offset, time.class, formatted].freeze
+        formatted
+      end
 
       # Same as path.sub(%r{^/}, '') without a regexp in the common case.
       def remove_leading_slash(path)
