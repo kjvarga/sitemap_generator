@@ -147,7 +147,7 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
     end
 
     it 'tries to convert to utc' do
-      time = Time.at(0)
+      time = Time.at(0).getlocal('+05:00')
       allow(time).to receive(:respond_to?).and_return(false, true)
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+00:00')
     end

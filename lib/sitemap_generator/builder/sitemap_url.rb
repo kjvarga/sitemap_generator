@@ -300,10 +300,9 @@ module SitemapGenerator
       def w3c_date(date) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         if date.is_a?(String)
           date
-        elsif date.is_a?(Time) && date.respond_to?(:iso8601) # includes ActiveSupport::TimeWithZone
-          w3c_time(date)
         elsif date.respond_to?(:iso8601)
-          date.iso8601.sub(/Z$/i, '+00:00')
+          # Time includes ActiveSupport::TimeWithZone
+          date.is_a?(Time) ? w3c_time(date) : date.iso8601.sub(/Z$/i, '+00:00')
         elsif date.is_a?(Date) && !date.is_a?(DateTime)
           date.strftime('%Y-%m-%d')
         else
