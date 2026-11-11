@@ -14,7 +14,7 @@ RSpec.describe 'SitemapGenerator' do
       SitemapGenerator::Sitemap.default_host # Force initialization of the LinkSet
     end
 
-    # rubocop:disable RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
+    # rubocop:disable-next RSpec/ExampleLength -- flowing before/after comparison, no extractable setup
     it 'sets a new LinkSet instance', :aggregate_failures do
       first = SitemapGenerator::Sitemap.instance_variable_get(:@link_set)
       expect(first).to be_a(SitemapGenerator::LinkSet)
@@ -23,7 +23,6 @@ RSpec.describe 'SitemapGenerator' do
       expect(second).to be_a(SitemapGenerator::LinkSet)
       expect(first).not_to be(second)
     end
-    # rubocop:enable RSpec/ExampleLength
   end
 
   describe 'app root' do

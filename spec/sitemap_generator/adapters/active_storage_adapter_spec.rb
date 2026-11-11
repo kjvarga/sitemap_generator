@@ -8,11 +8,10 @@ RSpec.describe 'SitemapGenerator::ActiveStorageAdapter' do
   let(:adapter)  { SitemapGenerator::ActiveStorageAdapter.new }
   let(:fake_scope_class) do
     Class.new do
-      # rubocop:disable Naming/PredicateMethod -- mimics ActiveRecord::Relation's real method name
+      # rubocop:disable-next Naming/PredicateMethod -- mimics ActiveRecord::Relation's real method name
       def destroy_all
         true
       end
-      # rubocop:enable Naming/PredicateMethod
     end
   end
 

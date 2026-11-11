@@ -515,7 +515,7 @@ module SitemapGenerator
         @public_path = Pathname.new(SitemapGenerator::Utilities.append_slash(value))
         @public_path = SitemapGenerator.app.root + @public_path if @public_path.relative?
         update_location_info(:public_path, @public_path)
-        @public_path # rubocop:disable Lint/Void -- return value used by send(:public_path=) in the getter
+        @public_path # return value used by send(:public_path=) in the getter
       end
 
       # Return a Pathname with the full path to the public directory

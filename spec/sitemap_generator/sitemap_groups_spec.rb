@@ -34,7 +34,7 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
     expect_public_files(exist: %w[sitemap.xml.gz], not_exist: %w[sitemap1.xml.gz])
   end
 
-  # rubocop:disable RSpec/ExampleLength -- distinct add-before/group/add-after steps are the scenario under test
+  # rubocop:disable-next RSpec/ExampleLength -- distinct add-before/group/add-after steps are the scenario under test
   it 'adds links to the default sitemap' do
     linkset.create do
       add '/before'
@@ -44,9 +44,8 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
     expect(linkset.link_count).to eq(4)
     expect_public_files(exist: %w[sitemap.xml.gz sitemap1.xml.gz sitemap_en.xml.gz])
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength -- exercises a full max_sitemap_links rollover scenario across 2 groups
+  # rubocop:disable-next RSpec/ExampleLength -- exercises a full max_sitemap_links rollover scenario across 2 groups
   it 'rolls over when sitemaps are full' do
     linkset.max_sitemap_links = 1
     linkset.include_index = false
@@ -65,9 +64,8 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
       not_exist: %w[sitemap3.xml.gz en/sitemap_en2.xml.gz]
     )
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength -- exercises 2 independent groups plus the resulting file layout
+  # rubocop:disable-next RSpec/ExampleLength -- exercises 2 independent groups plus the resulting file layout
   it 'supports multiple groups' do
     linkset.create do
       group(filename: :sitemap_en, sitemaps_path: 'en/') { add '/one' }
@@ -76,9 +74,8 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
     expect(linkset.link_count).to eq(2)
     expect_public_files(exist: %w[sitemap.xml.gz en/sitemap_en.xml.gz fr/sitemap_fr.xml.gz])
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength -- exercises 2 non-conflicting groups interleaved with top-level adds
+  # rubocop:disable-next RSpec/ExampleLength -- exercises 2 non-conflicting groups interleaved with top-level adds
   it 'the sitemap shouldn\'t be finalized until the end if the groups don\'t conflict' do
     linkset.create do
       add 'one'
@@ -91,9 +88,8 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
     expect_public_files(exist: %w[sitemap.xml.gz sitemap1.xml.gz first.xml.gz second.xml.gz])
     expect_valid_sitemap_index_and_page(public_file('sitemap.xml.gz'), public_file('sitemap1.xml.gz'))
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength -- exercises 2 groups with differing hosts interleaved with top-level adds
+  # rubocop:disable-next RSpec/ExampleLength -- exercises 2 groups with differing hosts interleaved with top-level adds
   it 'groups should share the sitemap if the sitemap location is unchanged' do
     linkset.create do
       add 'one'
@@ -107,9 +103,8 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
                         not_exist: %w[sitemap4.xml.gz])
     expect_valid_sitemap_index_and_pages('sitemap1.xml.gz', 'sitemap2.xml.gz', 'sitemap3.xml.gz')
   end
-  # rubocop:enable RSpec/ExampleLength
 
-  # rubocop:disable RSpec/ExampleLength -- exercises 2 groups with differing virtual locations interleaved with adds
+  # rubocop:disable-next RSpec/ExampleLength -- exercises 2 groups with differing virtual locations interleaved with adds
   it 'sitemaps should be finalized if virtual location settings are changed' do
     linkset.create do
       add 'one'
@@ -122,7 +117,6 @@ RSpec.describe 'Sitemap Groups' do # rubocop:disable RSpec/DescribeClass -- feat
     expect_public_files(exist: %w[sitemap.xml.gz sitemap1.xml.gz sitemap2.xml.gz sitemap3.xml.gz en/sitemap.xml.gz],
                         not_exist: %w[sitemap4.xml.gz])
   end
-  # rubocop:enable RSpec/ExampleLength
 
   def expect_valid_sitemap_index_and_page(index_file, sitemap_file)
     expect_gzipped_xml_file_to_validate_against_schema(index_file, 'siteindex')
