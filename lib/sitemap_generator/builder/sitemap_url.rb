@@ -323,7 +323,8 @@ module SitemapGenerator
 
         base, origin = host_uri(host)
         if url.is_a?(String) && !DOT_SEGMENT.match?(url)
-          return url.dup if SIMPLE_ABSOLUTE_URL.match?(url) # a new String, like URI.join, not the caller's
+          # A new UTF-8 String, like URI.join, not the caller's (nor a subclass or another encoding).
+          return String.new(url, encoding: Encoding::UTF_8) if SIMPLE_ABSOLUTE_URL.match?(url)
           return origin + url if origin && SIMPLE_ABSOLUTE_PATH.match?(url)
         end
         base.merge(url).to_s
@@ -355,14 +356,17 @@ module SitemapGenerator
       # Format a Time as W3C datetime, caching the last result. URLs often share a lastmod,
       # or get the current time by default, so consecutive URLs usually format the same second.
       def w3c_time(time)
-        seconds = time.to_i
-        offset = time.utc_offset
         cached = SitemapUrl.w3c_time_cache
-        return cached[3] if cached && cached[0] == seconds && cached[1] == offset && cached[2].equal?(time.class)
+        # A copy for each caller, as when it was formatted each time: a caller may modify it.
+        return cached[3].dup if w3c_time_cached?(cached, time)
 
         formatted = time.iso8601.sub(/Z$/i, '+00:00')
-        SitemapUrl.w3c_time_cache = [seconds, offset, time.class, formatted].freeze
+        SitemapUrl.w3c_time_cache = [time.to_i, time.utc_offset, time.class, formatted.dup].freeze
         formatted
+      end
+
+      def w3c_time_cached?(cached, time)
+        cached && cached[0] == time.to_i && cached[1] == time.utc_offset && cached[2].equal?(time.class)
       end
 
       # Same as path.sub(%r{^/}, '') without a regexp in the common case.

@@ -43,7 +43,8 @@ module SitemapGenerator
       # Only build the arrays below for a key that is not found directly (an unknown key,
       # or valid keys given as an array).
       hash.each_key do |key|
-        next if valid_keys.include?(key)
+        # Symbols only: == and eql? agree on them, as Array#- uses eql?.
+        next if key.is_a?(Symbol) && valid_keys.include?(key)
 
         unknown_keys = hash.keys - valid_keys.flatten
         raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(', ')}") unless unknown_keys.empty?

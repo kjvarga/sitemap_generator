@@ -136,6 +136,12 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:w3c_date, '2010-01-01')).to eq('2010-01-01')
     end
 
+    it 'returns a string each caller can modify' do
+      url = new_url
+      url.send(:w3c_date, Time.at(0).utc) << 'X'
+      expect(url.send(:w3c_date, Time.at(0).utc)).to eq('1970-01-01T00:00:00+00:00')
+    end
+
     context 'when consecutive times have the same seconds but different offsets' do
       it 'formats each time with its own offset' do
         url = new_url
@@ -368,6 +374,12 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
         expect([first[:images], second[:images]]).to eq(
           [[{ loc: 'http://example.com/logo.png' }], [{ loc: 'http://example.fr/logo.png' }]]
         )
+      end
+
+      it 'returns an absolute image loc in another encoding as a UTF-8 String, as URI.join does' do
+        images = [{ loc: 'http://cdn.example.com/a.jpg'.b }]
+        loc = new_url('/a', host: 'http://example.com', images: images)[:images].first[:loc]
+        expect(loc.encoding).to eq(Encoding::UTF_8)
       end
 
       it 'does not modify the images' do

@@ -8,6 +8,7 @@ RSpec.describe SitemapGenerator::Utilities do
     it 'raises error on invalid keys' do
       expect_invalid_keys_to_raise({ name: 'Rob', years: '28' }, :name, :age)
       expect_invalid_keys_to_raise({ name: 'Rob', age: '28' }, 'name', 'age')
+      expect_invalid_keys_to_raise({ 1 => 'Rob' }, 1.0)
     end
 
     it 'does not raise error on valid keys' do
