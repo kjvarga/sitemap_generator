@@ -46,5 +46,22 @@ RSpec.describe 'SitemapGenerator::FileAdapter' do
         expect(Dir.children(dir)).to eq(['sitemap.xml'])
       end
     end
+
+    context 'when the file is a symlink' do
+      let(:target) { File.join(dir, 'shared', 'sitemap.xml') }
+
+      before do
+        FileUtils.mkdir_p(File.dirname(target))
+        File.write(target, 'previous')
+        File.symlink(target, path)
+      end
+
+      it 'writes to the target and keeps the symlink', :aggregate_failures do
+        adapter.write(location, 'data')
+        expect(File.symlink?(path)).to be(true)
+        expect(File.read(target)).to eq('data')
+        expect(Dir.children(File.dirname(target))).to eq(['sitemap.xml'])
+      end
+    end
   end
 end

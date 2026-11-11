@@ -37,7 +37,9 @@ module SitemapGenerator
     end
 
     # Yield a stream to a temporary file in the same directory as `path`, then rename it to `path`.
+    # If `path` is a symlink, its target is replaced and the symlink is kept.
     def write_atomically(path, &block)
+      path = File.realpath(path) if File.symlink?(path) && File.exist?(path)
       temp_path = "#{path}.#{Process.pid}.#{Thread.current.object_id}.tmp"
       File.open(temp_path, 'wb', &block)
       File.rename(temp_path, path)
