@@ -40,14 +40,25 @@ module SitemapGenerator
     # mismatch. Note that keys are NOT treated indifferently, meaning if you use
     # strings for keys but assert symbols as keys, this will fail.
     def assert_valid_keys(hash, *valid_keys)
-      unknown_keys = hash.keys - [valid_keys].flatten
-      raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(', ')}") unless unknown_keys.empty?
+      # Only build the arrays below for a key that is not found directly (an unknown key,
+      # or valid keys given as an array).
+      hash.each_key do |key|
+        # Symbols only: == and eql? agree on them, as Array#- uses eql?.
+        next if key.is_a?(Symbol) && valid_keys.include?(key)
+
+        unknown_keys = hash.keys - valid_keys.flatten
+        raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(', ')}") unless unknown_keys.empty?
+
+        break # every key was checked against the flattened valid keys
+      end
+      nil
     end
 
     # Return a new hash with all keys converted to symbols, as long as
     # they respond to +to_sym+.
     def symbolize_keys(hash)
-      symbolize_keys!(hash.dup)
+      hash.each_key { |key| return symbolize_keys!(hash.dup) unless key.is_a?(Symbol) }
+      hash.dup # all keys are already symbols
     end
 
     # Destructively convert all keys to symbols, as long as they respond

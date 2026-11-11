@@ -8,11 +8,19 @@ RSpec.describe SitemapGenerator::Utilities do
     it 'raises error on invalid keys' do
       expect_invalid_keys_to_raise({ name: 'Rob', years: '28' }, :name, :age)
       expect_invalid_keys_to_raise({ name: 'Rob', age: '28' }, 'name', 'age')
+      expect_invalid_keys_to_raise({ 1 => 'Rob' }, 1.0)
     end
 
     it 'does not raise error on valid keys' do
       expect_valid_keys_not_to_raise({ name: 'Rob', age: '28' }, :name, :age)
       expect_valid_keys_not_to_raise({ name: 'Rob' }, :name, :age)
+    end
+
+    context 'when the valid keys are given as an array' do
+      it 'checks the keys against the array' do
+        expect_valid_keys_not_to_raise({ name: 'Rob' }, %i[name age])
+        expect_invalid_keys_to_raise({ name: 'Rob', years: '28' }, %i[name age])
+      end
     end
 
     def expect_invalid_keys_to_raise(hash, *keys)
@@ -21,6 +29,22 @@ RSpec.describe SitemapGenerator::Utilities do
 
     def expect_valid_keys_not_to_raise(hash, *keys)
       expect { described_class.assert_valid_keys(hash, *keys) }.not_to raise_exception
+    end
+  end
+
+  describe 'symbolize_keys' do
+    it 'returns a copy with symbol keys' do
+      hash = { 'name' => 'Rob', age: 28 }
+      expect(described_class.symbolize_keys(hash)).to eq(name: 'Rob', age: 28)
+    end
+
+    context 'when all keys are already symbols' do
+      it 'returns a copy', :aggregate_failures do
+        hash = { name: 'Rob' }
+        result = described_class.symbolize_keys(hash)
+        expect(result).to eq(hash)
+        expect(result).not_to be(hash)
+      end
     end
   end
 

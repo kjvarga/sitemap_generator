@@ -10,6 +10,26 @@ module SitemapGenerator
     # A Hash-like class for holding information about a sitemap URL and
     # generating an XML <url> element suitable for sitemaps.
     class SitemapUrl < Hash # rubocop:disable Metrics/ClassLength
+      VALID_OPTIONS = %i[
+        priority changefreq lastmod expires host images video news videos mobile alternate alternates pagemap
+      ].freeze
+      DEFAULT_OPTIONS = { priority: 0.5, changefreq: 'weekly', mobile: false }.freeze
+      LIST_OPTIONS = %i[images videos alternates].freeze # default to a new empty Array
+      # Paths and queries made only of characters that URI never escapes or normalizes.
+      SIMPLE_PATH_AND_QUERY = '(?:/(?:[A-Za-z0-9\\-._~]|%\\h\\h)*)+(?:\\?(?:[A-Za-z0-9\\-._~=&]|%\\h\\h)*)?'
+      SIMPLE_ABSOLUTE_URL = %r{\Ahttps?://[a-z0-9-]+(?:\.[a-z0-9-]+)*(?:#{SIMPLE_PATH_AND_QUERY})?\z}.freeze
+      SIMPLE_ABSOLUTE_PATH = %r{\A(?!//)#{SIMPLE_PATH_AND_QUERY}\z}.freeze # not a protocol-relative URL
+      DOT_SEGMENT = %r{/\.\.?(?:/|\?|\z)}.freeze
+      private_constant :VALID_OPTIONS, :DEFAULT_OPTIONS, :LIST_OPTIONS, :SIMPLE_PATH_AND_QUERY, :SIMPLE_ABSOLUTE_URL,
+                       :SIMPLE_ABSOLUTE_PATH, :DOT_SEGMENT
+
+      # Caches used by #join_url and #w3c_time. They are replaced, never modified, so they are thread-safe.
+      @host_uri_cache = {}.freeze
+      @w3c_time_cache = nil
+      class << self
+        attr_accessor :host_uri_cache, :w3c_time_cache # :nodoc:
+      end
+
       # Return a new instance with options configured on it.
       #
       # == Arguments
@@ -42,35 +62,24 @@ module SitemapGenerator
           path = sitemap.location.path_in_public
         end
 
-        SitemapGenerator::Utilities.assert_valid_keys(
-          options,
-          :priority, :changefreq, :lastmod, :expires, :host,
-          :images, :video, :news, :videos, :mobile,
-          :alternate, :alternates, :pagemap
-        )
-        SitemapGenerator::Utilities.reverse_merge!(
-          options,
-          priority: 0.5,
-          changefreq: 'weekly',
-          lastmod: SitemapGenerator::Utilities.current_time,
-          images: [],
-          news: {},
-          videos: [],
-          mobile: false,
-          alternates: []
-        )
+        SitemapGenerator::Utilities.assert_valid_keys(options, *VALID_OPTIONS)
+        DEFAULT_OPTIONS.each { |key, value| options[key] = value unless options.key?(key) }
+        LIST_OPTIONS.each { |key| options[key] = [] unless options.key?(key) }
+        options[:news] = {} unless options.key?(:news)
+        # Only look up the current time when it is needed.
+        options[:lastmod] = SitemapGenerator::Utilities.current_time unless options.key?(:lastmod)
         raise 'Cannot generate a url without a host' unless SitemapGenerator::Utilities.present?(options[:host])
 
+        # Build new arrays rather than appending to the caller's arrays, which may be reused across URLs.
         if (video = options.delete(:video))
-          options[:videos] = video.is_a?(Array) ? options[:videos].concat(video) : options[:videos] << video
+          options[:videos] = options[:videos] + (video.is_a?(Array) ? video : [video])
         end
         if (alternate = options.delete(:alternate))
-          options[:alternates] =
-            alternate.is_a?(Array) ? options[:alternates].concat(alternate) : options[:alternates] << alternate
+          options[:alternates] = options[:alternates] + (alternate.is_a?(Array) ? alternate : [alternate])
         end
 
-        path = encode_non_ascii(path.to_s.sub(%r{^/}, ''))
-        loc  = path.empty? ? options[:host] : "#{options[:host].to_s.sub(%r{/$}, '')}/#{path}"
+        path = encode_non_ascii(remove_leading_slash(path.to_s))
+        loc  = path.empty? ? options[:host] : "#{remove_trailing_slash(options[:host].to_s)}/#{path}"
         merge!(
           priority: options[:priority],
           changefreq: options[:changefreq],
@@ -228,7 +237,7 @@ module SitemapGenerator
 
           href = alt[:href].to_s
           if href.start_with?('/')
-            alt.merge(href: URI.join(host, href).to_s)
+            alt.merge(href: join_url(host, href))
           else
             alt
           end
@@ -236,20 +245,25 @@ module SitemapGenerator
       end
 
       # Return an Array of image option Hashes suitable to be parsed by SitemapGenerator::Builder::SitemapFile
+      #
+      # The caller's images are not modified: they are often shared between URLs, and possibly
+      # between groups with different hosts, so each image loc must be resolved against this URL's host.
       def prepare_images(images, host)
-        images.delete_if { |key, _value| key[:loc].nil? }
-        images.each do |r|
-          SitemapGenerator::Utilities.assert_valid_keys(r, :loc, :caption, :geo_location, :title, :license)
-          r[:loc] = URI.join(host, r[:loc]).to_s
+        images = images.reject { |image| image[:loc].nil? }
+        images.each do |image|
+          SitemapGenerator::Utilities.assert_valid_keys(image, :loc, :caption, :geo_location, :title, :license)
         end
-        images[0..(SitemapGenerator::MAX_SITEMAP_IMAGES - 1)]
+        images.first(SitemapGenerator::MAX_SITEMAP_IMAGES).map do |image|
+          image.merge(loc: join_url(host, image[:loc]))
+        end
       end
 
       def w3c_date(date) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         if date.is_a?(String)
           date
         elsif date.respond_to?(:iso8601)
-          date.iso8601.sub(/Z$/i, '+00:00')
+          # Time includes ActiveSupport::TimeWithZone
+          date.is_a?(Time) ? w3c_time(date) : date.iso8601.sub(/Z$/i, '+00:00')
         elsif date.is_a?(Date) && !date.is_a?(DateTime)
           date.strftime('%Y-%m-%d')
         else
@@ -299,9 +313,80 @@ module SitemapGenerator
 
       private
 
+      # Same as URI.join(host, url).to_s, but faster.
+      #
+      # Each host is parsed only once, and URLs made only of characters that URI never
+      # escapes or normalizes (an absolute http(s) URL or an absolute path, without dot
+      # segments) are joined without parsing them.
+      def join_url(host, url)
+        return URI.join(host, url).to_s unless host.is_a?(String)
+
+        base, origin = host_uri(host)
+        if url.is_a?(String) && !DOT_SEGMENT.match?(url)
+          # A new UTF-8 String, like URI.join, not the caller's (nor a subclass or another encoding).
+          return String.new(url, encoding: Encoding::UTF_8) if SIMPLE_ABSOLUTE_URL.match?(url)
+          return origin + url if origin && SIMPLE_ABSOLUTE_PATH.match?(url)
+        end
+        base.merge(url).to_s
+      end
+
+      # Return the parsed host URI and its origin (the URI without path, query and fragment),
+      # or nil for the origin if the host is not an absolute http(s) URI.
+      def host_uri(host)
+        cache = SitemapUrl.host_uri_cache
+        cache[host] || begin
+          base = URI.parse(host)
+          entry = [base, uri_origin(base)].freeze
+          # Copy-on-write so readers in other threads never see a Hash being modified.
+          SitemapUrl.host_uri_cache = (cache.size < 100 ? cache : {}).merge(host.dup.freeze => entry).freeze
+          entry
+        end
+      end
+
+      def uri_origin(uri)
+        # Other schemes (URI::FTP keeps a "/" path) go through URI#merge, as with URI.join.
+        return unless uri.is_a?(URI::HTTP) && uri.host
+
+        origin = uri.dup
+        origin.path = ''
+        origin.query = nil
+        origin.fragment = nil
+        origin.to_s
+      end
+
+      # Format a Time as W3C datetime, caching the last result. URLs often share a lastmod,
+      # or get the current time by default, so consecutive URLs usually format the same second.
+      def w3c_time(time)
+        cached = SitemapUrl.w3c_time_cache
+        # A copy for each caller, as when it was formatted each time: a caller may modify it.
+        return cached[3].dup if w3c_time_cached?(cached, time)
+
+        formatted = time.iso8601.sub(/Z$/i, '+00:00')
+        SitemapUrl.w3c_time_cache = [time.to_i, time.utc_offset, time.class, formatted.dup].freeze
+        formatted
+      end
+
+      def w3c_time_cached?(cached, time)
+        cached && cached[0] == time.to_i && cached[1] == time.utc_offset && cached[2].equal?(time.class)
+      end
+
+      # Same as path.sub(%r{^/}, '') without a regexp in the common case.
+      def remove_leading_slash(path)
+        path.start_with?('/') ? path[1..] : path.sub(%r{^/}, '')
+      end
+
+      # Same as host.sub(%r{/$}, '') without a regexp in the common case (a host without newlines).
+      def remove_trailing_slash(host)
+        return host.sub(%r{/$}, '') if host.include?("\n")
+
+        host.end_with?('/') ? host[0..-2] : host
+      end
+
       # Percent-encode non-ASCII bytes in a path segment, leaving already-encoded %XX sequences untouched.
       # Applied to paths only — not the host — IDN hostnames require punycode, not percent-encoding.
       def encode_non_ascii(str)
+        return str if str.ascii_only?
+
         str.gsub(/[^\x00-\x7F]/) { |c| c.bytes.map { |b| format('%%%02X', b) }.join }
       end
     end

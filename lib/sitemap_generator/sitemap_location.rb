@@ -50,7 +50,7 @@ module SitemapGenerator
     # * <tt>max_sitemap_links</tt> - The maximum number of links to put in each sitemap.
     def initialize(opts = {}) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       super()
-      SitemapGenerator::Utilities.assert_valid_keys(opts, %i[
+      SitemapGenerator::Utilities.assert_valid_keys(opts, *%i[
                                                       adapter
                                                       public_path
                                                       sitemaps_path

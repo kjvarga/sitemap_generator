@@ -136,8 +136,24 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       expect(new_url.send(:w3c_date, '2010-01-01')).to eq('2010-01-01')
     end
 
+    it 'returns a string each caller can modify' do
+      url = new_url
+      url.send(:w3c_date, Time.at(0).utc) << 'X'
+      expect(url.send(:w3c_date, Time.at(0).utc)).to eq('1970-01-01T00:00:00+00:00')
+    end
+
+    context 'when consecutive times have the same seconds but different offsets' do
+      it 'formats each time with its own offset' do
+        url = new_url
+        times = [Time.at(0).utc, Time.at(0).getlocal('+05:30'), Time.at(0).getlocal('-03:00'), Time.at(0).utc]
+        expect(times.map { |time| url.send(:w3c_date, time) }).to eq(
+          %w[1970-01-01T00:00:00+00:00 1970-01-01T05:30:00+05:30 1969-12-31T21:00:00-03:00 1970-01-01T00:00:00+00:00]
+        )
+      end
+    end
+
     it 'tries to convert to utc' do
-      time = Time.at(0)
+      time = Time.at(0).getlocal('+05:00')
       allow(time).to receive(:respond_to?).and_return(false, true)
       expect(new_url.send(:w3c_date, time)).to eq('1970-01-01T00:00:00+00:00')
     end
@@ -322,6 +338,105 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
 
       it 'leaves the href unchanged' do
         expect(alternate_link['href']).to eq('https://es.example.com/page')
+      end
+    end
+  end
+
+  describe 'join_url' do
+    [
+      ['http://example.com', '/a.png'], ['http://example.com/sub/', 'a.png'], ['http://example.com/sub', '/a.png'],
+      ['http://example.com/', 'https://cdn.example.com/a.png'], ['http://example.com/a/b/', '../c.png'],
+      ['http://example.com/sub/', '/a/./b/../c.png'], ['http://example.com', '//cdn.example.com/a.png'],
+      ['http://example.com:8080/sub?q=1', '/a.png?w=100&h=50'], ['https://example.com:443', '/a.png'],
+      ['HTTP://Example.COM', 'HTTPS://CDN.example.com/a.png'], ['http://example.com', '/caf%C3%A9.png']
+    ].each do |host, path|
+      context "when joining #{host} and #{path}" do
+        it 'resolves the url like URI.join' do
+          expect(new_url.send(:join_url, host, path)).to eq(URI.join(host, path).to_s)
+        end
+      end
+    end
+
+    context 'when the host is not an absolute url' do
+      it 'raises like URI.join' do
+        expect { new_url.send(:join_url, 'example.com', '/a.png') }.to raise_error(URI::BadURIError)
+      end
+    end
+
+    context 'when the host is an ftp url' do
+      def outcome
+        yield
+      rescue StandardError => e
+        e.class
+      end
+
+      it 'behaves like URI.join, without a double slash' do
+        expected = outcome { URI.join('ftp://example.com/', '/a.png').to_s }
+        expect(outcome { new_url.send(:join_url, 'ftp://example.com/', '/a.png') }).to eq(expected)
+      end
+    end
+  end
+
+  describe 'caller options' do
+    context 'when the same images are used for urls with different hosts' do
+      let(:images) { [{ loc: '/logo.png' }, { loc: nil }] }
+
+      it 'resolves each image loc against its own host' do
+        first = new_url('/a', host: 'http://example.com', images: images)
+        second = new_url('/b', host: 'http://example.fr', images: images)
+        expect([first[:images], second[:images]]).to eq(
+          [[{ loc: 'http://example.com/logo.png' }], [{ loc: 'http://example.fr/logo.png' }]]
+        )
+      end
+
+      it 'returns an absolute image loc in another encoding as a UTF-8 String, as URI.join does' do
+        images = [{ loc: 'http://cdn.example.com/a.jpg'.b }]
+        loc = new_url('/a', host: 'http://example.com', images: images)[:images].first[:loc]
+        expect(loc.encoding).to eq(Encoding::UTF_8)
+      end
+
+      it 'does not modify the images' do
+        new_url('/a', host: 'http://example.com', images: images)
+        expect(images).to eq([{ loc: '/logo.png' }, { loc: nil }])
+      end
+    end
+
+    context 'when an image loc is an absolute url' do
+      let(:loc) { +'https://cdn.example.com/logo.png' }
+
+      it 'does not share the loc string with the caller', :aggregate_failures do
+        image_loc = new_url('/a', host: 'http://example.com', images: [{ loc: loc }])[:images].first[:loc]
+        expect(image_loc).to eq(loc)
+        expect(image_loc).not_to be(loc)
+      end
+    end
+
+    context 'when given both videos and video' do
+      let(:videos) { [{ thumbnail_loc: 'http://example.com/1.jpg', title: '1', description: '1' }] }
+      let(:video) { { thumbnail_loc: 'http://example.com/2.jpg', title: '2', description: '2' } }
+
+      it 'includes all the videos' do
+        expect(new_url('/a', host: 'http://example.com', videos: videos, video: video)[:videos]).to eq(videos + [video])
+      end
+
+      it 'does not modify the videos array' do
+        new_url('/a', host: 'http://example.com', videos: videos, video: video)
+        expect(videos.size).to eq(1)
+      end
+    end
+
+    context 'when given both alternates and alternate' do
+      let(:alternates) { [{ href: 'http://example.com/fr', lang: 'fr' }] }
+      let(:alternate) { { href: 'http://example.com/de', lang: 'de' } }
+
+      it 'includes all the alternates' do
+        url = new_url('/a', host: 'http://example.com', alternates: alternates, alternate: alternate)
+        expect(url[:alternates]).to eq(alternates + [alternate])
+      end
+
+      it 'does not modify the alternates array' do
+        new_url('/a', host: 'http://example.com', alternates: alternates, alternate: [alternate])
+        expect(alternates.size).to eq(1)
       end
     end
   end
