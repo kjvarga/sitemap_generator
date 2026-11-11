@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-* Fix: `add` no longer modifies the `images`, `videos` and `alternates` options passed to it. Image locs were rewritten in place, so images shared between URLs kept the host of the first URL (wrong host in groups with a different `default_host`), and a `videos` or `alternates` array combined with `video` or `alternate` grew on every call, leaking videos and alternates into other URLs.
+* Fix: `add` no longer modifies the `images`, `videos` and `alternates` options passed to it. Image locs were rewritten in place, so images shared between URLs kept the host of the first URL (wrong host in groups with a different `default_host`), and a `videos` or `alternates` array combined with `video` or `alternate` grew on every call, leaking videos and alternates into other URLs. Images past the 1,000 per URL limit are no longer resolved, so an invalid loc among them no longer raises.
 
 ## 7.1.1
 

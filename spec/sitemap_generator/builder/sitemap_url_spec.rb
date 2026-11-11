@@ -344,6 +344,18 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
     end
 
+    context 'when given more images than MAX_SITEMAP_IMAGES' do
+      let(:images) do
+        locs = Array.new(SitemapGenerator::MAX_SITEMAP_IMAGES) { |i| "/#{i}.png" } << 'http://exa mple.com/x.png'
+        [{ loc: nil }] + locs.map { |loc| { loc: loc } }
+      end
+
+      it 'keeps the first ones with a loc, without resolving the others' do
+        locs = new_url('/a', host: 'http://example.com', images: images)[:images].map { |image| image[:loc] }
+        expect([locs.size, locs.first, locs.last]).to eq([1_000, 'http://example.com/0.png', 'http://example.com/999.png'])
+      end
+    end
+
     context 'when given both videos and video' do
       let(:videos) { [{ thumbnail_loc: 'http://example.com/1.jpg', title: '1', description: '1' }] }
       let(:video) { { thumbnail_loc: 'http://example.com/2.jpg', title: '2', description: '2' } }
