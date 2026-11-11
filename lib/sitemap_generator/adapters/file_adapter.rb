@@ -37,14 +37,42 @@ module SitemapGenerator
     end
 
     # Yield a stream to a temporary file in the same directory as `path`, then rename it to `path`.
-    # If `path` is a symlink, its target is replaced and the symlink is kept.
+    # If `path` is a symlink, its target is replaced and the symlink is kept. As when writing in
+    # place, the mode and, if permitted, the owner of the previous file are kept.
     def write_atomically(path, &block)
-      path = File.realpath(path) if File.symlink?(path) && File.exist?(path)
-      temp_path = "#{path}.#{Process.pid}.#{Thread.current.object_id}.tmp"
+      path = resolve_symlinks(path)
+      # Hidden, so that a web server or a directory listing does not show it while it is written.
+      temp_name = ".#{File.basename(path)}.#{Process.pid}.#{Thread.current.object_id}.tmp"
+      temp_path = File.join(File.dirname(path), temp_name)
       File.open(temp_path, 'wb', &block)
+      copy_permissions(path, temp_path)
       File.rename(temp_path, path)
     ensure
-      FileUtils.rm_f(temp_path)
+      FileUtils.rm_f(temp_path) if temp_path
+    end
+
+    # Follow `path` through symlinks, including a dangling one, to the file to write.
+    def resolve_symlinks(path)
+      40.times do # the usual operating system limit (ELOOP)
+        return path unless File.symlink?(path)
+
+        path = File.expand_path(File.readlink(path), File.dirname(path))
+      end
+      raise Errno::ELOOP, path
+    end
+
+    # Give `temp_path` the mode and, if permitted, the owner and group of `path` when it exists.
+    def copy_permissions(path, temp_path)
+      stat = File.stat(path)
+    rescue Errno::ENOENT
+      nil
+    else
+      File.chmod(stat.mode, temp_path)
+      begin
+        File.chown(stat.uid, stat.gid, temp_path)
+      rescue Errno::EPERM, Errno::EACCES
+        # Only root can give a file to another user: keep the current user, as File.atomic_write does.
+      end
     end
 
     # Write `data` to a stream, passing the data through a GzipWriter
