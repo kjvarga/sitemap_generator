@@ -166,5 +166,18 @@ RSpec.describe 'SitemapGenerator::FileAdapter' do
         expect(File.stat(path).mode & 0o7777).to eq(0o640)
       end
     end
+
+    context 'when the file is read-only' do
+      before do
+        File.write(path, 'previous')
+        File.chmod(0o444, path)
+      end
+
+      it 'replaces it and keeps it read-only', :aggregate_failures do
+        adapter.write(location, 'data')
+        expect(File.read(path)).to eq('data')
+        expect(File.stat(path).mode & 0o7777).to eq(0o444)
+      end
+    end
   end
 end
