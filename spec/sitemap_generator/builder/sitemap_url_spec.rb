@@ -362,6 +362,19 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
         expect { new_url.send(:join_url, 'example.com', '/a.png') }.to raise_error(URI::BadURIError)
       end
     end
+
+    context 'when the host is an ftp url' do
+      def outcome
+        yield
+      rescue StandardError => e
+        e.class
+      end
+
+      it 'behaves like URI.join, without a double slash' do
+        expected = outcome { URI.join('ftp://example.com/', '/a.png').to_s }
+        expect(outcome { new_url.send(:join_url, 'ftp://example.com/', '/a.png') }).to eq(expected)
+      end
+    end
   end
 
   describe 'caller options' do

@@ -331,7 +331,7 @@ module SitemapGenerator
       end
 
       # Return the parsed host URI and its origin (the URI without path, query and fragment),
-      # or nil for the origin if the host is not an absolute URI.
+      # or nil for the origin if the host is not an absolute http(s) URI.
       def host_uri(host)
         cache = SitemapUrl.host_uri_cache
         cache[host] || begin
@@ -344,7 +344,8 @@ module SitemapGenerator
       end
 
       def uri_origin(uri)
-        return unless uri.absolute? && uri.host
+        # Other schemes (URI::FTP keeps a "/" path) go through URI#merge, as with URI.join.
+        return unless uri.is_a?(URI::HTTP) && uri.host
 
         origin = uri.dup
         origin.path = ''
