@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'builder'
+require 'sitemap_generator/builder/xml_escape'
 require 'uri'
 require 'time'
 require 'date'
@@ -87,111 +87,26 @@ module SitemapGenerator
         )
       end
 
-      # Return the URL as XML
+      # Return the URL as an XML string.
+      #
+      # The XML is generated directly, without going through Builder::XmlMarkup, which is
+      # much faster. The output is identical to what Builder::XmlMarkup 3.1+ produces with its default options.
+      # If a +builder+ is given the XML is appended to it and its target is returned.
       def to_xml(builder = nil) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
-        builder = ::Builder::XmlMarkup.new if builder.nil?
-        builder.url do # rubocop:disable Metrics/BlockLength
-          builder.loc        self[:loc]
-          builder.lastmod    w3c_date(self[:lastmod])      if self[:lastmod]
-          builder.expires    w3c_date(self[:expires])      if self[:expires]
-          builder.changefreq self[:changefreq].to_s        if self[:changefreq]
-          builder.priority   format_float(self[:priority]) if self[:priority]
-
-          unless SitemapGenerator::Utilities.blank?(self[:news])
-            news_data = self[:news]
-            builder.news :news do
-              builder.news :publication do
-                builder.news :name, news_data[:publication_name].to_s if news_data[:publication_name]
-                builder.news :language, news_data[:publication_language].to_s if news_data[:publication_language]
-              end
-
-              builder.news :access, news_data[:access].to_s if news_data[:access]
-              builder.news :genres, news_data[:genres].to_s if news_data[:genres]
-              builder.news :publication_date, w3c_date(news_data[:publication_date]) if news_data[:publication_date]
-              builder.news :title, news_data[:title].to_s if news_data[:title]
-              builder.news :keywords, news_data[:keywords].to_s if news_data[:keywords]
-              builder.news :stock_tickers, news_data[:stock_tickers].to_s if news_data[:stock_tickers]
-            end
-          end
-
-          self[:images].each do |image|
-            builder.image :image do
-              builder.image :loc, image[:loc]
-              builder.image :caption, image[:caption].to_s             if image[:caption]
-              builder.image :geo_location, image[:geo_location].to_s   if image[:geo_location]
-              builder.image :title, image[:title].to_s                 if image[:title]
-              builder.image :license, image[:license].to_s             if image[:license]
-            end
-          end
-
-          self[:videos].each do |video| # rubocop:disable Metrics/BlockLength
-            builder.video :video do # rubocop:disable Metrics/BlockLength
-              builder.video :thumbnail_loc, video[:thumbnail_loc].to_s
-              builder.video :title, video[:title].to_s
-              builder.video :description, video[:description].to_s
-              builder.video :content_loc, video[:content_loc].to_s if video[:content_loc]
-              if video[:player_loc]
-                loc_attributes = { allow_embed: yes_or_no_with_default(video[:allow_embed], true) }
-                if SitemapGenerator::Utilities.present?(video[:autoplay])
-                  loc_attributes[:autoplay] = video[:autoplay].to_s
-                end
-                builder.video :player_loc, video[:player_loc].to_s, loc_attributes
-              end
-              builder.video :duration, video[:duration].to_s if video[:duration]
-              builder.video :expiration_date, w3c_date(video[:expiration_date]) if video[:expiration_date]
-              builder.video :rating, format_float(video[:rating]) if video[:rating]
-              builder.video :view_count, video[:view_count].to_s if video[:view_count]
-              builder.video :publication_date, w3c_date(video[:publication_date]) if video[:publication_date]
-              video[:tags]&.each { |tag| builder.video :tag, tag.to_s }
-              builder.video :tag, video[:tag].to_s                           if video[:tag]
-              builder.video :category, video[:category].to_s                 if video[:category]
-              if video.key?(:family_friendly)
-                builder.video :family_friendly,
-                              yes_or_no_with_default(video[:family_friendly], true)
-              end
-              if video[:gallery_loc]
-                builder.video :gallery_loc, video[:gallery_loc].to_s,
-                              title: video[:gallery_title].to_s
-              end
-              if SitemapGenerator::Utilities.present?(video[:price])
-                builder.video :price, video[:price].to_s, prepare_video_price_attribs(video)
-              end
-              if video[:uploader]
-                builder.video :uploader, video[:uploader].to_s,
-                              video[:uploader_info] ? { info: video[:uploader_info].to_s } : {}
-              end
-              builder.video :live, yes_or_no_with_default(video[:live], true) if video.key?(:live)
-              if video.key?(:requires_subscription)
-                builder.video :requires_subscription,
-                              yes_or_no_with_default(video[:requires_subscription],
-                                                     true)
-              end
-            end
-          end
-
-          self[:alternates].each do |alternate|
-            rel = alternate[:nofollow] ? 'alternate nofollow' : 'alternate'
-            attributes = { rel: rel, href: alternate[:href].to_s }
-            attributes[:hreflang] = alternate[:lang].to_s if SitemapGenerator::Utilities.present?(alternate[:lang])
-            attributes[:media] = alternate[:media].to_s if SitemapGenerator::Utilities.present?(alternate[:media])
-            builder.xhtml :link, attributes
-          end
-
-          builder.mobile :mobile unless SitemapGenerator::Utilities.blank?(self[:mobile])
-
-          unless SitemapGenerator::Utilities.blank?(self[:pagemap])
-            builder.pagemap :PageMap do
-              SitemapGenerator::Utilities.as_array(self[:pagemap][:dataobjects]).each do |dataobject|
-                builder.pagemap :DataObject, type: dataobject[:type].to_s, id: dataobject[:id].to_s do
-                  SitemapGenerator::Utilities.as_array(dataobject[:attributes]).each do |attribute|
-                    builder.pagemap :Attribute, attribute[:value].to_s, name: attribute[:name].to_s
-                  end
-                end
-              end
-            end
-          end
-        end
-        builder << '' # Force to string
+        xml = +'<url>'
+        xml_tag(xml, 'loc', self[:loc])
+        xml_tag(xml, 'lastmod', w3c_date(self[:lastmod]))      if self[:lastmod]
+        xml_tag(xml, 'expires', w3c_date(self[:expires]))      if self[:expires]
+        xml_tag(xml, 'changefreq', self[:changefreq])          if self[:changefreq]
+        xml_tag(xml, 'priority', format_float(self[:priority])) if self[:priority]
+        news_xml(xml) unless SitemapGenerator::Utilities.blank?(self[:news])
+        self[:images].each { |image| image_xml(xml, image) }
+        self[:videos].each { |video| video_xml(xml, video) }
+        self[:alternates].each { |alternate| alternate_xml(xml, alternate) }
+        xml << '<mobile:mobile/>' unless SitemapGenerator::Utilities.blank?(self[:mobile])
+        pagemap_xml(xml) unless SitemapGenerator::Utilities.blank?(self[:pagemap])
+        xml << '</url>'
+        builder.nil? ? xml : builder << xml
       end
 
       def news?
@@ -199,6 +114,105 @@ module SitemapGenerator
       end
 
       protected
+
+      # Append <tt><name attrs>text</name></tt> to +xml+, escaping the text and attribute values.
+      def xml_tag(xml, name, text, attributes = nil)
+        xml << '<' << name
+        xml_attributes(xml, attributes) if attributes
+        xml << '>' << XmlEscape.escape_text(text) << '</' << name << '>'
+      end
+
+      def xml_attributes(xml, attributes)
+        attributes.each do |key, value|
+          xml << ' ' << key.to_s << '="' << XmlEscape.escape_attribute(value) << '"'
+        end
+        xml
+      end
+
+      def news_xml(xml) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        news = self[:news]
+        xml << '<news:news><news:publication>'
+        xml_tag(xml, 'news:name', news[:publication_name])         if news[:publication_name]
+        xml_tag(xml, 'news:language', news[:publication_language]) if news[:publication_language]
+        xml << '</news:publication>'
+        xml_tag(xml, 'news:access', news[:access])                               if news[:access]
+        xml_tag(xml, 'news:genres', news[:genres])                               if news[:genres]
+        xml_tag(xml, 'news:publication_date', w3c_date(news[:publication_date])) if news[:publication_date]
+        xml_tag(xml, 'news:title', news[:title])                                 if news[:title]
+        xml_tag(xml, 'news:keywords', news[:keywords])                           if news[:keywords]
+        xml_tag(xml, 'news:stock_tickers', news[:stock_tickers])                 if news[:stock_tickers]
+        xml << '</news:news>'
+      end
+
+      def image_xml(xml, image)
+        xml << '<image:image>'
+        xml_tag(xml, 'image:loc', image[:loc])
+        xml_tag(xml, 'image:caption', image[:caption])           if image[:caption]
+        xml_tag(xml, 'image:geo_location', image[:geo_location]) if image[:geo_location]
+        xml_tag(xml, 'image:title', image[:title])               if image[:title]
+        xml_tag(xml, 'image:license', image[:license])           if image[:license]
+        xml << '</image:image>'
+      end
+
+      def video_xml(xml, video) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        xml << '<video:video>'
+        xml_tag(xml, 'video:thumbnail_loc', video[:thumbnail_loc])
+        xml_tag(xml, 'video:title', video[:title])
+        xml_tag(xml, 'video:description', video[:description])
+        xml_tag(xml, 'video:content_loc', video[:content_loc]) if video[:content_loc]
+        if video[:player_loc]
+          loc_attributes = { allow_embed: yes_or_no_with_default(video[:allow_embed], true) }
+          loc_attributes[:autoplay] = video[:autoplay].to_s if SitemapGenerator::Utilities.present?(video[:autoplay])
+          xml_tag(xml, 'video:player_loc', video[:player_loc], loc_attributes)
+        end
+        xml_tag(xml, 'video:duration', video[:duration]) if video[:duration]
+        xml_tag(xml, 'video:expiration_date', w3c_date(video[:expiration_date])) if video[:expiration_date]
+        xml_tag(xml, 'video:rating', format_float(video[:rating])) if video[:rating]
+        xml_tag(xml, 'video:view_count', video[:view_count]) if video[:view_count]
+        xml_tag(xml, 'video:publication_date', w3c_date(video[:publication_date])) if video[:publication_date]
+        video[:tags]&.each { |tag| xml_tag(xml, 'video:tag', tag) }
+        xml_tag(xml, 'video:tag', video[:tag]) if video[:tag]
+        xml_tag(xml, 'video:category', video[:category]) if video[:category]
+        if video.key?(:family_friendly)
+          xml_tag(xml, 'video:family_friendly', yes_or_no_with_default(video[:family_friendly], true))
+        end
+        xml_tag(xml, 'video:gallery_loc', video[:gallery_loc], title: video[:gallery_title].to_s) if video[:gallery_loc]
+        if SitemapGenerator::Utilities.present?(video[:price])
+          xml_tag(xml, 'video:price', video[:price], prepare_video_price_attribs(video))
+        end
+        if video[:uploader]
+          xml_tag(xml, 'video:uploader', video[:uploader],
+                  video[:uploader_info] ? { info: video[:uploader_info].to_s } : nil)
+        end
+        xml_tag(xml, 'video:live', yes_or_no_with_default(video[:live], true)) if video.key?(:live)
+        if video.key?(:requires_subscription)
+          xml_tag(xml, 'video:requires_subscription', yes_or_no_with_default(video[:requires_subscription], true))
+        end
+        xml << '</video:video>'
+      end
+
+      def alternate_xml(xml, alternate)
+        attributes = { rel: alternate[:nofollow] ? 'alternate nofollow' : 'alternate', href: alternate[:href].to_s }
+        attributes[:hreflang] = alternate[:lang].to_s if SitemapGenerator::Utilities.present?(alternate[:lang])
+        attributes[:media] = alternate[:media].to_s if SitemapGenerator::Utilities.present?(alternate[:media])
+        xml << '<xhtml:link'
+        xml_attributes(xml, attributes)
+        xml << '/>'
+      end
+
+      def pagemap_xml(xml) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        xml << '<pagemap:PageMap>'
+        SitemapGenerator::Utilities.as_array(self[:pagemap][:dataobjects]).each do |dataobject|
+          xml << '<pagemap:DataObject'
+          xml_attributes(xml, type: dataobject[:type].to_s, id: dataobject[:id].to_s)
+          xml << '>'
+          SitemapGenerator::Utilities.as_array(dataobject[:attributes]).each do |attribute|
+            xml_tag(xml, 'pagemap:Attribute', attribute[:value], name: attribute[:name].to_s)
+          end
+          xml << '</pagemap:DataObject>'
+        end
+        xml << '</pagemap:PageMap>'
+      end
 
       def prepare_video_price_attribs(video)
         attribs = {}
