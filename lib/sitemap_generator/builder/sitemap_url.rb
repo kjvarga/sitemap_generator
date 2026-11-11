@@ -90,7 +90,7 @@ module SitemapGenerator
       # Return the URL as an XML string.
       #
       # The XML is generated directly, without going through Builder::XmlMarkup, which is
-      # much faster. The output is identical to what Builder::XmlMarkup produces.
+      # much faster. The output is identical to what Builder::XmlMarkup 3.1+ produces with its default options.
       # If a +builder+ is given the XML is appended to it and its target is returned.
       def to_xml(builder = nil) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         xml = +'<url>'

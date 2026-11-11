@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-* Performance: Generate `<url>` and `<sitemap>` XML directly instead of through `Builder::XmlMarkup`, making sitemap generation about 2-4x faster and allocating about 4x fewer objects per URL. The generated XML is byte-for-byte identical with builder 3.1 and later (with builder 3.0, line breaks in attribute values are now escaped as `&#10;` and `&#13;`). When a builder is passed to `SitemapUrl#to_xml` or `SitemapIndexUrl#to_xml`, the XML is appended to it unindented and as UTF-8, whatever encoding the builder declares.
+* Performance: Generate `<url>` and `<sitemap>` XML directly instead of through `Builder::XmlMarkup`, making sitemap generation about 2-4x faster and allocating about 4x fewer objects per URL. The generated XML is byte-for-byte identical with builder 3.1 and later (with builder 3.0, line breaks in attribute values are now escaped as `&#10;` and `&#13;`). When a builder is passed to `SitemapUrl#to_xml` or `SitemapIndexUrl#to_xml`, the XML is appended to it as UTF-8, unindented and with double quotes, whatever options and encoding the builder has: a builder whose target already holds non-ASCII text in another encoding raises `Encoding::CompatibilityError`.
 
 ## 7.1.1
 
