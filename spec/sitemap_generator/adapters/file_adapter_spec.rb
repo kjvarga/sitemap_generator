@@ -93,6 +93,34 @@ RSpec.describe 'SitemapGenerator::FileAdapter' do
       end
     end
 
+    context 'when the file is a symlink to a relative target starting with ~' do
+      before do
+        FileUtils.mkdir_p(File.join(dir, '~'))
+        File.symlink('~/sitemap.xml', path)
+      end
+
+      it 'writes to the target in the same directory' do
+        adapter.write(location, 'data')
+        expect(File.read(File.join(dir, '~', 'sitemap.xml'))).to eq('data')
+      end
+    end
+
+    context 'when something is already at the temporary file name' do
+      let(:victim) { File.join(dir, 'victim.txt') }
+
+      before do
+        File.write(victim, 'previous')
+        allow(adapter).to receive(:rand).and_return(0)
+        File.symlink(victim, File.join(dir, ".sitemap.xml.#{Process.pid}.0.tmp"))
+      end
+
+      it 'neither writes through it nor removes it', :aggregate_failures do
+        expect { adapter.write(location, 'data') }.to raise_error(Errno::EEXIST)
+        expect(File.read(victim)).to eq('previous')
+        expect(File.symlink?(File.join(dir, ".sitemap.xml.#{Process.pid}.0.tmp"))).to be(true)
+      end
+    end
+
     context 'when the file has a custom mode' do
       before do
         File.write(path, 'previous')

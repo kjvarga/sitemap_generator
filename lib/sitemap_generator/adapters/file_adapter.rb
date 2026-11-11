@@ -16,7 +16,8 @@ module SitemapGenerator
     # @param raw_data - data to write to the file.
     def write(location, raw_data)
       ensure_directory(location.directory)
-      write_atomically(location.path) do |stream|
+      # Replace the target of a symlink, and keep the symlink.
+      write_atomically(resolve_symlinks(location.path)) do |stream|
         if location.gzip?
           gzip(stream, raw_data)
         else
@@ -37,18 +38,24 @@ module SitemapGenerator
     end
 
     # Yield a stream to a temporary file in the same directory as `path`, then rename it to `path`.
-    # If `path` is a symlink, its target is replaced and the symlink is kept. As when writing in
-    # place, the mode and, if permitted, the owner of the previous file are kept.
-    def write_atomically(path, &block)
-      path = resolve_symlinks(path)
-      # Hidden, so that a web server or a directory listing does not show it while it is written.
-      temp_name = ".#{File.basename(path)}.#{Process.pid}.#{Thread.current.object_id}.tmp"
-      temp_path = File.join(File.dirname(path), temp_name)
-      File.open(temp_path, 'wb', &block)
+    # As when writing in place, the mode and, if permitted, the owner of the previous file are kept.
+    def write_atomically(path)
+      temp_path = temp_path_for(path)
+      created = false
+      # EXCL: never write through, nor remove, a file or a symlink already at that name.
+      File.open(temp_path, File::WRONLY | File::CREAT | File::EXCL, binmode: true) do |stream|
+        created = true
+        yield stream
+      end
       copy_permissions(path, temp_path)
       File.rename(temp_path, path)
     ensure
-      FileUtils.rm_f(temp_path) if temp_path
+      FileUtils.rm_f(temp_path) if created
+    end
+
+    # Hidden, so that a web server or a directory listing does not show it while it is written.
+    def temp_path_for(path)
+      File.join(File.dirname(path), ".#{File.basename(path)}.#{Process.pid}.#{rand(1 << 32).to_s(36)}.tmp")
     end
 
     # Follow `path` through symlinks, including a dangling one, to the file to write.
@@ -56,7 +63,8 @@ module SitemapGenerator
       40.times do # the usual operating system limit (ELOOP)
         return path unless File.symlink?(path)
 
-        path = File.expand_path(File.readlink(path), File.dirname(path))
+        # absolute_path rather than expand_path: a target starting with ~ is not the home directory.
+        path = File.absolute_path(File.readlink(path), File.dirname(path))
       end
       raise Errno::ELOOP, path
     end
