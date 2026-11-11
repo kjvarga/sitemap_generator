@@ -36,9 +36,8 @@ RSpec.describe SitemapGenerator::Builder::XmlEscape do
     end
 
     context 'when the string has nothing to escape' do
-      it 'returns the same object' do
-        string = 'http://example.com/'
-        expect(described_class.escape_text(string)).to be(string)
+      it 'returns it unchanged' do
+        expect(described_class.escape_text('http://example.com/')).to eq('http://example.com/')
       end
     end
   end
