@@ -325,4 +325,64 @@ RSpec.describe SitemapGenerator::Builder::SitemapUrl do
       end
     end
   end
+
+  describe 'caller options' do
+    context 'when the same images are used for urls with different hosts' do
+      let(:images) { [{ loc: '/logo.png' }, { loc: nil }] }
+
+      it 'resolves each image loc against its own host' do
+        first = new_url('/a', host: 'http://example.com', images: images)
+        second = new_url('/b', host: 'http://example.fr', images: images)
+        expect([first[:images], second[:images]]).to eq(
+          [[{ loc: 'http://example.com/logo.png' }], [{ loc: 'http://example.fr/logo.png' }]]
+        )
+      end
+
+      it 'does not modify the images' do
+        new_url('/a', host: 'http://example.com', images: images)
+        expect(images).to eq([{ loc: '/logo.png' }, { loc: nil }])
+      end
+    end
+
+    context 'when given more images than MAX_SITEMAP_IMAGES' do
+      let(:images) do
+        locs = Array.new(SitemapGenerator::MAX_SITEMAP_IMAGES) { |i| "/#{i}.png" } << 'http://exa mple.com/x.png'
+        [{ loc: nil }] + locs.map { |loc| { loc: loc } }
+      end
+
+      it 'keeps the first ones with a loc, without resolving the others' do
+        locs = new_url('/a', host: 'http://example.com', images: images)[:images].map { |image| image[:loc] }
+        expect([locs.size, locs.first, locs.last]).to eq([1_000, 'http://example.com/0.png', 'http://example.com/999.png'])
+      end
+    end
+
+    context 'when given both videos and video' do
+      let(:videos) { [{ thumbnail_loc: 'http://example.com/1.jpg', title: '1', description: '1' }] }
+      let(:video) { { thumbnail_loc: 'http://example.com/2.jpg', title: '2', description: '2' } }
+
+      it 'includes all the videos' do
+        expect(new_url('/a', host: 'http://example.com', videos: videos, video: video)[:videos]).to eq(videos + [video])
+      end
+
+      it 'does not modify the videos array' do
+        new_url('/a', host: 'http://example.com', videos: videos, video: video)
+        expect(videos.size).to eq(1)
+      end
+    end
+
+    context 'when given both alternates and alternate' do
+      let(:alternates) { [{ href: 'http://example.com/fr', lang: 'fr' }] }
+      let(:alternate) { { href: 'http://example.com/de', lang: 'de' } }
+
+      it 'includes all the alternates' do
+        url = new_url('/a', host: 'http://example.com', alternates: alternates, alternate: alternate)
+        expect(url[:alternates]).to eq(alternates + [alternate])
+      end
+
+      it 'does not modify the alternates array' do
+        new_url('/a', host: 'http://example.com', alternates: alternates, alternate: [alternate])
+        expect(alternates.size).to eq(1)
+      end
+    end
+  end
 end
