@@ -16,8 +16,9 @@ module SitemapGenerator
     # @param raw_data - data to write to the file.
     def write(location, raw_data)
       ensure_directory(location.directory)
-      # Replace the target of a symlink, and keep the symlink.
-      write_atomically(resolve_symlinks(location.path)) do |stream|
+      # Replace the target of a symlink, even a dangling one, and keep the symlink. realdirpath resolves
+      # a relative target from the real directory of the link, as the operating system does.
+      write_atomically(File.realdirpath(location.path)) do |stream|
         if location.gzip?
           gzip(stream, raw_data)
         else
@@ -58,17 +59,6 @@ module SitemapGenerator
       File.join(File.dirname(path), ".#{File.basename(path)}.#{Process.pid}.#{rand(1 << 32).to_s(36)}.tmp")
     end
 
-    # Follow `path` through symlinks, including a dangling one, to the file to write.
-    def resolve_symlinks(path)
-      40.times do # the usual operating system limit (ELOOP)
-        return path unless File.symlink?(path)
-
-        # absolute_path rather than expand_path: a target starting with ~ is not the home directory.
-        path = File.absolute_path(File.readlink(path), File.dirname(path))
-      end
-      raise Errno::ELOOP, path
-    end
-
     # Give `temp_path` the mode and, if permitted, the owner and group of `path` when it exists.
     def copy_permissions(path, temp_path)
       stat = File.stat(path)
@@ -79,8 +69,15 @@ module SitemapGenerator
       begin
         File.chown(stat.uid, stat.gid, temp_path)
       rescue Errno::EPERM, Errno::EACCES
-        # Only root can give a file to another user: keep the current user, as File.atomic_write does.
+        # Only root can give a file to another user: keep the current user, and the group if permitted.
+        keep_group(stat.gid, temp_path)
       end
+    end
+
+    def keep_group(gid, temp_path)
+      File.chown(nil, gid, temp_path)
+    rescue Errno::EPERM, Errno::EACCES
+      nil
     end
 
     # Write `data` to a stream, passing the data through a GzipWriter

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-* Fix: `FileAdapter` now writes each sitemap to a temporary file and renames it into place, so web servers and crawlers never serve a partially written sitemap, and a failed regeneration (disk full, process killed) no longer leaves an empty or truncated file in place of the previous sitemap. Sitemap files are therefore replaced rather than overwritten in place: they keep their mode and, when the process is allowed to set it, their owner; a symlinked sitemap stays a symlink and its target is replaced; hard links to a sitemap no longer see the new content.
+* Fix: `FileAdapter` now writes each sitemap to a temporary file and renames it into place, so web servers and crawlers never serve a partially written sitemap, and a failed regeneration (disk full, process killed) no longer leaves an empty or truncated file in place of the previous sitemap. Sitemap files are therefore replaced rather than overwritten in place: they keep their mode and, when the process is allowed to set them, their owner and group; a symlinked sitemap stays a symlink and its target is replaced; hard links to a sitemap no longer see the new content.
 * Note: writing sitemaps with `FileAdapter` now requires write access to the directory that holds each sitemap file (the symlink target's directory for a symlinked sitemap), not only to the file itself.
 
 ## 7.1.1
